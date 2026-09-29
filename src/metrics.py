@@ -178,19 +178,30 @@ def compute_full_verification_suite(
                 r_corr = compute_continuous_metrics(corr_fcst[mask], obs[mask])
                 r_cat = compute_categorical_scores(corr_fcst[mask], obs[mask], threshold=threshold)
                 
-                # RMSE skill score: (RMSE_raw - RMSE_corr) / RMSE_raw
-                skill_gain = ((r_raw["rmse"] - r_corr["rmse"]) / r_raw["rmse"] * 100.0) if r_raw["rmse"] > 0 else 0.0
-                
-                regime_breakdown[r_name] = {
-                    "sample_count": int(np.sum(mask)),
-                    "raw_rmse": r_raw["rmse"],
-                    "corr_rmse": r_corr["rmse"],
-                    "rmse_skill_gain_pct": round(skill_gain, 1),
-                    "pod": r_cat["pod"],
-                    "far": r_cat["far"],
-                    "csi": r_cat["csi"],
-                    "ets": r_cat["ets"]
-                }
+                is_degenerate = bool(np.max(obs[mask]) == 0.0)
+                if is_degenerate:
+                    regime_breakdown[r_name] = {
+                        "sample_count": int(np.sum(mask)),
+                        "raw_rmse": r_raw["rmse"],
+                        "corr_rmse": None,
+                        "rmse_skill_gain_pct": None,
+                        "pod": None,
+                        "far": None,
+                        "csi": None,
+                        "ets": None,
+                        "note": "N/A — offshore zero-rain test split"
+                    }
+                else:
+                    regime_breakdown[r_name] = {
+                        "sample_count": int(np.sum(mask)),
+                        "raw_rmse": r_raw["rmse"],
+                        "corr_rmse": r_corr["rmse"],
+                        "rmse_skill_gain_pct": round(skill_gain, 1),
+                        "pod": r_cat["pod"],
+                        "far": r_cat["far"],
+                        "csi": r_cat["csi"],
+                        "ets": r_cat["ets"]
+                    }
                 
     overall_skill_gain = ((raw_cont["rmse"] - corr_cont["rmse"]) / raw_cont["rmse"] * 100.0) if raw_cont["rmse"] > 0 else 0.0
     

@@ -100,12 +100,13 @@
     "Coastal": {
       "sample_count": 1175,
       "raw_rmse": 20.47,
-      "corr_rmse": 0.0,
-      "rmse_skill_gain_pct": 100.0,
-      "pod": 0.0,
-      "far": 0.0,
-      "csi": 0.0,
-      "ets": 0.0
+      "corr_rmse": null,
+      "rmse_skill_gain_pct": null,
+      "pod": null,
+      "far": null,
+      "csi": null,
+      "ets": null,
+      "note": "N/A — offshore zero-rain test split"
     },
     "Western Disturbance": {
       "sample_count": 1035,
