@@ -33,7 +33,17 @@ Current operational post-processing applies **uniform bias correction** across a
 
 ---
 
-## 2. Real vs. Synthetic Data Provenance Matrix (Hackathon Transparency)
+## 2. Visual Previews & Interactive Dashboard
+
+### Operational Streamlit Dashboard (`dashboard/app.py`)
+![Dashboard Preview](data/dashboard_preview.png)
+
+### Multi-Stream Pipeline Diagnostic Preview
+![Exploratory Data Preview](data/exploratory_data_preview.png)
+
+---
+
+## 3. Real vs. Synthetic Data Provenance Matrix (Hackathon Transparency)
 
 In accordance with Section 4 and Section 9 of the project brief, here is the complete, honest provenance breakdown:
 
@@ -56,7 +66,7 @@ In accordance with Section 4 and Section 9 of the project brief, here is the com
 
 ---
 
-## 3. Repository Structure
+## 4. Repository Structure
 
 ```
 varshamitra/
@@ -90,7 +100,7 @@ varshamitra/
 
 ---
 
-## 4. Setup & Installation
+## 5. Setup & Installation
 
 ### Step 1: Activate the Conda Environment
 Ensure you are using the designated conda environment:
@@ -106,7 +116,7 @@ conda install -n rainfall --solver libmamba --override-channels -c conda-forge g
 
 ---
 
-## 5. How to Run Everything
+## 6. How to Run Everything
 
 ### 1. Run Data Ingestion & Generate Exploratory Inspection Plots
 ```powershell
@@ -134,7 +144,7 @@ streamlit run dashboard/app.py
 
 ---
 
-## 6. Honest Limitations & Operational Disclaimer
+## 7. Honest Limitations & Operational Disclaimer
 
 - **Probabilistic Nature**: Forecasts are probabilistic estimates, not guaranteed outcomes. No numerical weather prediction or AI post-processing system achieves 100% accuracy.
 - **Domain Scale**: This build is a pilot demonstration focused on Maharashtra ($15.5^\circ\text{N}\text{--}22.5^\circ\text{N}$), not a production-scale pan-India deployment.
