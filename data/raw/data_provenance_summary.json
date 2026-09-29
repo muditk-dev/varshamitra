@@ -1,0 +1,39 @@
+{
+  "pilot_region": "Maharashtra (15.5\u00b0N - 22.5\u00b0N, 72.5\u00b0E - 80.5\u00b0E)",
+  "pilot_period": "2024-07-15 to 2024-07-20 (Monsoon Season)",
+  "streams": {
+    "raw_forecast": {
+      "source": "NOAA GFS 0.25-deg",
+      "role": "Raw NWP forecast substitute for NCMRWF/BharatFS",
+      "access": "Open NOMADS / AWS Open Data",
+      "status": "REAL",
+      "file": "data\\raw\\raw_forecast_gfs_2024-07-15_2024-07-20.nc"
+    },
+    "observed_rainfall": {
+      "source": "IMD Daily Gridded 0.25-deg (via imddaily / Pune IMD)",
+      "role": "Ground truth rainfall observation",
+      "status": "SYNTHETIC_FALLBACK",
+      "reason": "Live IMD Pune server timed out during SSL handshake; fall back to physically calibrated synthetic IMD ground truth",
+      "file": "data\\raw\\observed_rainfall_imd_2024-07-15_2024-07-20.nc"
+    },
+    "atmospheric_era5": {
+      "source": "ERA5 Reanalysis (ECMWF via cdsapi)",
+      "role": "Synoptic atmospheric drivers (wind shear, moisture, vorticity, MSLP)",
+      "status": "SYNTHETIC_FALLBACK",
+      "reason": "No ~/.cdsapirc key configured; generated physically consistent monsoon dynamics",
+      "file": "data\\raw\\atmospheric_era5_2024-07-15_2024-07-20.nc"
+    },
+    "topography": {
+      "source": "SRTM 30m / Calibrated DEM",
+      "role": "Orographic gradient & elevation modeling",
+      "status": "REAL_CALIBRATED",
+      "file": "data\\raw\\topography_dem_maharashtra.nc"
+    },
+    "districts": {
+      "source": "DataMeet India Maps (Census 2011)",
+      "role": "District boundary polygons for zonal aggregation",
+      "status": "REAL",
+      "file": "data\\raw\\maharashtra_districts.geojson"
+    }
+  }
+}

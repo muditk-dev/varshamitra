@@ -1,0 +1,122 @@
+{
+  "overall": {
+    "raw": {
+      "rmse": 24.57,
+      "mae": 20.17,
+      "mbe": 17.2,
+      "corr": 0.573,
+      "threshold": 10.0,
+      "hits": 15334,
+      "false_alarms": 12797,
+      "misses": 77,
+      "correct_negatives": 1459,
+      "pod": 0.995,
+      "far": 0.455,
+      "csi": 0.544,
+      "ets": 0.053
+    },
+    "corrected": {
+      "rmse": 14.9,
+      "mae": 7.89,
+      "mbe": 1.5,
+      "corr": 0.713,
+      "threshold": 10.0,
+      "hits": 12818,
+      "false_alarms": 4134,
+      "misses": 2593,
+      "correct_negatives": 10122,
+      "pod": 0.832,
+      "far": 0.244,
+      "csi": 0.656,
+      "ets": 0.374
+    },
+    "rmse_skill_gain_pct": 39.4,
+    "heavy_rain_scores": {
+      "raw": {
+        "threshold": 64.5,
+        "hits": 361,
+        "false_alarms": 887,
+        "misses": 327,
+        "correct_negatives": 28092,
+        "pod": 0.525,
+        "far": 0.711,
+        "csi": 0.229,
+        "ets": 0.215
+      },
+      "corrected": {
+        "threshold": 64.5,
+        "hits": 310,
+        "false_alarms": 592,
+        "misses": 378,
+        "correct_negatives": 28387,
+        "pod": 0.451,
+        "far": 0.656,
+        "csi": 0.242,
+        "ets": 0.23
+      }
+    }
+  },
+  "by_regime": {
+    "Active Monsoon": {
+      "sample_count": 23963,
+      "raw_rmse": 22.59,
+      "corr_rmse": 8.11,
+      "rmse_skill_gain_pct": 64.1,
+      "pod": 0.791,
+      "far": 0.297,
+      "csi": 0.593,
+      "ets": 0.302
+    },
+    "Break Monsoon": {
+      "sample_count": 34,
+      "raw_rmse": 4.48,
+      "corr_rmse": 4.71,
+      "rmse_skill_gain_pct": -5.1,
+      "pod": 0.0,
+      "far": 0.0,
+      "csi": 0.0,
+      "ets": 0.0
+    },
+    "Depression": {
+      "sample_count": 896,
+      "raw_rmse": 18.77,
+      "corr_rmse": 14.37,
+      "rmse_skill_gain_pct": 23.4,
+      "pod": 1.0,
+      "far": 0.0,
+      "csi": 1.0,
+      "ets": 0.0
+    },
+    "Orographic": {
+      "sample_count": 2564,
+      "raw_rmse": 42.27,
+      "corr_rmse": 42.78,
+      "rmse_skill_gain_pct": -1.2,
+      "pod": 1.0,
+      "far": 0.037,
+      "csi": 0.963,
+      "ets": 0.0
+    },
+    "Coastal": {
+      "sample_count": 1175,
+      "raw_rmse": 20.47,
+      "corr_rmse": 0.0,
+      "rmse_skill_gain_pct": 100.0,
+      "pod": 0.0,
+      "far": 0.0,
+      "csi": 0.0,
+      "ets": 0.0
+    },
+    "Western Disturbance": {
+      "sample_count": 1035,
+      "raw_rmse": 16.7,
+      "corr_rmse": 11.25,
+      "rmse_skill_gain_pct": 32.6,
+      "pod": 0.44,
+      "far": 0.489,
+      "csi": 0.31,
+      "ets": 0.214
+    }
+  },
+  "spatial_fss_sample": 0.379
+}
