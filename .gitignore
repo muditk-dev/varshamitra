@@ -5,3 +5,5 @@ __pycache__/
 .vscode/
 .idea/
 *.log
+header_dom_report.json
+

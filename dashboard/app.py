@@ -20,13 +20,14 @@ import json
 from pathlib import Path
 
 # Ensure Windows conda environment native DLLs are loaded properly
-conda_dll_dir = Path(sys.executable).parent / "Library" / "bin"
-if conda_dll_dir.exists():
-    try:
-        os.add_dll_directory(str(conda_dll_dir))
-    except Exception:
-        pass
-    os.environ["PATH"] = str(conda_dll_dir) + os.pathsep + os.environ.get("PATH", "")
+if sys.platform == "win32":
+    conda_dll_dir = Path(sys.executable).parent / "Library" / "bin"
+    if conda_dll_dir.exists():
+        try:
+            os.add_dll_directory(str(conda_dll_dir))
+        except Exception:
+            pass
+        os.environ["PATH"] = str(conda_dll_dir) + os.pathsep + os.environ.get("PATH", "")
 
 import streamlit as st
 import pandas as pd
