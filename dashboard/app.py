@@ -89,15 +89,37 @@ if is_dark:
         }
         .main-header {
             font-size: 2.2rem;
-            font-weight: 800;
-            color: #60A5FA !important;
+            line-height: 1.25;
             margin-bottom: 2px;
-            letter-spacing: -0.5px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            text-shadow: none !important;
+            -webkit-text-stroke: 0 !important;
+        }
+        .main-header::before, .main-header::after {
+            content: none !important;
+            display: none !important;
+        }
+        .title-en {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.5px !important;
+            color: #60A5FA !important;
+        }
+        .title-hi {
+            font-family: "Noto Sans Devanagari", "Nirmala UI", "Mangal", "Segoe UI", sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 1.85rem !important;
+            letter-spacing: 0px !important;
+            color: #38BDF8 !important;
         }
         .sub-header {
             font-size: 1.02rem;
             color: #94A3B8 !important;
             margin-bottom: 16px;
+            text-shadow: none !important;
+            -webkit-text-stroke: 0 !important;
         }
         .disclaimer-box {
             background-color: #2B1D0C !important;
@@ -274,15 +296,37 @@ else:
         }
         .main-header {
             font-size: 2.2rem;
-            font-weight: 800;
-            color: #1E3A8A !important;
+            line-height: 1.25;
             margin-bottom: 2px;
-            letter-spacing: -0.5px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            text-shadow: none !important;
+            -webkit-text-stroke: 0 !important;
+        }
+        .main-header::before, .main-header::after {
+            content: none !important;
+            display: none !important;
+        }
+        .title-en {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.5px !important;
+            color: #1E3A8A !important;
+        }
+        .title-hi {
+            font-family: "Noto Sans Devanagari", "Nirmala UI", "Mangal", "Segoe UI", sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 1.85rem !important;
+            letter-spacing: 0px !important;
+            color: #0284C7 !important;
         }
         .sub-header {
             font-size: 1.02rem;
             color: #475569 !important;
             margin-bottom: 16px;
+            text-shadow: none !important;
+            -webkit-text-stroke: 0 !important;
         }
         .disclaimer-box {
             background-color: #FEF3C7 !important;
@@ -544,7 +588,10 @@ col_head, col_theme_btn = st.columns([5, 1.2])
 
 with col_head:
     st.markdown("""
-    <div class="main-header">VarshaMitra (वर्षा मित्र)</div>
+    <div class="main-header">
+        <span class="title-en">VarshaMitra</span>
+        <span class="title-hi">(वर्षा मित्र)</span>
+    </div>
     <div class="sub-header">Regime-Aware AI Post-Processing of Monsoon Rainfall Forecasts • Pilot: Maharashtra Region</div>
     """, unsafe_allow_html=True)
 
