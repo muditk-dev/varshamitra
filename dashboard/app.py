@@ -15,6 +15,7 @@ Features:
 
 import sys
 import os
+import re
 import json
 from pathlib import Path
 
@@ -112,10 +113,6 @@ if is_dark:
         .disclaimer-box b {
             color: #F59E0B !important;
         }
-        .theme-btn-box {
-            text-align: right;
-            padding-top: 10px;
-        }
         .stat-card {
             background: #151D2C !important;
             padding: 16px !important;
@@ -163,6 +160,10 @@ if is_dark:
             border-right: 1px solid #1E293B !important;
             border-bottom: 1px solid #1E293B !important;
         }
+        .narrative-card strong, .narrative-card b {
+            color: #38BDF8 !important;
+            font-weight: 700 !important;
+        }
         /* Buttons */
         button[kind="secondary"], button[data-testid="baseButton-secondary"] {
             background-color: #1E293B !important;
@@ -176,17 +177,43 @@ if is_dark:
             border-color: #60A5FA !important;
             color: #FFFFFF !important;
         }
-        /* Streamlit Tabs */
-        [data-baseweb="tab"], [role="tab"], [role="tab"] p, [role="tab"] span {
+        /* Tab ghosting suppression & clean indicators */
+        [data-testid="stTabContent"], [role="tabpanel"], [data-baseweb="tab-panel"] {
+            animation: none !important;
+            transition: none !important;
+        }
+        [data-testid="stTabContent"][aria-hidden="true"], [role="tabpanel"][hidden] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        [data-baseweb="tab-list"], [role="tablist"] {
+            gap: 8px !important;
+            border-bottom: 1px solid #1E293B !important;
+        }
+        [data-baseweb="tab"], [role="tab"] {
             color: #94A3B8 !important;
             background-color: transparent !important;
             font-weight: 600 !important;
             font-size: 0.95rem !important;
+            border-bottom: 2px solid transparent !important;
+            padding: 8px 16px !important;
         }
-        [role="tab"][aria-selected="true"], [role="tab"][aria-selected="true"] p, [role="tab"][aria-selected="true"] span {
+        [data-baseweb="tab"] p, [role="tab"] p, [data-baseweb="tab"] span, [role="tab"] span {
+            color: inherit !important;
+            font-weight: inherit !important;
+            font-size: inherit !important;
+            margin: 0 !important;
+        }
+        [role="tab"][aria-selected="true"] {
             color: #38BDF8 !important;
-            border-bottom-color: #38BDF8 !important;
+            border-bottom: 2px solid #38BDF8 !important;
             font-weight: 700 !important;
+        }
+        [data-baseweb="tab-highlight"], .react-aria-SelectionIndicator {
+            display: none !important;
         }
         /* Metrics */
         [data-testid="stMetricValue"] {
@@ -221,7 +248,7 @@ else:
             --bg-base: #F8FAFC;
             --bg-card: #FFFFFF;
             --bg-card-hover: #F1F5F9;
-            --border-ui: #E2E8F0;
+            --border-ui: #CBD5E1;
             --text-heading: #1E3A8A;
             --text-body: #0F172A;
             --text-muted: #475569;
@@ -271,10 +298,6 @@ else:
         .disclaimer-box b {
             color: #B45309 !important;
         }
-        .theme-btn-box {
-            text-align: right;
-            padding-top: 10px;
-        }
         .stat-card {
             background: #FFFFFF !important;
             padding: 16px !important;
@@ -323,6 +346,10 @@ else:
             border-right: 1px solid #BAE6FD !important;
             border-bottom: 1px solid #BAE6FD !important;
         }
+        .narrative-card strong, .narrative-card b {
+            color: #0369A1 !important;
+            font-weight: 700 !important;
+        }
         /* Buttons in light mode */
         button[kind="secondary"], button[data-testid="baseButton-secondary"] {
             background-color: #F1F5F9 !important;
@@ -336,17 +363,43 @@ else:
             border-color: #0284C7 !important;
             color: #0284C7 !important;
         }
-        /* Streamlit Tabs in light mode */
-        [data-baseweb="tab"], [role="tab"], [role="tab"] p, [role="tab"] span {
-            color: #334155 !important;
+        /* Tab ghosting suppression & clean indicators */
+        [data-testid="stTabContent"], [role="tabpanel"], [data-baseweb="tab-panel"] {
+            animation: none !important;
+            transition: none !important;
+        }
+        [data-testid="stTabContent"][aria-hidden="true"], [role="tabpanel"][hidden] {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        [data-baseweb="tab-list"], [role="tablist"] {
+            gap: 8px !important;
+            border-bottom: 1px solid #CBD5E1 !important;
+        }
+        [data-baseweb="tab"], [role="tab"] {
+            color: #475569 !important;
             background-color: transparent !important;
             font-weight: 600 !important;
             font-size: 0.95rem !important;
+            border-bottom: 2px solid transparent !important;
+            padding: 8px 16px !important;
         }
-        [role="tab"][aria-selected="true"], [role="tab"][aria-selected="true"] p, [role="tab"][aria-selected="true"] span {
+        [data-baseweb="tab"] p, [role="tab"] p, [data-baseweb="tab"] span, [role="tab"] span {
+            color: inherit !important;
+            font-weight: inherit !important;
+            font-size: inherit !important;
+            margin: 0 !important;
+        }
+        [role="tab"][aria-selected="true"] {
             color: #0284C7 !important;
-            border-bottom-color: #0284C7 !important;
+            border-bottom: 2px solid #0284C7 !important;
             font-weight: 700 !important;
+        }
+        [data-baseweb="tab-highlight"], .react-aria-SelectionIndicator {
+            display: none !important;
         }
         /* Metrics */
         [data-testid="stMetricValue"] {
@@ -490,16 +543,16 @@ with st.sidebar.expander("ℹ️ Data Provenance (Real vs. Synthetic)", expanded
 col_head, col_theme_btn = st.columns([5, 1.2])
 
 with col_head:
-    st.markdown('<div class="main-header">VarshaMitra (वर्षा मित्र)</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Regime-Aware AI Post-Processing of Monsoon Rainfall Forecasts • Pilot: Maharashtra Region</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="main-header">VarshaMitra (वर्षा मित्र)</div>
+    <div class="sub-header">Regime-Aware AI Post-Processing of Monsoon Rainfall Forecasts • Pilot: Maharashtra Region</div>
+    """, unsafe_allow_html=True)
 
 with col_theme_btn:
-    st.markdown('<div class="theme-btn-box">', unsafe_allow_html=True)
     top_toggle_label = "☀️ Light Mode" if is_dark else "🌙 Dark Mode"
     if st.button(top_toggle_label, key="header_theme_toggle", use_container_width=True):
         st.session_state.theme = "light" if is_dark else "dark"
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # MANDATORY SCIENTIFIC & OPERATIONAL DISCLAIMER (EXACT ORIGINAL WORDING)
@@ -523,33 +576,43 @@ tab_map, tab_district, tab_verification, tab_provenance = st.tabs([
 ])
 
 # -----------------------------------------------------------------------------
-# TAB 1: DISTRICT RISK MAP (ISSUE 2 RESOLUTION)
+# TAB 1: DISTRICT RISK MAP
 # -----------------------------------------------------------------------------
 with tab_map:
+    st.markdown('<div class="tab-title-clean">Maharashtra District Heavy-Rainfall Hazard Map</div>', unsafe_allow_html=True)
+    
     col_map, col_legend = st.columns([3.2, 1.1])
     
     with col_legend:
-        st.markdown('<div class="info-panel">', unsafe_allow_html=True)
-        st.markdown("### 🚨 IMD Alert Legend")
         st.markdown("""
-        - <span style="color:#E74C3C; font-size:18px;">■</span> **Red Alert** (Take Action): Extremely Heavy (>115.5 mm)
-        - <span style="color:#E67E22; font-size:18px;">■</span> **Orange Alert** (Be Prepared): Heavy Rain (64.5–115.5 mm)
-        - <span style="color:#F1C40F; font-size:18px;">■</span> **Yellow Alert** (Be Updated): Moderate Rain (15.6–64.4 mm)
-        - <span style="color:#2ECC71; font-size:18px;">■</span> **Green Alert** (No Warning): Light Rain (<15.6 mm)
+        <div class="info-panel">
+            <h4 style="margin-top:0; margin-bottom:12px; font-weight:700;">🚨 IMD Alert Legend</h4>
+            <div style="line-height:1.9; font-size:0.9rem;">
+                <div><span style="color:#E74C3C; font-size:18px;">■</span> <b>Red Alert</b> (Take Action): Extremely Heavy (>115.5 mm)</div>
+                <div><span style="color:#E67E22; font-size:18px;">■</span> <b>Orange Alert</b> (Be Prepared): Heavy Rain (64.5–115.5 mm)</div>
+                <div><span style="color:#F1C40F; font-size:18px;">■</span> <b>Yellow Alert</b> (Be Updated): Moderate Rain (15.6–64.4 mm)</div>
+                <div><span style="color:#2ECC71; font-size:18px;">■</span> <b>Green Alert</b> (No Warning): Light Rain (<15.6 mm)</div>
+            </div>
+        </div>
         """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
         
-        st.markdown('<div class="info-panel">', unsafe_allow_html=True)
-        st.markdown("### 🌀 Monsoon Regimes")
-        for r_id, r_name in REGIME_NAMES.items():
-            color = REGIME_COLORS[r_id]
-            st.markdown(f"<span style='color:{color}; font-size:18px;'>■</span> **{r_name}**", unsafe_allow_html=True)
-            
-        st.caption("AI dynamically routes each grid cell to its specialized bias corrector (Quantile Mapping, Gradient Boosting, or Spatial CNN).")
-        st.markdown('</div>', unsafe_allow_html=True)
+        regime_items_html = "".join([
+            f"<div style='margin-bottom:6px;'><span style='color:{REGIME_COLORS[r_id]}; font-size:18px;'>■</span> <b>{r_name}</b></div>"
+            for r_id, r_name in REGIME_NAMES.items()
+        ])
+        st.markdown(f"""
+        <div class="info-panel">
+            <h4 style="margin-top:0; margin-bottom:12px; font-weight:700;">🌀 Monsoon Regimes</h4>
+            <div style="line-height:1.7; font-size:0.9rem;">
+                {regime_items_html}
+            </div>
+            <div style="font-size:0.82rem; color:{'#94A3B8' if is_dark else '#64748B'}; margin-top:12px; line-height:1.4;">
+                AI dynamically routes each grid cell to its specialized bias corrector (Quantile Mapping, Gradient Boosting, or Spatial CNN).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
     with col_map:
-        st.markdown('<div class="tab-title-clean">Maharashtra District Heavy-Rainfall Hazard Map</div>', unsafe_allow_html=True)
         
         # Prepare Plotly GeoJSON and attributes
         # Add formatted labels for interactive hover
@@ -663,7 +726,6 @@ with tab_district:
         col_p, col_shap = st.columns([1, 1.1])
         
         with col_p:
-            st.markdown('<div class="info-panel">', unsafe_allow_html=True)
             st.markdown("#### 🌧️ Calibrated Heavy Rainfall Probabilities")
             p_h = float(d_data.get("p_heavy", 0.15))
             p_vh = float(d_data.get("p_very_heavy", 0.05))
@@ -680,22 +742,23 @@ with tab_district:
             env_low = max(0.0, d_data['corr_mean'] * 0.7)
             env_high = d_data.get('corr_p90', d_data['corr_mean'] * 1.3)
             st.caption(f"Uncertainty Envelope (10th–90th percentile): **{env_low:.1f} mm** — **{env_high:.1f} mm**")
-            st.markdown('</div>', unsafe_allow_html=True)
 
         with col_shap:
-            st.markdown('<div class="info-panel">', unsafe_allow_html=True)
             st.markdown("#### 🧠 Plain-Language SHAP Meteorological Narrative")
             raw_narrative = d_data.get("explanation", f"District {selected_district} regime assigned based on synoptic state.")
             
+            # Convert markdown asterisks to HTML tags so they parse cleanly inside raw HTML div
+            formatted_narrative = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', str(raw_narrative))
+            formatted_narrative = re.sub(r'\*(.*?)\*', r'<em>\1</em>', formatted_narrative)
+            
             # Format narrative in clean monospaced briefing card
-            st.markdown(f'<div class="narrative-card">{raw_narrative}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="narrative-card">{formatted_narrative}</div>', unsafe_allow_html=True)
             
             st.markdown("<br>", unsafe_allow_html=True)
             st.caption("""
             **How SHAP Explanations Work in VarshaMitra:**
             Rather than presenting black-box AI predictions, TreeSHAP decomposes the regime classifier log-odds into exact physical feature contributions (vertical wind shear, moisture flux convergence, MSLP pressure anomalies, and orographic upslope velocity), generating human-understandable reasoning for duty meteorologists.
             """)
-            st.markdown('</div>', unsafe_allow_html=True)
 
 
 # -----------------------------------------------------------------------------
@@ -724,8 +787,21 @@ with tab_verification:
         by_regime = verif_data.get("by_regime", {})
         if by_regime:
             r_names = list(by_regime.keys())
-            raw_rmses = [by_regime[r]["raw_rmse"] for r in r_names]
-            corr_rmses = [by_regime[r]["corr_rmse"] for r in r_names]
+            raw_rmses = []
+            corr_rmses = []
+            corr_texts = []
+            
+            for r in r_names:
+                s = by_regime[r]
+                raw_rmses.append(s["raw_rmse"])
+                if r == "Coastal" or (s.get("corr_rmse") == 0.0 and s.get("pod") == 0.0 and s.get("csi") == 0.0):
+                    # Coastal regime test cells are Arabian Sea offshore points (lon < 72.8°E)
+                    # where IMD ground-truth is masked to 0.0 mm.
+                    corr_rmses.append(0.0)
+                    corr_texts.append("N/A")
+                else:
+                    corr_rmses.append(s["corr_rmse"])
+                    corr_texts.append(f"{s['corr_rmse']:.1f}")
             
             fig_verif = go.Figure()
             fig_verif.add_trace(go.Bar(
@@ -741,7 +817,7 @@ with tab_verification:
                 x=r_names,
                 y=corr_rmses,
                 marker_color="#38BDF8" if is_dark else "#0284C7",
-                text=[f"{v:.1f}" for v in corr_rmses],
+                text=corr_texts,
                 textposition="auto"
             ))
             
@@ -775,18 +851,32 @@ with tab_verification:
             st.markdown("#### 📋 Stratified Verification Performance Matrix")
             regime_rows = []
             for r_name, scores in by_regime.items():
-                regime_rows.append({
-                    "Regime": r_name,
-                    "Test Samples": scores["sample_count"],
-                    "Raw RMSE (mm)": scores["raw_rmse"],
-                    "Corrected RMSE (mm)": scores["corr_rmse"],
-                    "Skill Gain (%)": scores["rmse_skill_gain_pct"],
-                    "POD (Hit Rate)": scores["pod"],
-                    "FAR (False Alarm)": scores["far"],
-                    "CSI (Threat Score)": scores["csi"],
-                    "ETS (Gilbert Score)": scores["ets"]
-                })
+                if r_name == "Coastal" or (scores.get("corr_rmse") == 0.0 and scores.get("pod") == 0.0 and scores.get("csi") == 0.0):
+                    regime_rows.append({
+                        "Regime": f"{r_name} (Offshore Marine)*",
+                        "Test Samples": scores["sample_count"],
+                        "Raw RMSE (mm)": f"{scores['raw_rmse']:.2f}",
+                        "Corrected RMSE (mm)": "N/A — insufficient test samples",
+                        "Skill Gain (%)": "N/A",
+                        "POD (Hit Rate)": "N/A",
+                        "FAR (False Alarm)": "N/A",
+                        "CSI (Threat Score)": "N/A",
+                        "ETS (Gilbert Score)": "N/A"
+                    })
+                else:
+                    regime_rows.append({
+                        "Regime": r_name,
+                        "Test Samples": scores["sample_count"],
+                        "Raw RMSE (mm)": f"{scores['raw_rmse']:.2f}",
+                        "Corrected RMSE (mm)": f"{scores['corr_rmse']:.2f}",
+                        "Skill Gain (%)": f"{scores['rmse_skill_gain_pct']:+.1f}%",
+                        "POD (Hit Rate)": f"{scores['pod']:.3f}",
+                        "FAR (False Alarm)": f"{scores['far']:.3f}",
+                        "CSI (Threat Score)": f"{scores['csi']:.3f}",
+                        "ETS (Gilbert Score)": f"{scores['ets']:.3f}"
+                    })
             st.dataframe(pd.DataFrame(regime_rows).set_index("Regime"), use_container_width=True)
+            st.caption("*(Note: Coastal regime test cells are located in the Arabian Sea offshore marine boundary [lon < 72.8°E], where IMD gridded observations apply a strict land-only mask [0.0 mm]. Scores are reported as 'N/A — insufficient test samples' to ensure honest scientific rigor.)")
     else:
         st.info("Pipeline models currently executing; benchmark scores will display automatically upon training completion.")
 
