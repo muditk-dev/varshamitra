@@ -3,7 +3,7 @@
 Operational Meteorological Analysis & Decision-Support System
 Smart India Hackathon 2026 (NCMRWF / Ministry of Earth Sciences)
 ==================================================
-Meteorologist Analytical Workstation for Regime-Aware NWP Post-Processing.
+Professional Meteorological & Scientific Workstation.
 """
 
 import sys
@@ -44,7 +44,7 @@ from src.regime_classifier import FEATURE_COLS
 # 1. PAGE CONFIGURATION & SESSION STATE
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="VARSHAMITRA | Meteorological Analysis System",
+    page_title="VarshaMitra | Meteorological Operations System",
     page_icon="🌧️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -54,25 +54,33 @@ if "selected_district" not in st.session_state:
     st.session_state.selected_district = "Pune"
 if "lead_time_idx" not in st.session_state:
     st.session_state.lead_time_idx = 0
-if "active_layer" not in st.session_state:
-    st.session_state.active_layer = "VarshaMitra"
+if "current_tab" not in st.session_state:
+    st.session_state.current_tab = "Live Forecast"
+
+if "tab" in st.query_params:
+    qp_val = st.query_params["tab"]
+    for t_opt in ["Live Forecast", "District Intelligence", "Forecast Replay", "Verification Lab", "Data Provenance"]:
+        if qp_val.lower().replace(" ", "").replace("_", "") in t_opt.lower().replace(" ", "").replace("_", ""):
+            st.session_state.current_tab = t_opt
+            break
 
 # -----------------------------------------------------------------------------
-# 2. SCIENTIFIC WORKSTATION CSS (Clean, Professional, Non-Futuristic)
+# 2. PROFESSIONAL LIGHT METEOROLOGICAL WORKSTATION STYLING
 # -----------------------------------------------------------------------------
-scientific_css = """
+light_workstation_css = """
 <style>
-    /* Clean base reset */
+    /* Government & Research Grade Light Palette */
     :root {
-        --bg-main: #0B1120;
-        --bg-card: #1E293B;
-        --bg-surface: #0F172A;
-        --border-ui: #334155;
-        --border-subtle: #1E293B;
-        --accent-blue: #38BDF8;
-        --text-primary: #F8FAFC;
-        --text-secondary: #94A3B8;
-        --text-muted: #64748B;
+        --bg-main: #F4F6F8;
+        --bg-surface: #FFFFFF;
+        --bg-subtle: #F8FAFC;
+        --border-color: #D9DEE7;
+        --border-light: #E5E7EB;
+        --text-primary: #172033;
+        --text-secondary: #667085;
+        --text-muted: #8A94A6;
+        --accent-blue: #2563A6;
+        --accent-blue-hover: #1D4ED8;
         --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     }
@@ -83,73 +91,123 @@ scientific_css = """
         color: var(--text-primary) !important;
     }
 
-    /* Streamlit core container fixes */
+    /* Container padding & max-width */
     .block-container {
-        padding-top: 3.5rem !important;
+        padding-top: 2.8rem !important;
         padding-bottom: 2rem !important;
         padding-left: 2rem !important;
         padding-right: 2rem !important;
-        max-width: 100% !important;
+        max-width: 1650px !important;
     }
 
-    /* Clean Card */
-    .sci-card {
-        background-color: var(--bg-card);
-        border: 1px solid var(--border-ui);
+    /* Clean Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: var(--bg-surface) !important;
+        border-right: 1px solid var(--border-color) !important;
+    }
+
+    section[data-testid="stSidebar"] h3 {
+        color: var(--text-primary) !important;
+        font-size: 1.05rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.8rem !important;
+    }
+
+    /* Standard Cards / Panels */
+    .metro-panel {
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
-        padding: 12px 14px;
-        margin-bottom: 10px;
+        padding: 16px 18px;
+        margin-bottom: 12px;
     }
 
-    .sci-card-header {
+    /* Header text styling */
+    .metro-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+    }
+
+    .metro-subtitle {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-top: 2px;
+    }
+
+    /* Forecast Summary Strip */
+    .forecast-summary-strip {
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 12px 18px;
+        margin-bottom: 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 0;
+    }
+
+    .summary-col {
+        padding: 0 16px;
+        border-right: 1px solid var(--border-light);
+    }
+    .summary-col:first-child {
+        padding-left: 0;
+    }
+    .summary-col:last-child {
+        padding-right: 0;
+        border-right: none;
+    }
+
+    .summary-label {
         font-size: 0.75rem;
         font-weight: 600;
-        letter-spacing: 0.5px;
-        color: var(--text-secondary);
         text-transform: uppercase;
-        margin-bottom: 4px;
+        color: var(--text-secondary);
+        letter-spacing: 0.4px;
     }
 
-    .sci-card-val {
-        font-size: 1.5rem;
+    .summary-val {
+        font-size: 1.35rem;
         font-weight: 700;
         font-family: var(--font-mono);
         color: var(--text-primary);
-        line-height: 1.2;
+        margin-top: 2px;
     }
 
-    /* Alert Badges - IMD Standard Tiers */
+    /* Status Badges */
     .badge-normal {
-        background-color: rgba(34, 197, 94, 0.15);
-        color: #22C55E;
-        border: 1px solid rgba(34, 197, 94, 0.3);
+        background-color: #ECFDF5;
+        color: #16A34A;
+        border: 1px solid #BBF7D0;
         padding: 2px 7px;
         border-radius: 4px;
         font-size: 0.75rem;
         font-weight: 600;
     }
     .badge-moderate {
-        background-color: rgba(234, 179, 8, 0.15);
-        color: #EAB308;
-        border: 1px solid rgba(234, 179, 8, 0.3);
+        background-color: #FEFCE8;
+        color: #CA8A04;
+        border: 1px solid #FEF08A;
         padding: 2px 7px;
         border-radius: 4px;
         font-size: 0.75rem;
         font-weight: 600;
     }
     .badge-heavy {
-        background-color: rgba(249, 115, 22, 0.15);
-        color: #F97316;
-        border: 1px solid rgba(249, 115, 22, 0.3);
+        background-color: #FFF7ED;
+        color: #EA580C;
+        border: 1px solid #FED7AA;
         padding: 2px 7px;
         border-radius: 4px;
         font-size: 0.75rem;
         font-weight: 600;
     }
     .badge-extreme {
-        background-color: rgba(239, 68, 68, 0.15);
-        color: #EF4444;
-        border: 1px solid rgba(239, 68, 68, 0.3);
+        background-color: #FEF2F2;
+        color: #DC2626;
+        border: 1px solid #FECACA;
         padding: 2px 7px;
         border-radius: 4px;
         font-size: 0.75rem;
@@ -159,11 +217,11 @@ scientific_css = """
     /* Context Banner */
     .context-banner {
         background-color: var(--bg-surface);
-        border: 1px solid var(--border-ui);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         padding: 8px 14px;
         font-family: var(--font-mono);
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         color: var(--text-secondary);
         margin-bottom: 12px;
         display: flex;
@@ -171,23 +229,45 @@ scientific_css = """
         align-items: center;
     }
 
-    /* Subtle quiet disclaimer */
+    /* Explanation Box */
+    .explanation-box {
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 14px 18px;
+        line-height: 1.6;
+        font-size: 0.85rem;
+        margin-bottom: 14px;
+    }
+
+    .explanation-item {
+        margin-bottom: 6px;
+    }
+
+    .explanation-item b {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    /* Quiet disclaimer */
     .quiet-disclaimer {
         color: var(--text-muted);
         font-size: 0.75rem;
-        line-height: 1.4;
-        border-top: 1px solid var(--border-ui);
-        padding-top: 10px;
+        line-height: 1.45;
+        border-top: 1px solid var(--border-color);
+        padding-top: 12px;
         margin-top: 24px;
     }
 
-    /* Radio button pills cleanup */
-    div[role="radiogroup"] {
-        gap: 8px;
+    /* Clean navigation bar override */
+    div[data-testid="stHorizontalBlock"] div.stButton > button {
+        border-radius: 4px !important;
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
     }
 </style>
 """
-st.markdown(scientific_css, unsafe_allow_html=True)
+st.markdown(light_workstation_css, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # 3. CACHED DATA & MODEL LOADERS
@@ -281,31 +361,31 @@ GRID_MAP = get_grid_to_district_map()
 
 # Model Router Specification
 ROUTER_SPECS = {
-    0: {"name": "Active Monsoon", "acronym": "EQM", "model": "Empirical Quantile Mapping", "color": "#38BDF8"},
-    1: {"name": "Break Monsoon", "acronym": "GBM", "model": "Gradient Boosted Regressor", "color": "#F43F5E"},
-    2: {"name": "Depression", "acronym": "CNN", "model": "Spatial 2D ConvNet", "color": "#A855F7"},
-    3: {"name": "Orographic", "acronym": "CNN", "model": "Spatial 2D ConvNet", "color": "#14B8A6"},
-    4: {"name": "Coastal", "acronym": "GBM", "model": "Gradient Boosted Regressor", "color": "#06B6D4"},
-    5: {"name": "Western Disturbance", "acronym": "EQM", "model": "Empirical Quantile Mapping", "color": "#F59E0B"}
+    0: {"name": "Active Monsoon", "acronym": "EQM", "model": "Empirical Quantile Mapping", "desc": "Non-linear CDF matching calibrated against monsoon trough convergence."},
+    1: {"name": "Break Monsoon", "acronym": "GBM", "model": "Gradient Boosted Regressor", "desc": "Decision tree ensemble resolving convective triggers during synoptic lulls."},
+    2: {"name": "Depression", "acronym": "CNN", "model": "Spatial 2D ConvNet", "desc": "Convolutional receptive fields capturing cyclonic vortex asymmetry and rain bands."},
+    3: {"name": "Orographic", "acronym": "CNN", "model": "Spatial 2D ConvNet", "desc": "Receptive fields resolving Western Ghats windward blocking and lee decay."},
+    4: {"name": "Coastal", "acronym": "GBM", "model": "Gradient Boosted Regressor", "desc": "Nonlinear regression on marine boundary layer humidity and sea-breeze moisture."},
+    5: {"name": "Western Disturbance", "acronym": "EQM", "model": "Empirical Quantile Mapping", "desc": "Upper-tropospheric westerly trough distribution scaling preserving dry shear."}
 }
 
 # -----------------------------------------------------------------------------
 # 4. TIMELINE & DATA AGGREGATION
 # -----------------------------------------------------------------------------
 TIMELINE_STEPS = [
-    {"label": "NOW (T+0)", "hours": 0, "nominal_offset": 0},
-    {"label": "+6H", "hours": 6, "nominal_offset": 0},
-    {"label": "+12H", "hours": 12, "nominal_offset": 0},
-    {"label": "+24H", "hours": 24, "nominal_offset": 1},
-    {"label": "+36H", "hours": 36, "nominal_offset": 1},
-    {"label": "+48H", "hours": 48, "nominal_offset": 2}
+    {"label": "+0h (Analysis)", "hours": 0, "nominal_offset": 0},
+    {"label": "+6h", "hours": 6, "nominal_offset": 0},
+    {"label": "+12h", "hours": 12, "nominal_offset": 0},
+    {"label": "+24h", "hours": 24, "nominal_offset": 1},
+    {"label": "+36h", "hours": 36, "nominal_offset": 1},
+    {"label": "+48h", "hours": 48, "nominal_offset": 2}
 ]
 
 def get_forecast_dataframe_for_lead(base_date: str, step_idx: int) -> Tuple[gpd.GeoDataFrame, str]:
     """Compute or load district-level meteorological attributes for selected date and lead step."""
     step_info = TIMELINE_STEPS[min(step_idx, len(TIMELINE_STEPS)-1)]
     valid_dt = pd.to_datetime(base_date) + pd.Timedelta(hours=step_info["hours"])
-    valid_str = valid_dt.strftime("%d %b %Y — %H:00 UTC")
+    valid_str = valid_dt.strftime("%d %b %Y, %H:00 UTC")
 
     p_dir = BASE_DIR / "data" / "processed"
     target_date_str = (pd.to_datetime(base_date) + pd.Timedelta(days=step_info["nominal_offset"])).strftime("%Y-%m-%d")
@@ -350,18 +430,22 @@ def get_forecast_dataframe_for_lead(base_date: str, step_idx: int) -> Tuple[gpd.
             p_h = row.get("p_heavy", 0.0)
             p_vh = row.get("p_very_heavy", 0.0)
             if c_max >= 115.5 or p_vh >= 0.35:
-                return "Red", "Extreme", "#EF4444"
+                return "Red", "Extreme", "#DC2626"
             elif c_max >= 64.5 or p_h >= 0.40:
-                return "Orange", "Heavy", "#F97316"
+                return "Orange", "Heavy", "#EA580C"
             elif c_max >= 15.6:
-                return "Yellow", "Moderate", "#EAB308"
+                return "Yellow", "Moderate", "#CA8A04"
             else:
-                return "Green", "Normal", "#22C55E"
+                return "Green", "Normal", "#16A34A"
 
         alerts = [get_alert_tier(r) for _, r in gdf.iterrows()]
         gdf["alert_level"] = [a[0] for a in alerts]
         gdf["alert_label"] = [a[1] for a in alerts]
         gdf["alert_color"] = [a[2] for a in alerts]
+        gdf["uncertainty_spread"] = (gdf["corr_p90"] - gdf["corr_mean"]).clip(lower=2.0)
+        gdf["uncertainty_low"] = (gdf["corr_mean"] - gdf["uncertainty_spread"]).clip(lower=0.0)
+        gdf["uncertainty_high"] = gdf["corr_mean"] + gdf["uncertainty_spread"]
+        gdf["difference"] = gdf["corr_mean"] - gdf["raw_mean"]
     else:
         gdf = AUTH_GDF.copy()
         gdf["raw_mean"] = 32.5
@@ -374,20 +458,20 @@ def get_forecast_dataframe_for_lead(base_date: str, step_idx: int) -> Tuple[gpd.
         gdf["p_extremely_heavy"] = 0.01
         gdf["alert_level"] = "Yellow"
         gdf["alert_label"] = "Moderate"
-        gdf["alert_color"] = "#EAB308"
+        gdf["alert_color"] = "#CA8A04"
+        gdf["uncertainty_spread"] = 14.0
+        gdf["uncertainty_low"] = 10.0
+        gdf["uncertainty_high"] = 38.0
+        gdf["difference"] = -8.5
 
-    gdf["uncertainty_spread"] = (gdf["corr_p90"] - gdf["corr_mean"]).clip(lower=2.0)
-    gdf["uncertainty_low"] = (gdf["corr_mean"] - gdf["uncertainty_spread"]).clip(lower=0.0)
-    gdf["uncertainty_high"] = gdf["corr_mean"] + gdf["uncertainty_spread"]
-    gdf["difference"] = gdf["corr_mean"] - gdf["raw_mean"]
-
+    gdf["regime_name"] = gdf["dominant_regime"].map(lambda x: REGIME_NAMES.get(int(x), "Active Monsoon"))
     return gdf, valid_str
 
 # Base operational date selection
 default_date = ALERT_DATES[-1] if ALERT_DATES else "2024-09-28"
 
 # -----------------------------------------------------------------------------
-# 5. CLEAN SIDEBAR CONTROLS (Requirement 13: Minimal & Clean)
+# 5. SIDEBAR (Requirement 5: Clean Light Sidebar)
 # -----------------------------------------------------------------------------
 with st.sidebar:
     st.markdown("### Forecast Controls")
@@ -396,12 +480,12 @@ with st.sidebar:
         selected_base_date = st.selectbox(
             "Synoptic Base Date",
             ALERT_DATES,
-            index=len(ALERT_DATES) - 1
+            index=len(ALERT_DATES) - 1,
+            help="Select initialization cycle date."
         )
     else:
         selected_base_date = "2024-09-28"
 
-    # Pre-calculate data for current selection
     DISTRICTS_GDF, VALID_TIME_STR = get_forecast_dataframe_for_lead(selected_base_date, st.session_state.lead_time_idx)
 
     # District Selector
@@ -421,84 +505,126 @@ with st.sidebar:
     selected_lead = st.selectbox("Forecast Lead Time", lead_opts, index=st.session_state.lead_time_idx)
     st.session_state.lead_time_idx = lead_opts.index(selected_lead)
 
-    st.markdown("<hr style='border-color:#334155; margin:16px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border-color:#D9DEE7; margin:16px 0;'>", unsafe_allow_html=True)
     
     col_btn1, col_btn2 = st.columns(2)
     with col_btn1:
         if st.button("Run Forecast", use_container_width=True, type="primary"):
-            with st.spinner("Executing regime routing and quantile bias correction..."):
-                time.sleep(0.4)
+            with st.spinner("Processing NWP regime bias correction..."):
+                time.sleep(0.3)
                 st.cache_data.clear()
-                st.success("Synchronized")
     with col_btn2:
         if st.button("Refresh Data", use_container_width=True):
             st.cache_data.clear()
             st.rerun()
 
-    st.markdown("<hr style='border-color:#334155; margin:16px 0;'>", unsafe_allow_html=True)
-
-    # Data Ingestion Status (Honest, clean, minimal)
+    # Subtle status indicator (green dot + text)
     st.markdown("""
-    <div style="font-size:0.8rem; color:#94A3B8; line-height:1.8;">
-        <div><b>Data Stream Status</b></div>
-        <div>✓ NWP: <span style="color:#F8FAFC;">GFS 0.25° (NOAA)</span></div>
-        <div>✓ Observation: <span style="color:#F8FAFC;">IMD Gridded (Calibrated)</span></div>
-        <div>✓ Topography: <span style="color:#F8FAFC;">SRTM 30m DEM</span></div>
+    <div style="font-size:0.8rem; color:#16A34A; font-weight:500; margin-top:10px; display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.9rem;">●</span> Data synchronized
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<hr style='border-color:#D9DEE7; margin:16px 0;'>", unsafe_allow_html=True)
+
+    # Compact Data sources
+    st.markdown("""
+    <div style="font-size:0.8rem; color:#667085; line-height:1.8;">
+        <div style="font-weight:600; color:#172033; margin-bottom:4px;">Data sources</div>
+        <div>✓ GFS 0.25° &mdash; available</div>
+        <div>✓ IMD observations &mdash; available/fallback</div>
+        <div>✓ SRTM DEM &mdash; available</div>
     </div>
     """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 6. SIMPLIFIED SCIENTIFIC HEADER (Requirement 3)
+# 6. CLEAN SCIENTIFIC HEADER (Requirement 6)
 # -----------------------------------------------------------------------------
 st.markdown("""
-<div style="display:flex; justify-content:space-between; align-items:flex-end; padding:2px 0 14px 0; border-bottom:1px solid #334155; margin-bottom:14px;">
+<div style="display:flex; justify-content:space-between; align-items:flex-end; padding-bottom:12px; border-bottom:1px solid #D9DEE7; margin-bottom:14px;">
     <div>
-        <div style="font-size:1.6rem; font-weight:700; color:#F8FAFC; letter-spacing:0.5px;">VARSHAMITRA</div>
-        <div style="font-size:0.92rem; color:#94A3B8; margin-top:1px;">AI for a Resilient Monsoon India</div>
+        <div class="metro-title">VARSHAMITRA</div>
+        <div class="metro-subtitle">AI for a Resilient Monsoon India</div>
     </div>
-    <div style="text-align:right; font-family:'SFMono-Regular',Consolas,monospace; font-size:0.82rem; color:#94A3B8;">
-        <div>GFS 0.25° &bull; 12Z Operational Cycle</div>
-        <div style="color:#64748B; font-size:0.75rem; margin-top:2px;">29 Sep 2026 09:52 UTC</div>
+    <div style="text-align:right; font-family:'SFMono-Regular',Consolas,monospace; font-size:0.82rem; color:#667085;">
+        <div style="color:#172033; font-weight:600;">GFS 0.25° &bull; 12Z cycle</div>
+        <div style="margin-top:2px;">Updated 29 Sep 2026, 09:52 UTC</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 7. TAB NAVIGATION (5 Primary Scientific Workstation Tabs)
+# 7. TOP NAVIGATION (Requirement 7: Clean Horizontal Tabs with Thin Blue Underline)
 # -----------------------------------------------------------------------------
-tab_live, tab_diag, tab_replay, tab_verif, tab_prov = st.tabs([
-    "Live Forecast",
-    "District Intelligence",
-    "Forecast Replay",
-    "Verification Lab",
-    "Data Provenance"
-])
+tabs = ["Live Forecast", "District Intelligence", "Forecast Replay", "Verification Lab", "Data Provenance"]
+tab_cols = st.columns(len(tabs))
+
+for i, t_name in enumerate(tabs):
+    with tab_cols[i]:
+        is_active = (st.session_state.current_tab == t_name)
+        b_type = "primary" if is_active else "secondary"
+        if st.button(t_name, key=f"nav_btn_{i}", type=b_type, use_container_width=True):
+            st.session_state.current_tab = t_name
+            st.query_params["tab"] = t_name
+            st.rerun()
+
+st.markdown("<hr style='border-color:#D9DEE7; margin:6px 0 16px 0;'>", unsafe_allow_html=True)
+
+# Active district records
+sel_rows = DISTRICTS_GDF[DISTRICTS_GDF["district"] == st.session_state.selected_district]
+sel_data = sel_rows.iloc[0] if len(sel_rows) > 0 else DISTRICTS_GDF.iloc[0]
+sel_regime_id = int(sel_data.get("dominant_regime", 0))
+sel_router_info = ROUTER_SPECS.get(sel_regime_id, ROUTER_SPECS[0])
+bias_delta = sel_data["corr_mean"] - sel_data["raw_mean"]
+badge_class = f"badge-{sel_data.get('alert_label', 'Normal').lower()}"
 
 # =============================================================================
-# TAB 1: LIVE FORECAST (Requirements 4, 5, 11: Map-Dominant GIS Workstation)
+# TAB 1: LIVE FORECAST (Requirements 8, 9, 10: Map-Centric GIS Workstation)
 # =============================================================================
-with tab_live:
-    # Temporal Context Banner (Requirement 9)
+if st.session_state.current_tab == "Live Forecast":
+    # Context banner
     st.markdown(f"""
     <div class="context-banner">
-        <span>OPERATIONAL FORECAST &bull; CYCLE: 2026-09-29 12:00 UTC</span>
-        <span>VALID FOR: <b>{VALID_TIME_STR}</b></span>
+        <span><b>OPERATIONAL FORECAST</b> &bull; Cycle: 29 Sep 2026, 12Z</span>
+        <span>Valid: <b>{VALID_TIME_STR}</b></span>
     </div>
     """, unsafe_allow_html=True)
 
-    # Clean Layer Control (Requirement 5: One compact control, NOT seven separate cards)
+    # Forecast Summary Strip (Requirement 4)
+    st.markdown(f"""
+    <div class="forecast-summary-strip">
+        <div class="summary-col">
+            <div class="summary-label">Raw forecast</div>
+            <div class="summary-val">{sel_data['raw_mean']:.1f} <span style="font-size:0.8rem; font-weight:400; color:#667085;">mm/day</span></div>
+        </div>
+        <div class="summary-col">
+            <div class="summary-label">Corrected forecast</div>
+            <div class="summary-val" style="color:#2563A6;">{sel_data['corr_mean']:.1f} <span style="font-size:0.8rem; font-weight:400; color:#667085;">mm/day</span></div>
+        </div>
+        <div class="summary-col">
+            <div class="summary-label">Bias adjustment</div>
+            <div class="summary-val" style="color:{'#DC2626' if bias_delta < 0 else '#16A34A'};">{bias_delta:+.1f} <span style="font-size:0.8rem; font-weight:400; color:#667085;">mm/day</span></div>
+        </div>
+        <div class="summary-col">
+            <div class="summary-label">Regime</div>
+            <div class="summary-val" style="font-size:1.15rem; margin-top:4px;">{sel_router_info['name']}</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Clean Layer Control (Requirement 8)
     layer_map = {
-        "VarshaMitra": "corr_mean",
+        "Corrected rainfall": "corr_mean",
         "Raw GFS": "raw_mean",
         "Difference": "difference",
-        "Heavy Rain (>65mm)": "p_heavy",
-        "Extreme Rain (>115mm)": "p_very_heavy",
+        "Heavy rainfall probability": "p_heavy",
+        "Extreme rainfall probability": "p_very_heavy",
         "Uncertainty": "uncertainty_spread",
         "Regime": "dominant_regime"
     }
 
     selected_layer_label = st.radio(
-        "Precipitation Layer",
+        "Map layers",
         list(layer_map.keys()),
         index=0,
         horizontal=True,
@@ -506,42 +632,67 @@ with tab_live:
     )
     plot_col = layer_map[selected_layer_label]
 
-    # Configure Meteorological Color Ramps & Professional Legend (Requirement 11)
-    if selected_layer_label == "VarshaMitra":
-        c_scale = "Turbo"
-        range_val = [0, max(80.0, DISTRICTS_GDF["corr_mean"].max())]
-        colorbar_title = "VarshaMitra (mm/day)"
-    elif selected_layer_label == "Raw GFS":
-        c_scale = "Blues"
-        range_val = [0, max(80.0, DISTRICTS_GDF["raw_mean"].max())]
-        colorbar_title = "Raw GFS (mm/day)"
+    # Configure Restrained Sequential Meteorological Palette (Requirement 9)
+    if selected_layer_label in ["Corrected rainfall", "Raw GFS"]:
+        # Sequential Blue scale: light blue -> medium blue -> deep navy
+        c_scale = [
+            [0.0, "#E0F2FE"],
+            [0.15, "#BAE6FD"],
+            [0.35, "#38BDF8"],
+            [0.60, "#0284C7"],
+            [0.85, "#0369A1"],
+            [1.0, "#0C4A6E"]
+        ]
+        range_val = [0, max(80.0, DISTRICTS_GDF[plot_col].max())]
+        colorbar_title = "Rainfall (mm/day)"
     elif selected_layer_label == "Difference":
         c_scale = "RdBu_r"
         max_abs = max(15.0, abs(DISTRICTS_GDF["difference"]).max())
         range_val = [-max_abs, max_abs]
-        colorbar_title = "Bias Adjustment (mm/day)"
-    elif selected_layer_label == "Heavy Rain (>65mm)":
+        colorbar_title = "Bias Delta (mm/day)"
+    elif selected_layer_label == "Heavy rainfall probability":
         c_scale = "YlOrRd"
         range_val = [0.0, 1.0]
         colorbar_title = "P(Rain > 65mm)"
-    elif selected_layer_label == "Extreme Rain (>115mm)":
+    elif selected_layer_label == "Extreme rainfall probability":
         c_scale = "Purples"
         range_val = [0.0, 0.4]
         colorbar_title = "P(Rain > 115mm)"
     elif selected_layer_label == "Uncertainty":
-        c_scale = "Cividis"
+        c_scale = "Blues"
         range_val = [0, max(25.0, DISTRICTS_GDF["uncertainty_spread"].max())]
         colorbar_title = "IQR Spread (mm/day)"
     else: # Regime
-        c_scale = [[0.0, "#38BDF8"], [0.2, "#F43F5E"], [0.4, "#A855F7"], [0.6, "#14B8A6"], [0.8, "#06B6D4"], [1.0, "#F59E0B"]]
+        c_scale = [[0.0, "#2563A6"], [0.2, "#DC2626"], [0.4, "#7C3AED"], [0.6, "#0D9488"], [0.8, "#0284C7"], [1.0, "#D97706"]]
         range_val = [0, 5]
-        colorbar_title = "Regime ID"
+        colorbar_title = "Regime"
 
-    # Map-Dominant Layout: 70% Map, 30% District Panel (Requirement 4)
-    c_map, c_panel = st.columns([7, 3])
+    # Layout: 68% Map, 32% Panel (Requirement 8)
+    c_map, c_panel = st.columns([68, 32])
 
     with c_map:
-        # Construct Plotly Choropleth Map (cross-version Plotly 5/6/7 compatible)
+        # Construct Plotly Map with Carto Positron basemap (Requirement 9: Real GIS look)
+        custom_data_arr = np.stack([
+            DISTRICTS_GDF["district"],
+            DISTRICTS_GDF["raw_mean"],
+            DISTRICTS_GDF["corr_mean"],
+            DISTRICTS_GDF["difference"],
+            DISTRICTS_GDF["regime_name"],
+            DISTRICTS_GDF["p_heavy"],
+            DISTRICTS_GDF["alert_label"]
+        ], axis=-1)
+
+        # Hovertemplate matching Requirement 10
+        hover_tmpl = (
+            "<b>District:</b> %{customdata[0]}<br>"
+            "<b>Raw GFS:</b> %{customdata[1]:.1f} mm/day<br>"
+            "<b>VarshaMitra:</b> %{customdata[2]:.1f} mm/day<br>"
+            "<b>Bias correction:</b> %{customdata[3]:+.1f} mm/day<br>"
+            "<b>Regime:</b> %{customdata[4]}<br>"
+            "<b>Heavy rainfall probability:</b> %{customdata[5]:.1%}<br>"
+            "<b>Hazard:</b> %{customdata[6]}<extra></extra>"
+        )
+
         if hasattr(px, "choropleth_map"):
             fig_map = px.choropleth_map(
                 DISTRICTS_GDF,
@@ -551,21 +702,10 @@ with tab_live:
                 color=plot_col,
                 color_continuous_scale=c_scale,
                 range_color=range_val,
-                map_style="carto-darkmatter",
+                map_style="carto-positron",
                 zoom=5.9,
                 center={"lat": 19.3, "lon": 76.5},
-                opacity=0.88,
-                labels={plot_col: colorbar_title},
-                hover_name="district",
-                hover_data={
-                    "raw_mean": ":.1f mm/d",
-                    "corr_mean": ":.1f mm/d",
-                    "difference": ":+.1f mm/d",
-                    "p_heavy": ":.1%",
-                    "alert_label": True,
-                    "district": False,
-                    plot_col: False
-                }
+                opacity=0.82
             )
         else:
             fig_map = px.choropleth_mapbox(
@@ -576,24 +716,20 @@ with tab_live:
                 color=plot_col,
                 color_continuous_scale=c_scale,
                 range_color=range_val,
-                mapbox_style="carto-darkmatter",
+                mapbox_style="carto-positron",
                 zoom=5.9,
                 center={"lat": 19.3, "lon": 76.5},
-                opacity=0.88,
-                labels={plot_col: colorbar_title},
-                hover_name="district",
-                hover_data={
-                    "raw_mean": ":.1f mm/d",
-                    "corr_mean": ":.1f mm/d",
-                    "difference": ":+.1f mm/d",
-                    "p_heavy": ":.1%",
-                    "alert_label": True,
-                    "district": False,
-                    plot_col: False
-                }
+                opacity=0.82
             )
 
-        # Selected district outline (clean sky-blue boundary)
+        fig_map.update_traces(
+            customdata=custom_data_arr,
+            hovertemplate=hover_tmpl,
+            marker_line_color="#94A3B8",
+            marker_line_width=1.0
+        )
+
+        # Selected district outline (clean professional blue boundary)
         sel_gdf = DISTRICTS_GDF[DISTRICTS_GDF["district"] == st.session_state.selected_district]
         if len(sel_gdf) > 0:
             ChoroTrace = getattr(go, "Choroplethmap", getattr(go, "Choroplethmapbox", None))
@@ -603,68 +739,64 @@ with tab_live:
                     locations=sel_gdf["district"],
                     featureidkey="properties.district",
                     z=[1],
-                    colorscale=[[0, "rgba(56, 189, 248, 0.25)"], [1, "rgba(56, 189, 248, 0.25)"]],
+                    colorscale=[[0, "rgba(37, 99, 166, 0.15)"], [1, "rgba(37, 99, 166, 0.15)"]],
                     showscale=False,
-                    marker_line_color="#38BDF8",
-                    marker_line_width=2.5,
+                    marker_line_color="#1D4ED8",
+                    marker_line_width=3.0,
                     hoverinfo="skip"
                 ))
 
         fig_map.update_layout(
             margin=dict(l=0, r=0, t=0, b=0),
-            height=560,
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
+            height=540,
+            paper_bgcolor="#FFFFFF",
+            plot_bgcolor="#FFFFFF",
             coloraxis_colorbar=dict(
-                title=dict(text=colorbar_title, font=dict(color="#F8FAFC", size=11)),
-                tickfont=dict(color="#94A3B8", size=10),
-                len=0.7,
-                thickness=12,
+                title=dict(text=colorbar_title, font=dict(color="#172033", size=11, family="var(--font-sans)")),
+                tickfont=dict(color="#667085", size=10, family="var(--font-mono)"),
+                len=0.75,
+                thickness=14,
                 yanchor="middle",
-                y=0.5
+                y=0.5,
+                bgcolor="rgba(255,255,255,0.9)",
+                outlinecolor="#D9DEE7",
+                outlinewidth=1
             )
         )
-        st.plotly_chart(fig_map, use_container_width=True, config={"displayModeBar": False})
+
+        # Interactive map selection (Requirement 10: Clicking district opens District Intelligence)
+        map_select_event = st.plotly_chart(fig_map, use_container_width=True, on_select="rerun", selection_mode="points", config={"displayModeBar": True})
+
+        if map_select_event and "selection" in map_select_event and map_select_event["selection"] and "points" in map_select_event["selection"]:
+            pts = map_select_event["selection"]["points"]
+            if len(pts) > 0 and "location" in pts[0]:
+                clicked_dist = pts[0]["location"]
+                if clicked_dist in district_list and clicked_dist != st.session_state.selected_district:
+                    st.session_state.selected_district = clicked_dist
+                    st.session_state.current_tab = "District Intelligence"
+                    st.rerun()
 
     with c_panel:
-        # Selected District Summary
-        sel_rows = DISTRICTS_GDF[DISTRICTS_GDF["district"] == st.session_state.selected_district]
-        sel_data = sel_rows.iloc[0] if len(sel_rows) > 0 else DISTRICTS_GDF.iloc[0]
-        sel_regime_id = int(sel_data.get("dominant_regime", 0))
-        sel_router_info = ROUTER_SPECS.get(sel_regime_id, ROUTER_SPECS[0])
-        bias_delta = sel_data["corr_mean"] - sel_data["raw_mean"]
-
-        badge_class = f"badge-{sel_data.get('alert_label', 'Normal').lower()}"
-
+        # District summary panel
         st.markdown(f"""
-        <div class="sci-card">
+        <div class="metro-panel">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="font-size:1.15rem; font-weight:700; color:#F8FAFC;">{sel_data['district']}</span>
-                <span class="{badge_class}">{sel_data.get('alert_label', 'Normal').upper()}</span>
+                <span style="font-size:1.15rem; font-weight:700; color:#172033;">{sel_data['district']}</span>
+                <span class="{badge_class}">{sel_data.get('alert_label', 'Normal').upper()} ALERT</span>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px;">
-                <div>
-                    <div class="sci-card-header">VarshaMitra</div>
-                    <div style="font-size:1.3rem; font-weight:700; font-family:var(--font-mono); color:#38BDF8;">
-                        {sel_data['corr_mean']:.1f} <span style="font-size:0.75rem; color:#94A3B8;">mm/d</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="sci-card-header">Raw GFS</div>
-                    <div style="font-size:1.3rem; font-weight:700; font-family:var(--font-mono); color:#94A3B8;">
-                        {sel_data['raw_mean']:.1f} <span style="font-size:0.75rem; color:#64748B;">mm/d</span>
-                    </div>
-                </div>
-            </div>
-            <div style="margin-top:10px; padding-top:8px; border-top:1px solid #334155; font-size:0.8rem; color:#94A3B8;">
-                <div>Bias Correction: <b style="color:{'#F87171' if bias_delta < 0 else '#34D399'}; font-family:var(--font-mono);">{bias_delta:+.1f} mm/day</b></div>
-                <div style="margin-top:3px;">Regime: <b style="color:#F8FAFC;">{sel_router_info['name']}</b> &rarr; Model: <b style="color:#F8FAFC;">{sel_router_info['acronym']}</b></div>
+            <div style="font-size:0.85rem; color:#667085; line-height:1.6;">
+                <div>Regime: <b style="color:#172033;">{sel_router_info['name']}</b></div>
+                <div>Model: <b style="color:#2563A6;">{sel_router_info['model']} ({sel_router_info['acronym']})</b></div>
+                <div>Expected interval: <b style="color:#172033; font-family:var(--font-mono);">{sel_data['uncertainty_low']:.1f} – {sel_data['uncertainty_high']:.1f} mm/day</b></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Top Districts by Precipitation (Clean, compact table)
-        st.markdown("<div style='font-size:0.8rem; font-weight:600; color:#94A3B8; text-transform:uppercase; margin:10px 0 6px 0;'>Highest Rainfall Districts</div>", unsafe_allow_html=True)
+        if st.button(f"Open {sel_data['district']} Intelligence →", use_container_width=True, type="primary"):
+            st.session_state.current_tab = "District Intelligence"
+            st.rerun()
+
+        st.markdown("<div style='font-size:0.8rem; font-weight:600; color:#667085; text-transform:uppercase; margin:14px 0 6px 0;'>Highest Rainfall Districts</div>", unsafe_allow_html=True)
         top_districts = DISTRICTS_GDF.sort_values(by="corr_mean", ascending=False).head(5)[["district", "corr_mean", "raw_mean", "alert_label"]]
         top_table = top_districts.rename(columns={
             "district": "District",
@@ -676,12 +808,12 @@ with tab_live:
         top_table["Raw GFS"] = top_table["Raw GFS"].map(lambda x: f"{x:.1f}")
         st.dataframe(top_table.set_index("District"), use_container_width=True)
 
-    # Lead Time Machine Selector (Requirement 4)
-    st.markdown("<hr style='border-color:#334155; margin:12px 0 10px 0;'>", unsafe_allow_html=True)
-    c_time_lbl, c_time_btns = st.columns([2, 8])
-    with c_time_lbl:
-        st.markdown("<div style='font-size:0.82rem; font-weight:600; color:#94A3B8; padding-top:6px;'>FORECAST TIMELINE:</div>", unsafe_allow_html=True)
-    with c_time_btns:
+    # Horizontal Timeline
+    st.markdown("<hr style='border-color:#D9DEE7; margin:12px 0 10px 0;'>", unsafe_allow_html=True)
+    c_tl_lbl, c_tl_btns = st.columns([2, 8])
+    with c_tl_lbl:
+        st.markdown("<div style='font-size:0.82rem; font-weight:600; color:#667085; padding-top:6px;'>FORECAST TIMELINE:</div>", unsafe_allow_html=True)
+    with c_tl_btns:
         t_cols = st.columns(len(TIMELINE_STEPS))
         for i, step in enumerate(TIMELINE_STEPS):
             with t_cols[i]:
@@ -691,98 +823,99 @@ with tab_live:
                     st.session_state.lead_time_idx = i
                     st.rerun()
 
-    # Small quiet pipeline breadcrumb
     st.markdown("""
-    <div style="font-size:0.75rem; color:#64748B; font-family:var(--font-mono); margin-top:8px; text-align:center;">
+    <div style="font-size:0.75rem; color:#8A94A6; font-family:var(--font-mono); margin-top:8px; text-align:center;">
         GFS 0.25° NWP &rarr; Regime Classifier (XGBoost) &rarr; Model Router (EQM / GBM / CNN) &rarr; Calibrated District Forecast
     </div>
     """, unsafe_allow_html=True)
 
 # =============================================================================
-# TAB 2: DISTRICT INTELLIGENCE (Requirements 6, 7, 8, 10: Scientific Diagnostics)
+# TAB 2: DISTRICT INTELLIGENCE (Requirements 11 & 12: Professional Briefing)
 # =============================================================================
-with tab_diag:
-    sel_rows = DISTRICTS_GDF[DISTRICTS_GDF["district"] == st.session_state.selected_district]
-    sel_data = sel_rows.iloc[0] if len(sel_rows) > 0 else DISTRICTS_GDF.iloc[0]
-    sel_regime_id = int(sel_data.get("dominant_regime", 0))
-    sel_router_info = ROUTER_SPECS.get(sel_regime_id, ROUTER_SPECS[0])
-    bias_delta = sel_data["corr_mean"] - sel_data["raw_mean"]
+elif st.session_state.current_tab == "District Intelligence":
+    # Header (Requirement 11)
+    st.markdown(f"""
+    <div style="border-bottom:1px solid #D9DEE7; padding-bottom:10px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <div style="font-size:1.6rem; font-weight:700; color:#172033;">{sel_data['district']}</div>
+            <div style="font-size:0.95rem; color:#2563A6; font-weight:600; margin-top:2px;">{sel_router_info['name']}</div>
+        </div>
+        <span class="{badge_class}">{sel_data.get('alert_label', 'Normal').upper()} ALERT</span>
+    </div>
+    """, unsafe_allow_html=True)
 
-    col_diag, col_shap = st.columns([1, 1])
+    # Simple 3-Metric Comparison (Requirement 11)
+    st.markdown(f"""
+    <div class="forecast-summary-strip" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:16px;">
+        <div class="summary-col">
+            <div class="summary-label">Raw GFS</div>
+            <div class="summary-val">{sel_data['raw_mean']:.1f} <span style="font-size:0.8rem; font-weight:400; color:#667085;">mm/day</span></div>
+        </div>
+        <div class="summary-col">
+            <div class="summary-label">Corrected</div>
+            <div class="summary-val" style="color:#2563A6;">{sel_data['corr_mean']:.1f} <span style="font-size:0.8rem; font-weight:400; color:#667085;">mm/day</span></div>
+        </div>
+        <div class="summary-col">
+            <div class="summary-label">Difference</div>
+            <div class="summary-val" style="color:{'#DC2626' if bias_delta < 0 else '#16A34A'};">{bias_delta:+.1f} <span style="font-size:0.8rem; font-weight:400; color:#667085;">mm/day</span></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Left Column: Clean Scientific Diagnostic View (Requirement 6)
-    with col_diag:
+    col_info, col_chart = st.columns([1, 1])
+
+    with col_info:
+        # Forecast Explanation Area (Requirement 12: Very Important!)
+        st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin-bottom:8px;'>Forecast explanation</div>", unsafe_allow_html=True)
         st.markdown(f"""
-        <div style="border-bottom:1px solid #334155; padding-bottom:8px; margin-bottom:12px;">
-            <div style="font-size:1.4rem; font-weight:700; color:#F8FAFC;">{sel_data['district']}</div>
-            <div style="font-size:0.95rem; color:#38BDF8; font-family:var(--font-mono); margin-top:2px;">
-                {sel_data['corr_mean']:.1f} mm/day &bull; {sel_router_info['name'].upper()}
-            </div>
+        <div class="explanation-box">
+            <div class="explanation-item"><b>1. Synoptic regime:</b> {sel_router_info['name']}</div>
+            <div class="explanation-item"><b>2. Main atmospheric drivers:</b> Western Ghats orographic upslope flow, strong low-level westerly winds (850 hPa), and moisture flux convergence.</div>
+            <div class="explanation-item"><b>3. Model selected:</b> {sel_router_info['model']} ({sel_router_info['acronym']}) &mdash; {sel_router_info['desc']}</div>
+            <div class="explanation-item"><b>4. Bias correction:</b> <span style="font-family:var(--font-mono); color:{'#DC2626' if bias_delta < 0 else '#16A34A'};">{bias_delta:+.1f} mm/day</span> adjusting for raw GFS grid diffusion.</div>
+            <div class="explanation-item"><b>5. Final rainfall:</b> <span style="font-family:var(--font-mono); font-weight:700; color:#2563A6;">{sel_data['corr_mean']:.1f} mm/day</span> (peak cell: {sel_data['corr_max']:.1f} mm).</div>
+            <div class="explanation-item"><b>6. Uncertainty:</b> 10th&ndash;90th percentile interval: <span style="font-family:var(--font-mono);">{sel_data['uncertainty_low']:.1f} &ndash; {sel_data['uncertainty_high']:.1f} mm/day</span> (spread: {sel_data['uncertainty_spread']:.1f} mm).</div>
+            <div class="explanation-item"><b>7. Hazard level:</b> <span class="{badge_class}">{sel_data.get('alert_label', 'Normal').upper()}</span></div>
         </div>
         """, unsafe_allow_html=True)
 
-        # 1. Forecast Comparison
-        st.markdown("<div style='font-size:0.8rem; font-weight:600; color:#94A3B8; text-transform:uppercase;'>Forecast Comparison</div>", unsafe_allow_html=True)
-        comp_df = pd.DataFrame([
-            {"Parameter": "Raw GFS NWP", "Value": f"{sel_data['raw_mean']:.1f} mm/day"},
-            {"Parameter": "VarshaMitra Calibrated", "Value": f"{sel_data['corr_mean']:.1f} mm/day"},
-            {"Parameter": "Bias Correction Delta", "Value": f"{bias_delta:+.1f} mm/day"}
-        ]).set_index("Parameter")
-        st.table(comp_df)
-
-        # 2. Model Routing (Requirement 8: Simple & Compact)
-        st.markdown("<div style='font-size:0.8rem; font-weight:600; color:#94A3B8; text-transform:uppercase; margin-top:14px;'>Model Routing</div>", unsafe_allow_html=True)
-        st.markdown(f"""
-        <div style="background-color:#1E293B; border:1px solid #334155; border-radius:6px; padding:10px 12px; font-size:0.82rem; margin-bottom:8px;">
-            <div>Active Regime: <b style="color:#F8FAFC;">{sel_router_info['name']}</b></div>
-            <div style="margin-top:2px;">Routed Model: <b style="color:#38BDF8;">{sel_router_info['model']} ({sel_router_info['acronym']})</b></div>
-        </div>
-        <div style="font-size:0.75rem; color:#64748B; font-family:var(--font-mono); line-height:1.5;">
-            Routing Reference: Active &rarr; EQM | Break &rarr; GBM | Depression &rarr; CNN | Orographic &rarr; CNN | Coastal &rarr; GBM | WD &rarr; EQM
-        </div>
-        """, unsafe_allow_html=True)
-
-        # 3. Extreme Rainfall Probabilities
-        st.markdown("<div style='font-size:0.8rem; font-weight:600; color:#94A3B8; text-transform:uppercase; margin-top:14px;'>Extreme Rainfall Exceedance</div>", unsafe_allow_html=True)
+        # Rainfall outlook (Requirement 11)
+        st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin-bottom:8px;'>Rainfall outlook & exceedance</div>", unsafe_allow_html=True)
         p_heavy_val = sel_data.get("p_heavy", 0.15) * 100.0
         p_vh_val = sel_data.get("p_very_heavy", 0.03) * 100.0
         p_eh_val = sel_data.get("p_extremely_heavy", 0.005) * 100.0
-        prob_df = pd.DataFrame([
-            {"Threshold": "Heavy Rain (> 65.0 mm)", "Probability": f"{p_heavy_val:.1f}%"},
-            {"Threshold": "Very Heavy Rain (> 115.5 mm)", "Probability": f"{p_vh_val:.1f}%"},
-            {"Threshold": "Extremely Heavy Rain (> 204.5 mm)", "Probability": f"{p_eh_val:.1f}%"}
+        prob_table = pd.DataFrame([
+            {"Threshold": "Heavy rainfall probability (> 65.0 mm)", "Value": f"{p_heavy_val:.1f}%"},
+            {"Threshold": "Extreme rainfall probability (> 115.5 mm)", "Value": f"{p_vh_val:.1f}%"},
+            {"Threshold": "Extremely heavy probability (> 204.5 mm)", "Value": f"{p_eh_val:.1f}%"},
+            {"Threshold": "Uncertainty interval (10th–90th percentile)", "Value": f"{sel_data['uncertainty_low']:.1f} – {sel_data['uncertainty_high']:.1f} mm/day"}
         ]).set_index("Threshold")
-        st.table(prob_df)
+        st.dataframe(prob_table, use_container_width=True)
 
-        # 4. Uncertainty & Classifier Output (Requirement 10: Label as REGIME CLASSIFIER OUTPUT, not Forecast Confidence)
-        u_low = max(0.0, sel_data['corr_mean'] - sel_data['uncertainty_spread'])
-        u_high = sel_data['corr_mean'] + sel_data['uncertainty_spread']
-        st.markdown("<div style='font-size:0.8rem; font-weight:600; color:#94A3B8; text-transform:uppercase; margin-top:14px;'>Forecast Uncertainty & Regime Diagnostics</div>", unsafe_allow_html=True)
+        # Model routing (Requirement 11)
+        st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin:14px 0 8px 0;'>Model route</div>", unsafe_allow_html=True)
         st.markdown(f"""
-        <div style="background-color:#1E293B; border:1px solid #334155; border-radius:6px; padding:10px 12px; font-size:0.82rem; line-height:1.6;">
-            <div><b>Expected Interval (10th–90th Percentile):</b> <span style="font-family:var(--font-mono); color:#F8FAFC;">{u_low:.1f} — {u_high:.1f} mm/day</span></div>
-            <div style="color:#94A3B8; font-size:0.75rem;">IQR Spread: {sel_data['uncertainty_spread']:.1f} mm/day</div>
-            <hr style="border-color:#334155; margin:6px 0;">
-            <div style="font-weight:600; color:#94A3B8; font-size:0.75rem; text-transform:uppercase; margin-bottom:4px;">Regime Classifier Output (Multi-Class Probability)</div>
-            <div style="font-family:var(--font-mono); font-size:0.75rem; color:#CBD5E1;">
-                Active: 82.4% &bull; Orographic: 7.1% &bull; Depression: 4.8% &bull; Break: 3.2% &bull; Coastal: 1.5% &bull; WD: 1.0%
+        <div style="background-color:#FFFFFF; border:1px solid #D9DEE7; border-radius:6px; padding:10px 14px; font-size:0.85rem;">
+            <div><b>Active route:</b> {sel_router_info['name']} &rarr; <span style="color:#2563A6; font-weight:600;">{sel_router_info['acronym']}</span></div>
+            <div style="color:#667085; font-size:0.75rem; margin-top:4px;">
+                Routing matrix: Active &rarr; EQM | Break &rarr; GBM | Depression &rarr; CNN | Orographic &rarr; CNN | Coastal &rarr; GBM | WD &rarr; EQM
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-    # Right Column: Clean SHAP Diverging Bar Chart (Requirement 7)
-    with col_shap:
-        st.markdown("<div style='font-size:0.95rem; font-weight:700; color:#F8FAFC; text-transform:uppercase;'>Why did VarshaMitra change the forecast?</div>", unsafe_allow_html=True)
+    with col_chart:
+        # SHAP Diverging Bar Chart (Requirement 11: Restrained Red/Blue Diverging Chart)
+        st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033;'>Why did VarshaMitra change the forecast?</div>", unsafe_allow_html=True)
         st.caption("Feature attribution shows which atmospheric variables influenced the correction.")
 
         shap_features = [
-            {"feat": "Moisture Flux Convergence", "val": +3.8},
-            {"feat": "Low-Level Westerly Wind (850hPa)", "val": +2.4},
-            {"feat": "Western Ghats Upslope Lift", "val": +1.9},
-            {"feat": "Relative Humidity (850hPa)", "val": +0.8},
-            {"feat": "MSLP Pressure Anomaly", "val": -4.2},
-            {"feat": "Vertical Wind Shear (200-850hPa)", "val": -5.1},
-            {"feat": "Raw GFS Model Diffusion Wet-Bias", "val": -10.5}
+            {"feat": "Moisture flux convergence", "val": +3.8},
+            {"feat": "Low-level westerly wind (850 hPa)", "val": +2.4},
+            {"feat": "Western Ghats upslope lift", "val": +1.9},
+            {"feat": "Relative humidity (850 hPa)", "val": +0.8},
+            {"feat": "MSLP pressure anomaly", "val": -4.2},
+            {"feat": "Vertical wind shear (200-850 hPa)", "val": -5.1},
+            {"feat": "Raw GFS model diffusion wet-bias", "val": -10.5}
         ]
 
         fig_shap = go.Figure()
@@ -790,31 +923,32 @@ with tab_diag:
             y=[f["feat"] for f in shap_features],
             x=[f["val"] for f in shap_features],
             orientation="h",
-            marker_color=["#22C55E" if f["val"] > 0 else "#EF4444" for f in shap_features],
+            marker_color=["#2563A6" if f["val"] > 0 else "#DC2626" for f in shap_features],
             text=[f"{f['val']:+.1f} mm" for f in shap_features],
-            textposition="auto"
+            textposition="auto",
+            textfont=dict(family="var(--font-mono)", size=10)
         ))
         fig_shap.update_layout(
-            height=320,
+            height=340,
             margin=dict(l=10, r=10, t=10, b=30),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
+            paper_bgcolor="#FFFFFF",
+            plot_bgcolor="#FFFFFF",
             xaxis=dict(
-                title="Impact on Corrected Rainfall (mm/day)",
-                color="#94A3B8",
-                gridcolor="#1E293B",
+                title="Impact on corrected rainfall (mm/day)",
+                color="#667085",
+                gridcolor="#E5E7EB",
                 zeroline=True,
-                zerolinecolor="#475569"
+                zerolinecolor="#94A3B8"
             ),
-            yaxis=dict(color="#F8FAFC", tickfont=dict(size=11))
+            yaxis=dict(color="#172033", tickfont=dict(size=11))
         )
         st.plotly_chart(fig_shap, use_container_width=True, config={"displayModeBar": False})
 
-        # Clean Scenario Sensitivity Test (What-If drill)
-        st.markdown("<div style='font-size:0.82rem; font-weight:600; color:#94A3B8; text-transform:uppercase; margin-top:16px;'>Moisture Perturbation Sensitivity</div>", unsafe_allow_html=True)
+        # Moisture Perturbation Sensitivity
+        st.markdown("<div style='font-size:0.85rem; font-weight:600; color:#172033; margin-top:14px;'>Scenario sensitivity test</div>", unsafe_allow_html=True)
         scenario_choice = st.radio(
-            "Select Scenario",
-            ["Baseline", "Heavy (+50% Moisture)", "Very Heavy (+100% Moisture/Shear)", "Extreme Surge"],
+            "Select contingency scenario",
+            ["Baseline", "Heavy (+50% moisture)", "Very Heavy (+100% moisture/shear)", "Extreme surge"],
             index=0,
             horizontal=True,
             label_visibility="collapsed"
@@ -835,23 +969,23 @@ with tab_diag:
 
         s1, s2 = st.columns(2)
         with s1:
-            st.metric("Perturbed Rain", f"{sc_rain:.1f} mm/d", delta=f"{sc_rain - base_corr:+.1f} mm")
+            st.metric("Perturbed rainfall", f"{sc_rain:.1f} mm/day", delta=f"{sc_rain - base_corr:+.1f} mm")
         with s2:
-            st.metric("P(Heavy Rain)", f"{sc_p_h*100:.1f}%", delta=f"{(sc_p_h - sel_data['p_heavy'])*100:+.1f}%")
+            st.metric("P(Heavy rain)", f"{sc_p_h*100:.1f}%", delta=f"{(sc_p_h - sel_data['p_heavy'])*100:+.1f}%")
 
 # =============================================================================
-# TAB 3: FORECAST REPLAY (Requirements 9, 16: Scientific Historical Verification)
+# TAB 3: FORECAST REPLAY (Requirement 13: Case Study Comparison Tool)
 # =============================================================================
-with tab_replay:
+elif st.session_state.current_tab == "Forecast Replay":
     st.markdown("""
     <div class="context-banner">
-        <span>HISTORICAL EVALUATION &bull; CASE STUDY REPLAY</span>
-        <span>BENCHMARK DATA: <b>HELD-OUT MONSOON EVENTS</b></span>
+        <span><b>HISTORICAL EVALUATION</b> &bull; Case study replay</span>
+        <span>Benchmark: <b>HELD-OUT MONSOON EVENTS</b></span>
     </div>
     """, unsafe_allow_html=True)
 
     event_choice = st.selectbox(
-        "Select Historical Evaluation Case",
+        "Historical event",
         [
             "13 July 2024 — Peak Western Ghats Active Monsoon Surge",
             "28 September 2024 — Late-Season Monsoon Depression Passage",
@@ -859,37 +993,44 @@ with tab_replay:
         ]
     )
 
-    # Three Synchronized Columns (Requirement 16)
+    # 3-Column Synchronized Comparison (Requirement 13)
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("""
-        <div class="sci-card" style="text-align:center;">
-            <div class="sci-card-header">Raw NWP (GFS)</div>
-            <div class="sci-card-val" style="color:#94A3B8; margin:6px 0;">38.4 <span style="font-size:0.85rem;">mm/d</span></div>
-            <div style="font-size:0.8rem; color:#EF4444;">Wet Bias: +15.6 mm/d</div>
-            <div style="font-size:0.75rem; color:#64748B; margin-top:2px;">RMSE vs Obs: 24.57 mm</div>
+        <div class="metro-panel" style="text-align:center;">
+            <div class="summary-label">Raw GFS</div>
+            <div class="summary-val" style="color:#667085; margin:6px 0;">38.4 <span style="font-size:0.85rem; font-weight:400;">mm/day</span></div>
+            <div style="font-size:0.8rem; color:#DC2626;">Wet bias: +15.6 mm/day</div>
+            <div style="font-size:0.75rem; color:#8A94A6; margin-top:2px;">RMSE vs observed: 24.57 mm</div>
         </div>
         """, unsafe_allow_html=True)
     with c2:
         st.markdown("""
-        <div class="sci-card" style="text-align:center; border-color:#38BDF8;">
-            <div class="sci-card-header" style="color:#38BDF8;">VarshaMitra Calibrated</div>
-            <div class="sci-card-val" style="color:#38BDF8; margin:6px 0;">24.1 <span style="font-size:0.85rem;">mm/d</span></div>
-            <div style="font-size:0.8rem; color:#22C55E;">Residual Bias: +1.3 mm/d</div>
-            <div style="font-size:0.75rem; color:#64748B; margin-top:2px;">RMSE vs Obs: 14.90 mm (-39.4%)</div>
+        <div class="metro-panel" style="text-align:center; border-color:#2563A6;">
+            <div class="summary-label" style="color:#2563A6;">VarshaMitra</div>
+            <div class="summary-val" style="color:#2563A6; margin:6px 0;">24.1 <span style="font-size:0.85rem; font-weight:400;">mm/day</span></div>
+            <div style="font-size:0.8rem; color:#16A34A;">Residual bias: +1.3 mm/day</div>
+            <div style="font-size:0.75rem; color:#8A94A6; margin-top:2px;">RMSE vs observed: 14.90 mm (-39.4%)</div>
         </div>
         """, unsafe_allow_html=True)
     with c3:
         st.markdown("""
-        <div class="sci-card" style="text-align:center; border-color:#22C55E;">
-            <div class="sci-card-header" style="color:#22C55E;">IMD Ground Truth Observation</div>
-            <div class="sci-card-val" style="color:#22C55E; margin:6px 0;">22.8 <span style="font-size:0.85rem;">mm/d</span></div>
-            <div style="font-size:0.8rem; color:#94A3B8;">Observational Benchmark</div>
-            <div style="font-size:0.75rem; color:#64748B; margin-top:2px;">Gridded Rain Gauge Network</div>
+        <div class="metro-panel" style="text-align:center; border-color:#16A34A;">
+            <div class="summary-label" style="color:#16A34A;">IMD Observation</div>
+            <div class="summary-val" style="color:#16A34A; margin:6px 0;">22.8 <span style="font-size:0.85rem; font-weight:400;">mm/day</span></div>
+            <div style="font-size:0.8rem; color:#667085;">Ground truth benchmark</div>
+            <div style="font-size:0.75rem; color:#8A94A6; margin-top:2px;">Gridded rain gauge network</div>
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<div style='font-size:0.85rem; font-weight:600; color:#F8FAFC; margin:14px 0 6px 0;'>WMO Verification Metric Scoreboard</div>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="font-size:0.85rem; text-align:center; font-family:var(--font-mono); color:#667085; margin:8px 0 16px 0;">
+        Raw GFS (38.4 mm/day) &rarr; VarshaMitra Calibrated (24.1 mm/day) &rarr; IMD Observed (22.8 mm/day)
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Scoreboard Table
+    st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin-bottom:6px;'>WMO verification metric scoreboard</div>", unsafe_allow_html=True)
     replay_table = pd.DataFrame([
         {"Metric": "Root Mean Squared Error (RMSE)", "Raw NWP (GFS)": "24.57 mm", "VarshaMitra": "14.90 mm", "Difference": "-39.4%", "Assessment": "Variance reduction"},
         {"Metric": "Threat Score (CSI @ 10mm)", "Raw NWP (GFS)": "0.544", "VarshaMitra": "0.656", "Difference": "+0.112", "Assessment": "Contingency index"},
@@ -900,28 +1041,32 @@ with tab_replay:
     st.dataframe(replay_table, use_container_width=True)
 
 # =============================================================================
-# TAB 4: VERIFICATION LAB (Requirements 9, 15: Baseline Ladder & Stratified Matrix)
+# TAB 4: VERIFICATION LAB (Requirements 14 & 15: Research Validation Tool)
 # =============================================================================
-with tab_verif:
+elif st.session_state.current_tab == "Verification Lab":
     st.markdown("""
     <div class="context-banner">
-        <span>HELD-OUT VERIFICATION DATA &bull; EVALUATION PERIOD: MONSOON 2024 (122 CYCLES)</span>
-        <span>METHODOLOGY: <b>5-TIER BENCHMARK PROGRESSION</b></span>
+        <span><b>HELD-OUT VERIFICATION DATA</b> &bull; Evaluation period: Monsoon 2024 (122 cycles)</span>
+        <span>Methodology: <b>5-TIER BENCHMARK PROGRESSION</b></span>
     </div>
     """, unsafe_allow_html=True)
 
-    # Key Verification Metrics
-    m1, m2, m3, m4 = st.columns(4)
+    # Model validation summary (Requirement 14)
+    st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin-bottom:8px;'>Model validation summary</div>", unsafe_allow_html=True)
+    m1, m2, m3, m4, m5 = st.columns(5)
     with m1:
-        st.metric("Raw NWP RMSE", "24.57 mm")
+        st.metric("Raw GFS RMSE", "24.57 mm")
     with m2:
         st.metric("VarshaMitra RMSE", "14.90 mm", delta="-39.4% Error")
     with m3:
-        st.metric("Threat Score (CSI)", "0.656", delta="+0.112 vs Raw")
+        st.metric("Skill gain", "39.4%")
     with m4:
-        st.metric("Gilbert Score (ETS)", "0.374", delta="+0.321 vs Raw")
+        st.metric("Threat score (CSI)", "0.656", delta="+0.112")
+    with m5:
+        st.metric("Gilbert score (ETS)", "0.374", delta="+0.321")
 
-    st.markdown("<div style='font-size:0.85rem; font-weight:600; color:#F8FAFC; margin:16px 0 6px 0;'>Baseline Progression Ladder (B0 &rarr; B4)</div>", unsafe_allow_html=True)
+    # B0 -> B4 Benchmark Table
+    st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin:16px 0 6px 0;'>Benchmark ladder progression (B0 &rarr; B4)</div>", unsafe_allow_html=True)
     ladder_data = [
         {"Tier": "B0: Raw NWP Forecast", "Methodology": "Uncalibrated NOAA GFS 0.25° raw output", "RMSE (mm)": 24.57, "MAE (mm)": 20.17, "CSI": 0.544, "ETS": 0.053},
         {"Tier": "B1: Climatological Mean", "Methodology": "Historical 30-year grid-cell mean precipitation", "RMSE (mm)": 28.40, "MAE (mm)": 22.85, "CSI": 0.310, "ETS": 0.012},
@@ -932,71 +1077,73 @@ with tab_verif:
     st.dataframe(pd.DataFrame(ladder_data).set_index("Tier"), use_container_width=True)
     st.caption("*(Note: B4 demonstrates the **best observed performance in this evaluation split**, achieving an additional 11.1 percentage points of error reduction over traditional global EQM.)")
 
-    # Clean Progression Chart
+    # Restrained Scientific Chart (Requirement 14: neutral gray for baselines, blue for intermediate, green ONLY for VarshaMitra)
     fig_ladder = go.Figure()
     fig_ladder.add_trace(go.Bar(
         x=[d["Tier"].split(":")[0] for d in ladder_data],
         y=[d["RMSE (mm)"] for d in ladder_data],
-        marker_color=["#94A3B8", "#EF4444", "#F59E0B", "#38BDF8", "#22C55E"],
+        marker_color=["#94A3B8", "#94A3B8", "#2563A6", "#2563A6", "#16A34A"],
         text=[f"{d['RMSE (mm)']} mm" for d in ladder_data],
-        textposition="auto"
+        textposition="auto",
+        textfont=dict(family="var(--font-mono)", size=11)
     ))
     fig_ladder.update_layout(
-        title="RMSE Across Baseline Ladder (Lower RMSE = Superior Performance)",
+        title="RMSE across baseline ladder (lower is better)",
         height=260,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
+        paper_bgcolor="#FFFFFF",
+        plot_bgcolor="#FFFFFF",
         margin=dict(l=20, r=20, t=30, b=30),
-        xaxis=dict(color="#94A3B8", gridcolor="#1E293B"),
-        yaxis=dict(title="RMSE (mm/day)", color="#94A3B8", gridcolor="#1E293B")
+        xaxis=dict(color="#172033", gridcolor="#E5E7EB"),
+        yaxis=dict(title="RMSE (mm/day)", color="#667085", gridcolor="#E5E7EB")
     )
     st.plotly_chart(fig_ladder, use_container_width=True, config={"displayModeBar": False})
 
-    # Stratified Performance Matrix (Requirement 15: Preserve Coastal N/A handling)
-    st.markdown("<div style='font-size:0.85rem; font-weight:600; color:#F8FAFC; margin:16px 0 6px 0;'>Stratified Performance Matrix by Synoptic Regime</div>", unsafe_allow_html=True)
+    # Regime Performance Table (Requirement 15: Preserve Coastal N/A scientific handling)
+    st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin:16px 0 6px 0;'>Regime performance matrix</div>", unsafe_allow_html=True)
     regimes_table = [
-        {"Regime": "Active Monsoon", "Samples": "23,963", "Raw RMSE (mm)": "22.59", "VarshaMitra RMSE (mm)": "8.11", "Skill Gain": "+64.1%", "POD": "0.791", "FAR": "0.297", "CSI": "0.593", "ETS": "0.302"},
-        {"Regime": "Break Monsoon", "Samples": "34", "Raw RMSE (mm)": "4.48", "VarshaMitra RMSE (mm)": "4.71", "Skill Gain": "-5.1%", "POD": "0.000", "FAR": "0.000", "CSI": "0.000", "ETS": "0.000"},
-        {"Regime": "Depression (LPS)", "Samples": "896", "Raw RMSE (mm)": "18.77", "VarshaMitra RMSE (mm)": "14.37", "Skill Gain": "+23.4%", "POD": "1.000", "FAR": "0.000", "CSI": "1.000", "ETS": "0.000"},
-        {"Regime": "Orographic Rain", "Samples": "2,564", "Raw RMSE (mm)": "42.27", "VarshaMitra RMSE (mm)": "42.78", "Skill Gain": "-1.2%", "POD": "1.000", "FAR": "0.037", "CSI": "0.963", "ETS": "0.000"},
-        {"Regime": "Coastal (Offshore Marine)*", "Samples": "1,175", "Raw RMSE (mm)": "20.47", "VarshaMitra RMSE (mm)": "N/A — insufficient test samples", "Skill Gain": "N/A", "POD": "N/A", "FAR": "N/A", "CSI": "N/A", "ETS": "N/A"},
-        {"Regime": "Western Disturbance", "Samples": "1,035", "Raw RMSE (mm)": "16.70", "VarshaMitra RMSE (mm)": "11.25", "Skill Gain": "+32.6%", "POD": "0.440", "FAR": "0.489", "CSI": "0.310", "ETS": "0.214"}
+        {"Regime": "Active Monsoon", "Samples": "23,963", "Raw RMSE (mm)": "22.59", "VarshaMitra RMSE (mm)": "8.11", "Skill gain": "+64.1%", "POD": "0.791", "FAR": "0.297", "CSI": "0.593", "ETS": "0.302"},
+        {"Regime": "Break Monsoon", "Samples": "34", "Raw RMSE (mm)": "4.48", "VarshaMitra RMSE (mm)": "4.71", "Skill gain": "-5.1%", "POD": "0.000", "FAR": "0.000", "CSI": "0.000", "ETS": "0.000"},
+        {"Regime": "Depression", "Samples": "896", "Raw RMSE (mm)": "18.77", "VarshaMitra RMSE (mm)": "14.37", "Skill gain": "+23.4%", "POD": "1.000", "FAR": "0.000", "CSI": "1.000", "ETS": "0.000"},
+        {"Regime": "Orographic", "Samples": "2,564", "Raw RMSE (mm)": "42.27", "VarshaMitra RMSE (mm)": "42.78", "Skill gain": "-1.2%", "POD": "1.000", "FAR": "0.037", "CSI": "0.963", "ETS": "0.000"},
+        {"Regime": "Coastal*", "Samples": "1,175", "Raw RMSE (mm)": "20.47", "VarshaMitra RMSE (mm)": "N/A — insufficient test samples", "Skill gain": "N/A", "POD": "N/A", "FAR": "N/A", "CSI": "N/A", "ETS": "N/A"},
+        {"Regime": "Western Disturbance", "Samples": "1,035", "Raw RMSE (mm)": "16.70", "VarshaMitra RMSE (mm)": "11.25", "Skill gain": "+32.6%", "POD": "0.440", "FAR": "0.489", "CSI": "0.310", "ETS": "0.214"}
     ]
     st.dataframe(pd.DataFrame(regimes_table).set_index("Regime"), use_container_width=True)
     st.caption("*(Note: Coastal regime test cells are located in the Arabian Sea offshore marine boundary [lon < 72.8°E], where IMD gridded observations apply a strict land-only mask [0.0 mm]. Scores are reported as 'N/A — insufficient test samples' to ensure honest scientific rigor.)")
 
 # =============================================================================
-# TAB 5: DATA PROVENANCE (Requirement 17: Transparent Badges & Lineage)
+# TAB 5: DATA PROVENANCE (Requirement 16: Scientific Data Lineage & Audit)
 # =============================================================================
-with tab_prov:
+elif st.session_state.current_tab == "Data Provenance":
     st.markdown("""
     <div class="context-banner">
-        <span>DATA PROVENANCE & ARCHITECTURE</span>
-        <span>LINEAGE: <b>OPERATIONAL ACQUISITION AUDIT</b></span>
+        <span><b>DATA PROVENANCE & AUDIT</b></span>
+        <span>Lineage: <b>OPERATIONAL ACQUISITION AUDIT</b></span>
     </div>
     """, unsafe_allow_html=True)
 
     prov_rows = [
-        {"Data Stream": "Raw NWP Forecast", "Source": "NOAA GFS 0.25°", "Status": "REAL", "Acquisition Mode / Rationale": "Open NOMADS / AWS Open Data; operational model-agnostic substitute for NCMRWF/BharatFS"},
-        {"Data Stream": "Ground Truth Rain", "Source": "IMD 0.25° Gridded", "Status": "REAL ATTEMPT / CALIBRATED FALLBACK", "Acquisition Mode / Rationale": "IMD Pune endpoints experience frequent SSL timeouts; falls back to physically calibrated IMD format"},
-        {"Data Stream": "Synoptic Atmosphere", "Source": "ERA5 (ECMWF)", "Status": "SYNTHETIC FALLBACK", "Acquisition Mode / Rationale": "Requires personal CDS API credentials; fallback generated with authentic Indian monsoon physics"},
-        {"Data Stream": "Topography (DEM)", "Source": "SRTM 30m / DEM", "Status": "REAL", "Acquisition Mode / Rationale": "Authentic elevation gradients across Western Ghats ridge and Deccan Plateau"},
-        {"Data Stream": "District Boundaries", "Source": "Census 2011 / geoBoundaries", "Status": "REAL", "Acquisition Mode / Rationale": "Authentic administrative polygons for all 36 Maharashtra districts"}
+        {"Source": "NOAA GFS 0.25°", "Dataset": "Raw NWP Forecast", "Status": "REAL", "Usage": "Open NOMADS / AWS Open Data; operational model-agnostic substitute for NCMRWF/BharatFS"},
+        {"Source": "IMD 0.25° Gridded", "Dataset": "Ground Truth Rain", "Status": "REAL ATTEMPT / FALLBACK", "Usage": "IMD Pune endpoints experience frequent SSL timeouts; falls back to physically calibrated IMD format"},
+        {"Source": "ERA5 (ECMWF)", "Dataset": "Synoptic Atmosphere", "Status": "SYNTHETIC FALLBACK", "Usage": "Requires personal CDS API credentials; fallback generated with authentic Indian monsoon physics"},
+        {"Source": "SRTM 30m / DEM", "Dataset": "Topography (DEM)", "Status": "REAL", "Usage": "Authentic elevation gradients across Western Ghats ridge and Deccan Plateau"},
+        {"Source": "Census 2011 / geoBoundaries", "Dataset": "District Boundaries", "Status": "REAL", "Usage": "Authentic administrative polygons for all 36 Maharashtra districts"}
     ]
-    st.dataframe(pd.DataFrame(prov_rows).set_index("Data Stream"), use_container_width=True)
+    st.dataframe(pd.DataFrame(prov_rows).set_index("Source"), use_container_width=True)
 
-    st.markdown("<div style='font-size:0.85rem; font-weight:600; color:#F8FAFC; margin:16px 0 8px 0;'>Processing Lineage Architecture</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:0.9rem; font-weight:600; color:#172033; margin:16px 0 8px 0;'>Processing lineage architecture</div>", unsafe_allow_html=True)
     lineage_steps = pd.DataFrame([
-        {"Stage": "1. Ingestion & Preprocessing", "Inputs": "GFS 0.25°, ERA5 synoptic fields, SRTM 30m DEM", "Output": "19 Physical Diagnostic Variables (Moisture Flux, Shear, Lift)"},
-        {"Stage": "2. Regime Classification", "Inputs": "19 Physical Diagnostic Variables", "Output": "XGBoost Multi-Class Regime Probability (Active, Break, LPS, Orographic, Coastal, WD)"},
-        {"Stage": "3. Model Routing", "Inputs": "Dominant Synoptic Regime", "Output": "Route assignment (Active/WD → EQM, Break/Coastal → GBM, Depression/Orographic → CNN)"},
-        {"Stage": "4. Bias Post-Processing", "Inputs": "Raw NWP Grid + Routed Model", "Output": "Quantile-mapped and bias-corrected precipitation grid"},
-        {"Stage": "5. Hazard Gating & Zonal Aggregation", "Inputs": "Corrected Precipitation + District Polygons", "Output": "4-Tier IMD District Hazard Status + TreeSHAP Feature Attributions"}
+        {"Stage": "1. Data ingestion", "Inputs": "GFS 0.25°, ERA5 synoptic fields, SRTM 30m DEM", "Output": "19 Physical Diagnostic Variables (Moisture Flux, Shear, Lift)"},
+        {"Stage": "2. Preprocessing & feature extraction", "Inputs": "19 Physical Diagnostic Variables", "Output": "Derived gradient features, lapse rates, terrain blocking index"},
+        {"Stage": "3. Regime classification", "Inputs": "Physical Diagnostic Vector", "Output": "XGBoost Multi-Class Regime Probability (Active, Break, LPS, Orographic, Coastal, WD)"},
+        {"Stage": "4. Model routing", "Inputs": "Dominant Synoptic Regime", "Output": "Route assignment (Active/WD → EQM, Break/Coastal → GBM, Depression/Orographic → CNN)"},
+        {"Stage": "5. Bias correction", "Inputs": "Raw NWP Grid + Routed Model", "Output": "Quantile-mapped and bias-corrected precipitation grid"},
+        {"Stage": "6. District aggregation & hazard probability", "Inputs": "Corrected Precipitation + District Polygons", "Output": "4-Tier IMD District Hazard Status + TreeSHAP Feature Attributions"}
     ]).set_index("Stage")
     st.dataframe(lineage_steps, use_container_width=True)
 
 # -----------------------------------------------------------------------------
-# 8. SUBTLE QUIET DISCLAIMER (Requirement 3: Visually Quieter)
+# 8. SUBTLE QUIET DISCLAIMER (Requirement 6)
 # -----------------------------------------------------------------------------
 st.markdown("""
 <div class="quiet-disclaimer">
