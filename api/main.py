@@ -18,10 +18,17 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
+import traceback
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import numpy as np
+
+# Ensure model classes are registered with pickle
+import src.regime_classifier
+import src.bias_correction
+import src.heavy_rainfall_probability
+
 
 # -----------------------------------------------------------------------------
 # 1. APPLICATION INITIALIZATION & CORS
@@ -83,6 +90,7 @@ def load_resources():
                 MODELS["regime_classifier"] = pickle.load(f)
     except Exception as e:
         print(f"[Warning] Could not load regime classifier: {e}")
+        traceback.print_exc()
 
     try:
         corr_path = models_dir / "regime_bias_postprocessor.pkl"
@@ -91,6 +99,7 @@ def load_resources():
                 MODELS["bias_corrector"] = pickle.load(f)
     except Exception as e:
         print(f"[Warning] Could not load bias corrector: {e}")
+        traceback.print_exc()
 
     try:
         prob_path = models_dir / "heavy_rainfall_prob_model.pkl"
@@ -99,6 +108,7 @@ def load_resources():
                 MODELS["heavy_prob_model"] = pickle.load(f)
     except Exception as e:
         print(f"[Warning] Could not load heavy rainfall prob model: {e}")
+        traceback.print_exc()
 
     # 2. Load Processed GeoJSON
     try:
