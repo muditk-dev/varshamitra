@@ -22,6 +22,18 @@ if (fs.existsSync(srcProcessed)) {
   if (fs.existsSync(verifFile)) {
     fs.copyFileSync(verifFile, path.join(dataDir, 'verification_scores_summary.json'));
   }
+
+  // Copy Maharashtra 36-district alert GeoJSON files
+  const geojsonActive = path.join(srcProcessed, 'district_alerts_2024-09-28.geojson');
+  if (fs.existsSync(geojsonActive)) {
+    fs.copyFileSync(geojsonActive, path.join(dataDir, 'district_alerts.geojson'));
+    fs.copyFileSync(geojsonActive, path.join(dataDir, 'district_alerts_active.geojson'));
+  }
+
+  const geojsonBreak = path.join(srcProcessed, 'district_alerts_2024-07-13.geojson');
+  if (fs.existsSync(geojsonBreak)) {
+    fs.copyFileSync(geojsonBreak, path.join(dataDir, 'district_alerts_break.geojson'));
+  }
 }
 
 if (fs.existsSync(srcRaw)) {
@@ -31,5 +43,6 @@ if (fs.existsSync(srcRaw)) {
   }
 }
 
-console.log('✅ [VarshaMitra Build] Static metadata assets synchronized.');
+console.log('✅ [VarshaMitra Build] Static metadata & GeoJSON assets synchronized.');
 console.log('✅ [VarshaMitra Build] Production build completed successfully in ./public directory.');
+
