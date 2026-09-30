@@ -39,9 +39,10 @@ if str(BASE_DIR) not in sys.path:
 
 from src.regime_labels import REGIME_NAMES, REGIME_COLORS
 from src.regime_classifier import FEATURE_COLS
+import dashboard.auth as auth
 
 # -----------------------------------------------------------------------------
-# 1. PAGE CONFIGURATION & SESSION STATE
+# 1. PAGE CONFIGURATION & AUTHENTICATION GATE
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="VarshaMitra | Meteorological Operations System",
@@ -49,6 +50,13 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+auth.init_auth_session()
+
+# Unauthenticated Gate: Show Cinematic Login & Register Experience
+if not st.session_state.authenticated:
+    auth.render_auth_page()
+    st.stop()
 
 if "selected_district" not in st.session_state:
     st.session_state.selected_district = "Pune"
@@ -474,6 +482,21 @@ default_date = ALERT_DATES[-1] if ALERT_DATES else "2024-09-28"
 # 5. SIDEBAR (Requirement 5: Clean Light Sidebar)
 # -----------------------------------------------------------------------------
 with st.sidebar:
+    st.markdown(f"""
+    <div style="background: #FFFFFF; border: 1px solid #D9DEE7; border-radius: 8px; padding: 12px 14px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: #2563A6; letter-spacing: 0.6px; background: #EFF6FF; border: 1px solid #BFDBFE; padding: 2px 6px; border-radius: 4px;">OPERATIONAL SESSION</span>
+            <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #16A34A;"></span>
+        </div>
+        <div style="font-size: 0.92rem; font-weight: 700; color: #172033;">{st.session_state.get('user_name', 'Guest Observer')}</div>
+        <div style="font-size: 0.76rem; color: #667085; margin-top: 2px;">{st.session_state.get('user_role', 'Meteorological Analyst')}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Sign Out / Lock Console", key="btn_sign_out_sidebar", use_container_width=True):
+        st.session_state.authenticated = False
+        st.session_state.auth_mode = "login"
+        st.rerun()
+
     st.markdown("### Forecast Controls")
     
     if ALERT_DATES:

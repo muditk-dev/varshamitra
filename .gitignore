@@ -6,4 +6,5 @@ __pycache__/
 .idea/
 *.log
 header_dom_report.json
-
+*.bak
+scratch/
