@@ -1159,11 +1159,10 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
         zoomControl: true
       });
 
-      // CartoDB Positron Light Tiles matching scientific palette
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        subdomains: 'abcd',
-        maxZoom: 19
+      // Clean scientific GIS palette (Esri Canvas World Light Gray Base - watermark free)
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+        maxZoom: 16
       }).addTo(leafletMap);
 
       geojsonLayer = L.geoJSON(geoData, {
