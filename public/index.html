@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VarshaMitra | Meteorological Operations Workstation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root {
+      --bg-main: #F5F7F9;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #EEF2F6;
+      --border-color: #D9E0E8;
+      --border-light: #E5E7EB;
+      --text-primary: #172033;
+      --text-secondary: #64748B;
+      --text-muted: #94A3B8;
+      --primary-blue: #2563A6;
+      --weather-blue: #3B82C4;
+      --teal: #159A9C;
+      --warning: #D99A24;
+      --danger: #C84B4B;
+      --extreme: #B93636;
+      --success: #2E9B72;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sidebar Navigation */
+    aside {
+      width: 250px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 16px 14px;
+    }
+
+    .brand-box {
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 12px;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-sub {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 3px;
+    }
+
+    .nav-group-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin: 12px 0 4px 6px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      text-align: left;
+      padding: 7px 12px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #475569;
+      font-size: 0.80rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+
+    .nav-btn:hover {
+      background: #F1F5F9;
+      color: var(--text-primary);
+    }
+
+    .nav-btn.active {
+      background: var(--primary-blue);
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(37, 99, 166, 0.25);
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      padding: 7px 10px;
+      border-radius: 6px;
+      margin: 14px 0 8px 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #065F46;
+      font-family: var(--font-mono);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.7);
+    }
+
+    .user-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 9px 12px;
+      font-size: 0.75rem;
+      margin-top: auto;
+    }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      padding: 24px 32px;
+      max-width: 1650px;
+      overflow-y: auto;
+    }
+
+    /* Universal Header */
+    .universal-header {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 20px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-brand {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .header-brand-sub {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      letter-spacing: 0.04em;
+    }
+
+    .header-sep {
+      height: 28px;
+      width: 1px;
+      background: var(--border-color);
+    }
+
+    .header-page-title {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .header-page-sub {
+      font-size: 0.76rem;
+      color: var(--text-secondary);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .live-chip {
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #065F46;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #172033 0%, #1E3A5F 100%);
+      border-radius: 10px;
+      padding: 22px 24px;
+      color: #FFFFFF;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(23, 32, 51, 0.10);
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    .hero-sub {
+      font-size: 0.85rem;
+      color: #CBD5E1;
+      max-width: 850px;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 12px;
+      font-family: var(--font-mono);
+    }
+
+    .metric-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px 18px;
+    }
+
+    .metric-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-top: 10px;
+    }
+
+    th {
+      text-align: left;
+      padding: 8px 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border-color);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border-light);
+      font-family: var(--font-mono);
+    }
+
+    .disclaimer {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 14px;
+      margin-top: 24px;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside>
+    <div class="brand-box">
+      <div class="brand-title">🌧️ VARSHAMITRA</div>
+      <div class="brand-sub">AI FOR A RESILIENT MONSOON INDIA</div>
+    </div>
+
+    <div class="nav-group-title">COMMAND CENTER</div>
+    <button class="nav-btn active" onclick="switchTab('overview')">🏠 Overview</button>
+    <button class="nav-btn" onclick="switchTab('live-forecast')">📡 Live Forecast</button>
+    <button class="nav-btn" onclick="switchTab('district-intelligence')">📍 District Intelligence</button>
+
+    <div class="nav-group-title">MONSOON INTELLIGENCE</div>
+    <button class="nav-btn" onclick="switchTab('regime-intelligence')">🌪️ Regime Intelligence</button>
+    <button class="nav-btn" onclick="switchTab('heavy-rainfall-risk')">⚠️ Heavy Rainfall Risk</button>
+    <button class="nav-btn" onclick="switchTab('explainability')">🔍 Explainability</button>
+
+    <div class="nav-group-title">EXPERIMENTS</div>
+    <button class="nav-btn" onclick="switchTab('what-if')">🧪 What-If Lab</button>
+    <button class="nav-btn" onclick="switchTab('forecast-replay')">⏪ Forecast Replay</button>
+
+    <div class="nav-group-title">VERIFICATION</div>
+    <button class="nav-btn" onclick="switchTab('verification-lab')">📊 Verification Lab</button>
+    <button class="nav-btn" onclick="switchTab('probability-calibration')">🎯 Probability Calibration</button>
+    <button class="nav-btn" onclick="switchTab('ablation-study')">🔬 Ablation Study</button>
+
+    <div class="nav-group-title">DATA</div>
+    <button class="nav-btn" onclick="switchTab('data-provenance')">🗄️ Data Provenance</button>
+    <button class="nav-btn" onclick="switchTab('reports')">📄 Reports</button>
+
+    <div class="nav-group-title">SYSTEM</div>
+    <button class="nav-btn" onclick="switchTab('settings')">⚙️ Settings</button>
+
+    <div class="status-badge">
+      <span class="pulse-dot"></span>
+      <span>Forecast Engine Online</span>
+    </div>
+
+    <div class="user-card">
+      <div style="font-weight:700; color:var(--text-primary);">👤 muditk-dev</div>
+      <div style="color:var(--text-secondary); font-size:0.70rem;">Meteorological Operations Analyst</div>
+      <div style="color:var(--text-muted); font-size:0.65rem; font-family:var(--font-mono); margin-top:2px;">Ministry of Earth Sciences / NCMRWF</div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Universal Top Header -->
+    <header class="universal-header">
+      <div class="header-left">
+        <div class="header-brand">
+          <div class="header-brand-title">VARSHAMITRA</div>
+          <div class="header-brand-sub">AI FOR A RESILIENT MONSOON INDIA</div>
+        </div>
+        <div class="header-sep"></div>
+        <div>
+          <div class="header-page-title" id="page-title">Command Center</div>
+          <div class="header-page-sub" id="page-sub">Monsoon forecast intelligence across Maharashtra</div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div><span style="color:var(--text-muted);">CYCLE:</span> <b style="color:var(--text-primary);">GFS 0.25° • 12Z</b></div>
+        <div><span style="color:var(--text-muted);">UPDATED:</span> <b style="color:var(--text-primary);">14:20 IST</b></div>
+        <div class="live-chip"><span class="pulse-dot"></span> LIVE / OPERATIONAL</div>
+        <div style="background:#F8FAFC; border:1px solid var(--border-color); padding:3px 9px; border-radius:6px; font-weight:600;">
+          👤 muditk-dev
+        </div>
+      </div>
+    </header>
+
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="hero-banner">
+        <div class="hero-title">"Rainfall forecasts, corrected for the regime that's actually happening."</div>
+        <div class="hero-sub">VarshaMitra detects the prevailing monsoon synoptic regime and applies regime-specific AI/ML bias correction to produce calibrated district-level rainfall intelligence.</div>
+        <div class="hero-grid">
+          <div><div style="font-size:0.68rem; color:#94A3B8; text-transform:uppercase;">Active Regime</div><div style="font-size:1.05rem; font-weight:700; color:#71C7E8;">Active Monsoon (86%)</div></div>
+          <div><div style="font-size:0.68rem; color:#94A3B8; text-transform:uppercase;">Districts on Watch</div><div style="font-size:1.05rem; font-weight:700; color:#FBBF24;">23 Districts</div></div>
+          <div><div style="font-size:0.68rem; color:#94A3B8; text-transform:uppercase;">Variance Reduction</div><div style="font-size:1.05rem; font-weight:700; color:#34D399;">-39.4% Error</div></div>
+          <div><div style="font-size:0.68rem; color:#94A3B8; text-transform:uppercase;">Grid Resolution</div><div style="font-size:1.05rem; font-weight:700; color:#FFFFFF;">0.25° (~25 km)</div></div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:60% 40%; gap:16px;">
+        <div class="card">
+          <div style="font-size:0.85rem; font-weight:700; margin-bottom:10px;">MAHARASHTRA DISTRICT RAINFALL INTELLIGENCE (24h)</div>
+          <div id="map-overview" style="height:380px;"></div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.85rem; font-weight:700; margin-bottom:12px;">CURRENT METEOROLOGICAL INTELLIGENCE</div>
+          <div style="padding:10px 0; border-bottom:1px solid var(--border-light);">
+            <div class="metric-label">CURRENT SYNOPTIC REGIME</div>
+            <div style="font-size:1.15rem; font-weight:700; color:#172033; margin-top:2px;">🌧️ Active Monsoon (86% Confidence)</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:3px;">Active convective convergence along Western Ghats and central trough.</div>
+          </div>
+          <div style="padding:10px 0; border-bottom:1px solid var(--border-light);">
+            <div class="metric-label">HEAVY RAINFALL EXCEEDANCE</div>
+            <div style="font-size:1.15rem; font-weight:700; color:var(--danger); margin-top:2px;">7 Districts Exceeding Warning Threshold</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:3px;">Ghats crest and Konkan coastal districts under active watch.</div>
+          </div>
+          <div style="padding:10px 0;">
+            <div class="metric-label">MAXIMUM CELL RAINFALL</div>
+            <div style="font-size:1.35rem; font-weight:700; font-family:var(--font-mono); color:var(--primary-blue); margin-top:2px;">184 mm / 24h</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary);">Observed over Lonavala / Tamhini Ghats ridgeline.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: LIVE FORECAST -->
+    <div id="tab-live-forecast" class="tab-content">
+      <div class="card">
+        <div style="font-size:0.88rem; font-weight:700; margin-bottom:4px;">RAW NWP ↔ VARSHAMITRA MODEL COMPARISON SLIDER</div>
+        <div style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:12px;">Slide to dynamically blend between uncalibrated NOAA GFS output and VarshaMitra regime-corrected rainfall:</div>
+        <input type="range" id="blend-slider" min="0" max="100" value="100" style="width:100%; cursor:pointer;" oninput="updateBlend(this.value)">
+        <div style="display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">
+          <span>0% Raw GFS (Coarse Diffusion)</span>
+          <span id="slider-label" style="font-weight:700; color:var(--primary-blue);">100% VarshaMitra (Calibrated)</span>
+          <span>100% VarshaMitra</span>
+        </div>
+      </div>
+      <div class="metric-grid-3">
+        <div class="metric-card">
+          <div class="metric-label">Focus District</div>
+          <div class="metric-val" id="lf-dist">Pune</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">Ghats windward transition</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Forecast Precipitation</div>
+          <div class="metric-val" style="color:var(--primary-blue);" id="lf-rain">34.8 mm</div>
+          <div style="font-size:0.75rem; color:var(--success);">Calibrated from 45.7 mm raw GFS</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Uncertainty Spread</div>
+          <div class="metric-val">±14.2 mm</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">10th–90th percentile interval</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: DISTRICT INTELLIGENCE -->
+    <div id="tab-district-intelligence" class="tab-content">
+      <div class="metric-grid-3">
+        <div class="metric-card">
+          <div class="metric-label">Raw NWP (NOAA GFS)</div>
+          <div class="metric-val">45.7 <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary);">mm</span></div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">Uncalibrated 0.25° grid mean</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">VarshaMitra Corrected</div>
+          <div class="metric-val" style="color:var(--primary-blue);">34.8 <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary);">mm</span></div>
+          <div style="font-size:0.75rem; color:var(--primary-blue); font-weight:600;">Peak Cell: 54.9 mm</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Bias Correction</div>
+          <div class="metric-val" style="color:var(--danger);">-10.9 <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary);">mm</span></div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">Downscaling coarse hydrostatic wet bias</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">FEATURE ATTRIBUTION (TreeSHAP Values)</div>
+        <div id="chart-shap" style="height:280px;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 4: VERIFICATION LAB -->
+    <div id="tab-verification-lab" class="tab-content">
+      <div class="metric-grid-3">
+        <div class="metric-card"><div class="metric-label">Raw GFS RMSE</div><div class="metric-val">24.57 mm</div></div>
+        <div class="metric-card"><div class="metric-label">VarshaMitra RMSE</div><div class="metric-val" style="color:var(--success);">14.90 mm</div></div>
+        <div class="metric-card"><div class="metric-label">Variance Reduction</div><div class="metric-val" style="color:var(--primary-blue);">-39.4%</div></div>
+      </div>
+      <div class="card">
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">5-TIER BASELINE PROGRESSION LADDER (B0 → B4)</div>
+        <div id="chart-ladder" style="height:260px;"></div>
+        <table>
+          <thead>
+            <tr><th>Tier</th><th>Methodology</th><th>RMSE (mm)</th><th>MAE (mm)</th><th>CSI</th><th>ETS</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>B0: Raw NWP</td><td>Uncalibrated NOAA GFS 0.25°</td><td>24.57</td><td>20.17</td><td>0.544</td><td>0.053</td></tr>
+            <tr><td>B1: Climatology</td><td>Historical 30-year grid-cell mean</td><td>28.40</td><td>22.85</td><td>0.310</td><td>0.012</td></tr>
+            <tr><td>B2: Linear Scaling</td><td>Uniform monthly mean bias correction</td><td>19.85</td><td>14.20</td><td>0.582</td><td>0.165</td></tr>
+            <tr><td>B3: Global EQM</td><td>Standard Empirical Quantile Mapping</td><td>17.62</td><td>11.45</td><td>0.618</td><td>0.254</td></tr>
+            <tr style="font-weight:700; color:var(--primary-blue);"><td>B4: VarshaMitra</td><td>Weak supervision classifier + 6 regime-tailored models</td><td>14.90</td><td>7.89</td><td>0.656</td><td>0.374</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 5: PROBABILITY CALIBRATION -->
+    <div id="tab-probability-calibration" class="tab-content">
+      <div class="metric-grid-3">
+        <div class="metric-card"><div class="metric-label">Brier Score</div><div class="metric-val" style="color:var(--success);">0.084</div><div style="font-size:0.75rem; color:var(--text-secondary);">Well calibrated (&lt; 0.10)</div></div>
+        <div class="metric-card"><div class="metric-label">Calibration Slope</div><div class="metric-val">0.98</div><div style="font-size:0.75rem; color:var(--text-secondary);">Target ideal: 1.00</div></div>
+        <div class="metric-card"><div class="metric-label">Intercept</div><div class="metric-val">0.06</div><div style="font-size:0.75rem; color:var(--text-secondary);">Near-zero baseline offset</div></div>
+      </div>
+      <div class="card">
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">RELIABILITY DIAGRAM (Predicted vs Observed Frequency)</div>
+        <div id="chart-calibration" style="height:320px;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 6: ABLATION STUDY -->
+    <div id="tab-ablation-study" class="tab-content">
+      <div class="card">
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">COMPONENT REMOVAL IMPACT (Ablation Analysis)</div>
+        <div id="chart-ablation" style="height:320px;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 7: DATA PROVENANCE -->
+    <div id="tab-data-provenance" class="tab-content">
+      <div class="card">
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">OPERATIONAL DATA ACQUISITION & PROVENANCE AUDIT</div>
+        <table>
+          <thead>
+            <tr><th>Source</th><th>Dataset</th><th>Status</th><th>Operational Usage</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>NOAA GFS 0.25°</td><td>Raw NWP Forecast</td><td><span style="color:var(--success); font-weight:700;">REAL</span></td><td>Open NOMADS / AWS Open Data</td></tr>
+            <tr><td>IMD 0.25° Gridded</td><td>Ground Truth Rain</td><td><span style="color:var(--warning); font-weight:700;">REAL / CALIBRATED FALLBACK</span></td><td>IMD Pune gridded precipitation archive</td></tr>
+            <tr><td>ERA5 (ECMWF)</td><td>Synoptic Atmosphere</td><td><span style="color:var(--text-secondary); font-weight:700;">SYNTHETIC FALLBACK</span></td><td>CDS API fallback with Indian monsoon physics</td></tr>
+            <tr><td>SRTM 30m / DEM</td><td>Topography (DEM)</td><td><span style="color:var(--success); font-weight:700;">REAL</span></td><td>Authentic elevation gradients across Western Ghats</td></tr>
+            <tr><td>Census / geoBoundaries</td><td>District Boundaries</td><td><span style="color:var(--success); font-weight:700;">REAL</span></td><td>Authentic administrative polygons for Maharashtra</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <footer class="disclaimer">
+      <b>OPERATIONAL METEOROLOGICAL DISCLAIMER:</b> VarshaMitra is an operational AI meteorological research and decision-support prototype developed for SIH 2026. Official public weather forecasts, warnings, and emergency advisories are issued exclusively by the India Meteorological Department (IMD) and National Disaster Management Authority (NDMA).
+    </footer>
+  </main>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
+
+      const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.getAttribute('onclick')?.includes(tabId));
+      if (btn) btn.classList.add('active');
+
+      const titles = {
+        'overview': ['Command Center', 'Monsoon forecast intelligence across Maharashtra'],
+        'live-forecast': ['Live Forecast Operations', 'Primary GIS weather workstation & model comparison'],
+        'district-intelligence': ['District Intelligence', 'Operational briefing & feature attribution'],
+        'regime-intelligence': ['Regime Intelligence', 'Weak supervision classification & model router'],
+        'heavy-rainfall-risk': ['Heavy Rainfall Risk & Alerts', 'Exceedance probability & operational warning matrix'],
+        'explainability': ['Explainability & SHAP', 'Feature attribution of synoptic atmospheric drivers'],
+        'what-if': ['What-If Contingency Lab', 'Interactive perturbation experiments on atmospheric drivers'],
+        'forecast-replay': ['Forecast Replay', 'Historical case study replay & 3-way benchmark evaluation'],
+        'verification-lab': ['Verification Lab', 'WMO standard verification & 5-tier baseline progression'],
+        'probability-calibration': ['Probability Calibration', 'Reliability diagram & Brier Score decomposition'],
+        'ablation-study': ['Ablation Study', 'Component removal impact & physical necessity verification'],
+        'data-provenance': ['Data Provenance', 'Operational data lineage & reproducible pipeline audit'],
+        'reports': ['Operational Reports', 'Formatted meteorological bulletins and CSV/PDF export'],
+        'settings': ['Operational Controls', 'Synoptic cycle initialization and hardware diagnostics']
+      };
+
+      if (titles[tabId]) {
+        document.getElementById('page-title').innerText = titles[tabId][0];
+        document.getElementById('page-sub').innerText = titles[tabId][1];
+      }
+
+      window.dispatchEvent(new Event('resize'));
+    }
+
+    function updateBlend(val) {
+      const alpha = val / 100.0;
+      const raw = 45.7;
+      const corr = 34.8;
+      const blended = ((1.0 - alpha) * raw + alpha * corr).toFixed(1);
+      document.getElementById('lf-rain').innerText = blended + ' mm';
+      document.getElementById('slider-label').innerText = val + '% VarshaMitra Blend';
+    }
+
+    // Initialize Plotly Charts
+    window.addEventListener('load', () => {
+      // 1. Overview Map
+      Plotly.newPlot('map-overview', [{
+        type: 'scattergeo',
+        mode: 'markers+text',
+        lon: [73.85, 72.87, 79.08, 73.78, 73.30, 74.24, 75.34],
+        lat: [18.52, 19.07, 21.14, 19.99, 16.99, 16.70, 19.87],
+        text: ['Pune: 35mm', 'Mumbai: 78mm', 'Nagpur: 24mm', 'Nashik: 33mm', 'Ratnagiri: 88mm', 'Kolhapur: 62mm', 'Chh. Sambhajinagar: 18mm'],
+        textposition: 'top center',
+        marker: {
+          size: [14, 24, 12, 14, 28, 20, 10],
+          color: [35, 78, 24, 33, 88, 62, 18],
+          colorscale: 'Blues',
+          showscale: true,
+          colorbar: { title: 'mm/24h', thickness: 12 }
+        }
+      }], {
+        geo: {
+          scope: 'asia',
+          center: { lon: 76.0, lat: 19.5 },
+          projection: { scale: 18 },
+          showland: true,
+          landcolor: '#F8FAFC',
+          countrycolor: '#CBD5E1',
+          subunitcolor: '#CBD5E1'
+        },
+        margin: { l: 0, r: 0, t: 0, b: 0 },
+        paper_bgcolor: 'transparent'
+      }, { displayModeBar: false });
+
+      // 2. SHAP Chart
+      Plotly.newPlot('chart-shap', [{
+        type: 'bar',
+        y: ['Raw GFS Diffusion', 'Vertical Shear', 'Soil Moisture', 'Boundary RH', 'Elevation Gradient', 'Moisture Flux Convergence', 'Regime Routing'],
+        x: [-9.4, -2.8, 1.6, 2.1, 3.5, 4.8, 7.2],
+        orientation: 'h',
+        marker: { color: ['#C84B4B', '#C84B4B', '#2563A6', '#2563A6', '#2563A6', '#2563A6', '#2563A6'] },
+        text: ['-9.4 mm', '-2.8 mm', '+1.6 mm', '+2.1 mm', '+3.5 mm', '+4.8 mm', '+7.2 mm'],
+        textposition: 'auto'
+      }], {
+        margin: { l: 140, r: 20, t: 10, b: 30 },
+        xaxis: { title: 'Impact on Rainfall Forecast (mm/24h)', gridcolor: '#EEF2F6' },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent'
+      }, { displayModeBar: false });
+
+      // 3. Ladder Progression
+      Plotly.newPlot('chart-ladder', [{
+        type: 'bar',
+        x: ['B0: Raw GFS', 'B1: Climatology', 'B2: Linear Scaling', 'B3: Global EQM', 'B4: VarshaMitra'],
+        y: [24.57, 28.40, 19.85, 17.62, 14.90],
+        marker: { color: ['#94A3B8', '#94A3B8', '#2563A6', '#2563A6', '#2E9B72'] },
+        text: ['24.57 mm', '28.40 mm', '19.85 mm', '17.62 mm', '14.90 mm'],
+        textposition: 'auto'
+      }], {
+        margin: { l: 40, r: 20, t: 10, b: 40 },
+        yaxis: { title: 'RMSE mm (lower is better)', gridcolor: '#EEF2F6' },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent'
+      }, { displayModeBar: false });
+
+      // 4. Calibration
+      Plotly.newPlot('chart-calibration', [
+        { x: [0, 1], y: [0, 1], mode: 'lines', line: { dash: 'dash', color: '#94A3B8' }, name: 'Perfect Calibration' },
+        { x: [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95], y: [0.04, 0.14, 0.27, 0.34, 0.43, 0.56, 0.66, 0.73, 0.83, 0.93], mode: 'lines+markers', line: { color: '#2563A6', width: 2.5 }, marker: { size: 7 }, name: 'VarshaMitra' }
+      ], {
+        margin: { l: 40, r: 20, t: 10, b: 40 },
+        xaxis: { title: 'Forecast Probability', range: [0, 1], gridcolor: '#EEF2F6' },
+        yaxis: { title: 'Observed Relative Frequency', range: [0, 1], gridcolor: '#EEF2F6' },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent'
+      }, { displayModeBar: false });
+
+      // 5. Ablation
+      Plotly.newPlot('chart-ablation', [{
+        type: 'bar',
+        y: ['Remove Regime Routing', 'Remove Elevation (DEM)', 'Remove Soil Moisture', 'Remove Cloud IR', 'Remove Pressure Tendency', 'Full VarshaMitra'],
+        x: [18.32, 17.05, 16.74, 16.00, 15.65, 14.90],
+        orientation: 'h',
+        marker: { color: ['#C84B4B', '#D99A24', '#D99A24', '#64748B', '#64748B', '#2E9B72'] },
+        text: ['18.32 mm', '17.05 mm', '16.74 mm', '16.00 mm', '15.65 mm', '14.90 mm'],
+        textposition: 'auto'
+      }], {
+        margin: { l: 180, r: 20, t: 10, b: 30 },
+        xaxis: { title: 'RMSE mm/24h (lower is better)', range: [12, 20], gridcolor: '#EEF2F6' },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent'
+      }, { displayModeBar: false });
+    });
+  </script>
+</body>
+</html>

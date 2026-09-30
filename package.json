@@ -1,0 +1,20 @@
+{
+  "name": "varshamitra",
+  "version": "1.0.0",
+  "description": "VarshaMitra — AI for a Resilient Monsoon India (Operational Meteorological Decision-Support System)",
+  "scripts": {
+    "build": "node build.js",
+    "start": "streamlit run dashboard/app.py",
+    "test": "pytest tests/test_pipeline.py"
+  },
+  "keywords": [
+    "meteorology",
+    "monsoon",
+    "nwp",
+    "ai-forecasting",
+    "bias-correction",
+    "sih-2026"
+  ],
+  "author": "muditk-dev",
+  "license": "MIT"
+}
