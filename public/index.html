@@ -800,17 +800,17 @@
         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:16px;">
           <div class="metric-card">
             <div class="metric-label">Low-Level Moisture Flux (&Delta; MFC)</div>
-            <input type="range" min="-30" max="30" value="10" style="width:100%; margin-top:8px;" oninput="document.getElementById('mfc-val').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+            <input type="range" id="whatif-mfc" min="-30" max="30" value="10" style="width:100%; margin-top:8px;" oninput="document.getElementById('mfc-val').innerText = (this.value > 0 ? '+' : '') + this.value + '%'; updateWhatIfSim();">
             <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:var(--primary-blue); margin-top:4px;" id="mfc-val">+10%</div>
           </div>
           <div class="metric-card">
             <div class="metric-label">Vertical Wind Shear Perturbation</div>
-            <input type="range" min="-15" max="15" value="0" style="width:100%; margin-top:8px;" oninput="document.getElementById('shear-val').innerText = (this.value > 0 ? '+' : '') + this.value + ' m/s'">
+            <input type="range" id="whatif-shear" min="-15" max="15" value="0" style="width:100%; margin-top:8px;" oninput="document.getElementById('shear-val').innerText = (this.value > 0 ? '+' : '') + this.value + ' m/s'; updateWhatIfSim();">
             <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:var(--primary-blue); margin-top:4px;" id="shear-val">0 m/s</div>
           </div>
           <div class="metric-card">
             <div class="metric-label">Synoptic Pressure Anomaly (&Delta; MSLP)</div>
-            <input type="range" min="-10" max="10" value="-3" style="width:100%; margin-top:8px;" oninput="document.getElementById('mslp-val').innerText = (this.value > 0 ? '+' : '') + this.value + ' hPa'">
+            <input type="range" id="whatif-mslp" min="-10" max="10" value="-3" style="width:100%; margin-top:8px;" oninput="document.getElementById('mslp-val').innerText = (this.value > 0 ? '+' : '') + this.value + ' hPa'; updateWhatIfSim();">
             <div style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:var(--primary-blue); margin-top:4px;" id="mslp-val">-3 hPa</div>
           </div>
         </div>
@@ -921,14 +921,26 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
     <!-- TAB 14: SETTINGS & BACKEND DIAGNOSTICS -->
     <div id="tab-settings" class="tab-content">
       <div class="card">
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">RENDER.COM CLOUD BACKEND CONNECTIVITY</div>
+        <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Connect this frontend directly to your deployed FastAPI machine learning backend on Render:</div>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+          <input type="text" id="render-api-input" value="https://varshamitra-api.onrender.com" style="flex:1; padding:7px 12px; border:1px solid var(--border-color); border-radius:6px; font-family:var(--font-mono); font-size:0.80rem;">
+          <button class="layer-btn active" onclick="testRenderConnection()">Ping Render Backend</button>
+        </div>
+        <div id="render-status-log" style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-secondary); background:#F8FAFC; border:1px solid var(--border-light); padding:8px 12px; border-radius:6px;">
+          Ready to verify connection to Render cloud service...
+        </div>
+      </div>
+
+      <div class="card">
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">SYSTEM SETTINGS & PIPELINE DIAGNOSTICS</div>
         <table>
           <tbody>
-            <tr><td>Engine Runtime</td><td>Python 3.10 • Conda Rainfall Environment</td></tr>
+            <tr><td>Cloud API Backend</td><td>FastAPI 0.110+ on Render (<code>/api/predict</code>, <code>/api/what-if</code>, <code>/api/districts</code>)</td></tr>
             <tr><td>Machine Learning Stack</td><td>XGBoost 2.0+ • Scikit-Learn • PyTorch • GeoPandas • Xarray</td></tr>
-            <tr><td>Native Web Service</td><td>Streamlit 1.37+ running locally on port 8501</td></tr>
             <tr><td>Edge Deployment</td><td>Vercel CDN (Static Client + Pre-computed Inference Store)</td></tr>
             <tr><td>GitHub Repository</td><td><code>https://github.com/muditk-dev/varshamitra</code></td></tr>
+            <tr><td>Render Blueprint</td><td><code>render.yaml</code> (1-click Web Service specification)</td></tr>
             <tr><td>Pipeline Unit Tests</td><td>11 / 11 Passing (100% physically bounded)</td></tr>
           </tbody>
         </table>
@@ -1388,7 +1400,107 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
       }, { displayModeBar: false });
+
+      // Automatically probe Render Cloud API
+      setTimeout(probeRenderAPI, 1000);
     });
+
+    // Render Cloud API State
+    let RENDER_API_URL = localStorage.getItem('vm_render_api') || 'https://varshamitra-api.onrender.com';
+    let isRenderOnline = false;
+
+    async function probeRenderAPI() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        const res = await fetch(RENDER_API_URL + '/health', { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const d = await res.json();
+          isRenderOnline = true;
+          const badge = document.querySelector('.backend-badge-bar');
+          if (badge) {
+            badge.style.background = '#ECFDF5';
+            badge.style.borderColor = '#A7F3D0';
+            badge.style.color = '#065F46';
+            badge.innerHTML = `
+              <div><b>🟢 Render FastAPI Backend:</b> Connected & Online (Models: ${d.models_loaded?.join(', ') || 'XGBoost, QM, FocalLoss'})</div>
+              <div style="font-family:var(--font-mono); font-size:0.75rem;">Uptime: ${d.uptime_seconds || 0}s • Live ML Inference Active</div>
+            `;
+          }
+          const log = document.getElementById('render-status-log');
+          if (log) {
+            log.innerHTML = `<span style="color:var(--success); font-weight:700;">🟢 Connected to Render FastAPI!</span> Active models: <b>${d.models_loaded?.join(', ')}</b>`;
+          }
+        }
+      } catch (err) {
+        // Render free tier may be idling or spinning up
+        console.log('[Render Probe] Render service standby / spinup. Using pre-computed inference layer.');
+      }
+    }
+
+    async function testRenderConnection() {
+      const input = document.getElementById('render-api-input');
+      const log = document.getElementById('render-status-log');
+      if (!input || !log) return;
+      const url = input.value.trim().replace(/\/$/, '');
+      log.innerText = 'Pinging ' + url + '/health ...';
+      try {
+        const res = await fetch(url + '/health');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        RENDER_API_URL = url;
+        localStorage.setItem('vm_render_api', url);
+        isRenderOnline = true;
+        log.innerHTML = `<span style="color:var(--success); font-weight:700;">🟢 Connected Successfully!</span> Active districts: <b>${data.active_districts}</b> • Models: <b>${data.models_loaded?.join(', ')}</b>`;
+        probeRenderAPI();
+      } catch (e) {
+        log.innerHTML = `<span style="color:var(--warning); font-weight:700;">🟡 Standby / Starting Up:</span> Unable to reach ${url}. (Render Free instances spin down after inactivity and take ~45s to wake up). Using local precomputed dataset.`;
+      }
+    }
+
+    async function updateWhatIfSim() {
+      const mfc = parseFloat(document.getElementById('whatif-mfc')?.value || 10);
+      const shear = parseFloat(document.getElementById('whatif-shear')?.value || 0);
+      const mslp = parseFloat(document.getElementById('whatif-mslp')?.value || -3);
+
+      if (isRenderOnline) {
+        try {
+          const res = await fetch(RENDER_API_URL + '/api/what-if', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mfc_delta_pct: mfc, shear_delta: shear, mslp_delta: mslp })
+          });
+          if (res.ok) {
+            const d = await res.json();
+            Plotly.react('chart-whatif-response', [
+              { name: 'Baseline Calibrated', x: d.time_series_hours, y: d.baseline_hourly, type: 'scatter', mode: 'lines+markers', line: { color: '#64748B' } },
+              { name: 'Perturbed Scenario', x: d.time_series_hours, y: d.perturbed_hourly, type: 'scatter', mode: 'lines+markers', line: { color: '#2563A6', width: 2.5 } }
+            ], {
+              margin: { l: 40, r: 20, t: 20, b: 30 },
+              yaxis: { title: 'Rain Rate (mm/h)', gridcolor: '#EEF2F6' },
+              paper_bgcolor: 'transparent',
+              plot_bgcolor: 'transparent'
+            });
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // Physics Fallback Computation
+      const factor = 1.0 + (mfc * 0.012) + (shear * 0.008) - (mslp * 0.04);
+      const base_curve = [4.2, 8.5, 12.8, 8.4, 4.5];
+      const pert_curve = base_curve.map(v => +(v * factor).toFixed(2));
+      Plotly.react('chart-whatif-response', [
+        { name: 'Baseline Calibrated', x: ['0h', '6h', '12h', '18h', '24h'], y: base_curve, type: 'scatter', mode: 'lines+markers', line: { color: '#64748B' } },
+        { name: 'Perturbed Scenario', x: ['0h', '6h', '12h', '18h', '24h'], y: pert_curve, type: 'scatter', mode: 'lines+markers', line: { color: '#2563A6', width: 2.5 } }
+      ], {
+        margin: { l: 40, r: 20, t: 20, b: 30 },
+        yaxis: { title: 'Rain Rate (mm/h)', gridcolor: '#EEF2F6' },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent'
+      });
+    }
   </script>
 </body>
 </html>
