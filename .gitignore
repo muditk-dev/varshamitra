@@ -8,3 +8,6 @@ __pycache__/
 header_dom_report.json
 *.bak
 scratch/
+
+.vercel
+.env*
