@@ -1,0 +1,10 @@
+# Tell Vercel not to treat api/ as serverless functions (api is hosted on Render)
+api/
+dashboard/
+src/
+models/
+notebooks/
+scratch/
+requirements.txt
+environment.yml
+packages.txt
