@@ -43,6 +43,25 @@ if (fs.existsSync(srcRaw)) {
   }
 }
 
+// Generate env-config.js for client-side consumption of VITE_API_URL without hardcoding
+let apiUrl = process.env.VITE_API_URL;
+if (!apiUrl && fs.existsSync('.env.local')) {
+  const envContent = fs.readFileSync('.env.local', 'utf-8');
+  const match = envContent.match(/VITE_API_URL=(.+)/);
+  if (match) apiUrl = match[1].trim().replace(/["']/g, '');
+}
+if (!apiUrl && fs.existsSync('.env')) {
+  const envContent = fs.readFileSync('.env', 'utf-8');
+  const match = envContent.match(/VITE_API_URL=(.+)/);
+  if (match) apiUrl = match[1].trim().replace(/["']/g, '');
+}
+if (!apiUrl) apiUrl = 'https://varshamitra-api.onrender.com';
+
+const envConfigPath = path.join(publicDir, 'env-config.js');
+fs.writeFileSync(envConfigPath, `window.__ENV__ = { VITE_API_URL: "${apiUrl}" };\n`);
+console.log(`✅ [VarshaMitra Build] Generated env-config.js with VITE_API_URL: ${apiUrl}`);
+
 console.log('✅ [VarshaMitra Build] Static metadata & GeoJSON assets synchronized.');
 console.log('✅ [VarshaMitra Build] Production build completed successfully in ./public directory.');
+
 

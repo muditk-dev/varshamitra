@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   
+  <!-- Environment Configuration (Loads VITE_API_URL dynamically) -->
+  <script src="./env-config.js"></script>
+
   <!-- Leaflet GIS Mapping -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -954,6 +957,14 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
   </main>
 
   <script>
+    // Centralized API Resolver (reads VITE_API_URL dynamically from window.__ENV__ or localStorage)
+    function getApiUrl() {
+      return (window.__ENV__ && window.__ENV__.VITE_API_URL) ||
+             window.VITE_API_URL ||
+             localStorage.getItem('vm_render_api') ||
+             'https://varshamitra-api.onrender.com';
+    }
+
     // Global State
     let districtsGeoJSON = null;
     let leafletMap = null;
@@ -1123,6 +1134,37 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
       if (geojsonLayer) {
         geojsonLayer.setStyle(getFeatureStyle);
       }
+
+      // Fetch live district intelligence & TreeSHAP from Render API
+      fetchDistrictDetails(props.district);
+    }
+
+    async function fetchDistrictDetails(distName) {
+      const apiUrl = getApiUrl();
+      try {
+        const res = await fetch(`${apiUrl}/api/districts/${encodeURIComponent(distName)}`);
+        if (res.ok) {
+          const d = await res.json();
+          if (d.shap_attribution && d.shap_attribution.length > 0) {
+            Plotly.react('chart-shap', [{
+              type: 'bar',
+              y: d.shap_attribution.map(s => s.feature),
+              x: d.shap_attribution.map(s => s.impact),
+              orientation: 'h',
+              marker: { color: d.shap_attribution.map(s => s.impact < 0 ? '#C84B4B' : '#2563A6') },
+              text: d.shap_attribution.map(s => (s.impact > 0 ? '+' : '') + s.impact + ' mm'),
+              textposition: 'auto'
+            }], {
+              margin: { l: 160, r: 20, t: 10, b: 30 },
+              xaxis: { title: 'Impact on Rainfall Forecast (mm/24h)', gridcolor: '#EEF2F6' },
+              paper_bgcolor: 'transparent',
+              plot_bgcolor: 'transparent'
+            }, { displayModeBar: false });
+          }
+        }
+      } catch (err) {
+        console.log('[District Fetch] Fallback to embedded SHAP profile for ' + distName);
+      }
     }
 
     // Populate District Table
@@ -1223,26 +1265,46 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
       populateDistrictTable(geoData.features);
     }
 
-    // Fetch GeoJSON and Initialize
+    // Fetch GeoJSON and Initialize (uses live Render API with static fallback)
     async function loadDataAndInit() {
+      const apiUrl = getApiUrl();
+      let loadedFromLive = false;
       try {
-        const response = await fetch('./data/district_alerts.geojson');
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        districtsGeoJSON = await response.json();
-        initMap(districtsGeoJSON);
+        console.log(`[VarshaMitra] Fetching live districts from Render API: ${apiUrl}/api/districts`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4500);
+        const response = await fetch(`${apiUrl}/api/districts`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (response.ok) {
+          districtsGeoJSON = await response.json();
+          loadedFromLive = true;
+          console.log(`[VarshaMitra] Successfully loaded ${districtsGeoJSON.features?.length} districts from live Render API.`);
+          initMap(districtsGeoJSON);
+        }
       } catch (err) {
-        console.warn('Could not fetch local GeoJSON, falling back to embedded/placeholder...', err);
-        // Fallback placeholder with Maharashtra districts
-        districtsGeoJSON = {
-          type: "FeatureCollection",
-          features: [
-            { type: "Feature", properties: { district: "Pune", division: "Pune", raw_mean: 39.8, corr_mean: 28.4, corr_max: 42.1, p_heavy: 0.148, p_very_heavy: 0.021, alert_level: "Yellow", explanation: "Active monsoon westerly convergence along Ghats ridge." }, geometry: { type: "Polygon", coordinates: [[[73.5, 18.2],[74.2, 18.2],[74.2, 19.1],[73.5, 19.1],[73.5, 18.2]]] } },
-            { type: "Feature", properties: { district: "Mumbai City", division: "Konkan", raw_mean: 85.2, corr_mean: 72.0, corr_max: 95.4, p_heavy: 0.58, p_very_heavy: 0.22, alert_level: "Orange", explanation: "Offshore trough with continuous coastal precipitation." }, geometry: { type: "Polygon", coordinates: [[[72.7, 18.8],[73.0, 18.8],[73.0, 19.3],[72.7, 19.3],[72.7, 18.8]]] } },
-            { type: "Feature", properties: { district: "Ratnagiri", division: "Konkan", raw_mean: 96.0, corr_mean: 88.4, corr_max: 130.2, p_heavy: 0.74, p_very_heavy: 0.41, alert_level: "Red", explanation: "Intense orographic lifting against the crest line." }, geometry: { type: "Polygon", coordinates: [[[73.1, 16.5],[73.8, 16.5],[73.8, 17.8],[73.1, 17.8],[73.1, 16.5]]] } },
-            { type: "Feature", properties: { district: "Nagpur", division: "Vidarbha", raw_mean: 28.4, corr_mean: 21.0, corr_max: 33.2, p_heavy: 0.04, p_very_heavy: 0.01, alert_level: "Green", explanation: "Moderate convective activity in eastern plateau." }, geometry: { type: "Polygon", coordinates: [[[78.6, 20.8],[79.5, 20.8],[79.5, 21.6],[78.6, 21.6],[78.6, 20.8]]] } }
-          ]
-        };
-        initMap(districtsGeoJSON);
+        console.warn(`[VarshaMitra] Render API /api/districts unavailable or starting up, using static fallback:`, err.message);
+      }
+
+      if (!loadedFromLive) {
+        try {
+          const response = await fetch('./data/district_alerts.geojson');
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          districtsGeoJSON = await response.json();
+          initMap(districtsGeoJSON);
+        } catch (err) {
+          console.warn('Could not fetch local GeoJSON, falling back to embedded/placeholder...', err);
+          // Fallback placeholder with Maharashtra districts
+          districtsGeoJSON = {
+            type: "FeatureCollection",
+            features: [
+              { type: "Feature", properties: { district: "Pune", division: "Pune", raw_mean: 39.8, corr_mean: 28.4, corr_max: 42.1, p_heavy: 0.148, p_very_heavy: 0.021, alert_level: "Yellow", explanation: "Active monsoon westerly convergence along Ghats ridge." }, geometry: { type: "Polygon", coordinates: [[[73.5, 18.2],[74.2, 18.2],[74.2, 19.1],[73.5, 19.1],[73.5, 18.2]]] } },
+              { type: "Feature", properties: { district: "Mumbai City", division: "Konkan", raw_mean: 85.2, corr_mean: 72.0, corr_max: 95.4, p_heavy: 0.58, p_very_heavy: 0.22, alert_level: "Orange", explanation: "Offshore trough with continuous coastal precipitation." }, geometry: { type: "Polygon", coordinates: [[[72.7, 18.8],[73.0, 18.8],[73.0, 19.3],[72.7, 19.3],[72.7, 18.8]]] } },
+              { type: "Feature", properties: { district: "Ratnagiri", division: "Konkan", raw_mean: 96.0, corr_mean: 88.4, corr_max: 130.2, p_heavy: 0.74, p_very_heavy: 0.41, alert_level: "Red", explanation: "Intense orographic lifting against the crest line." }, geometry: { type: "Polygon", coordinates: [[[73.1, 16.5],[73.8, 16.5],[73.8, 17.8],[73.1, 17.8],[73.1, 16.5]]] } },
+              { type: "Feature", properties: { district: "Nagpur", division: "Vidarbha", raw_mean: 28.4, corr_mean: 21.0, corr_max: 33.2, p_heavy: 0.04, p_very_heavy: 0.01, alert_level: "Green", explanation: "Moderate convective activity in eastern plateau." }, geometry: { type: "Polygon", coordinates: [[[78.6, 20.8],[79.5, 20.8],[79.5, 21.6],[78.6, 21.6],[78.6, 20.8]]] } }
+            ]
+          };
+          initMap(districtsGeoJSON);
+        }
       }
     }
 
@@ -1405,15 +1467,15 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
       setTimeout(probeRenderAPI, 1000);
     });
 
-    // Render Cloud API State
-    let RENDER_API_URL = localStorage.getItem('vm_render_api') || 'https://varshamitra-api.onrender.com';
+    // Render Cloud API Integration
     let isRenderOnline = false;
 
     async function probeRenderAPI() {
+      const apiUrl = getApiUrl();
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-        const res = await fetch(RENDER_API_URL + '/health', { signal: controller.signal });
+        const timeoutId = setTimeout(() => controller.abort(), 4500);
+        const res = await fetch(apiUrl + '/health', { signal: controller.signal });
         clearTimeout(timeoutId);
         if (res.ok) {
           const d = await res.json();
@@ -1425,18 +1487,41 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
             badge.style.color = '#065F46';
             badge.innerHTML = `
               <div><b>🟢 Render FastAPI Backend:</b> Connected & Online (Models: ${d.models_loaded?.join(', ') || 'XGBoost, QM, FocalLoss'})</div>
-              <div style="font-family:var(--font-mono); font-size:0.75rem;">Uptime: ${d.uptime_seconds || 0}s • Live ML Inference Active</div>
+              <div style="font-family:var(--font-mono); font-size:0.75rem;">Uptime: ${d.uptime_seconds || 0}s • 36 Districts Active • Live ML Inference Active</div>
             `;
           }
           const log = document.getElementById('render-status-log');
           if (log) {
-            log.innerHTML = `<span style="color:var(--success); font-weight:700;">🟢 Connected to Render FastAPI!</span> Active models: <b>${d.models_loaded?.join(', ')}</b>`;
+            log.innerHTML = `<span style="color:var(--success); font-weight:700;">🟢 Connected to Render FastAPI!</span> Active models: <b>${d.models_loaded?.join(', ')}</b> • Endpoint: <code>${apiUrl}</code>`;
           }
+          fetchLiveVerification();
+          fetchLiveRegimes();
         }
       } catch (err) {
-        // Render free tier may be idling or spinning up
         console.log('[Render Probe] Render service standby / spinup. Using pre-computed inference layer.');
       }
+    }
+
+    async function fetchLiveVerification() {
+      const apiUrl = getApiUrl();
+      try {
+        const res = await fetch(apiUrl + '/api/verification');
+        if (res.ok) {
+          const d = await res.json();
+          console.log('[Live Verification] Connected to Render verification data:', d.overall?.rmse_skill_gain_pct);
+        }
+      } catch (e) {}
+    }
+
+    async function fetchLiveRegimes() {
+      const apiUrl = getApiUrl();
+      try {
+        const res = await fetch(apiUrl + '/api/regimes');
+        if (res.ok) {
+          const d = await res.json();
+          console.log('[Live Regimes] Active synoptic regime from Render:', d.current_active, d.current_probability);
+        }
+      } catch (e) {}
     }
 
     async function testRenderConnection() {
@@ -1449,7 +1534,6 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
         const res = await fetch(url + '/health');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
-        RENDER_API_URL = url;
         localStorage.setItem('vm_render_api', url);
         isRenderOnline = true;
         log.innerHTML = `<span style="color:var(--success); font-weight:700;">🟢 Connected Successfully!</span> Active districts: <b>${data.active_districts}</b> • Models: <b>${data.models_loaded?.join(', ')}</b>`;
@@ -1463,10 +1547,11 @@ VARIANCE REDUCTION ACHIEVED: -39.4% RMSE reduction over raw NOAA GFS NWP.
       const mfc = parseFloat(document.getElementById('whatif-mfc')?.value || 10);
       const shear = parseFloat(document.getElementById('whatif-shear')?.value || 0);
       const mslp = parseFloat(document.getElementById('whatif-mslp')?.value || -3);
+      const apiUrl = getApiUrl();
 
       if (isRenderOnline) {
         try {
-          const res = await fetch(RENDER_API_URL + '/api/what-if', {
+          const res = await fetch(apiUrl + '/api/what-if', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ mfc_delta_pct: mfc, shear_delta: shear, mslp_delta: mslp })
