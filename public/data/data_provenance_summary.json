@@ -34,6 +34,21 @@
       "role": "District boundary polygons for zonal aggregation",
       "status": "REAL",
       "file": "data\\raw\\maharashtra_districts.geojson"
+    },
+    "cloud_ir": {
+      "source": "INSAT-3D / NWP 200-500 hPa Relative Humidity & Cloud Optical Depth Proxy",
+      "role": "Deep convective cloud top proxy and radiative cooling indicator",
+      "status": "DERIVED_METEOROLOGICAL_PROXY"
+    },
+    "soil_moisture_proxy": {
+      "source": "NOAA GFS 0-10 cm Volumetric Soil Moisture & Antecedent Precipitation Index (API)",
+      "role": "Land-atmosphere moisture coupling and runoff saturation indicator",
+      "status": "DERIVED_NWP_PROXY"
+    },
+    "easterly_jet_200hpa": {
+      "source": "ERA5 / GFS 200 hPa Tropical Easterly Jet (u200 zonal component, -20 to -30 m/s JJAS climatology)",
+      "role": "Upper-tropospheric vertical wind shear driver over Maharashtra domain",
+      "status": "REAL_DERIVED"
     }
   }
 }

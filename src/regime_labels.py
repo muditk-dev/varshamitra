@@ -102,26 +102,36 @@ def label_monsoon_regimes(ds: xr.Dataset) -> xr.DataArray:
     lon_3d = np.repeat(lon_grid[np.newaxis, :, :], n_times, axis=0)
     lat_3d = np.repeat(lat_grid[np.newaxis, :, :], n_times, axis=0)
     
+    # Extract terrain slope gradient
+    slope_x = ds["slope_lon"].values if "slope_lon" in ds else np.zeros_like(elev)
+    slope_y = ds["slope_lat"].values if "slope_lat" in ds else np.zeros_like(elev)
+    slope_mag = np.sqrt(slope_x**2 + slope_y**2)
+
     # Initialize labels with 0 (Active Monsoon)
     labels = np.zeros((n_times, n_lats, n_lons), dtype=np.int32)
     
-    # --- Rule 5: Break Monsoon ---
-    # Rationale: Suppressed rainfall, high pressure anomaly, dry troposphere
-    is_break = (mslp_anom > 1.2) & (rh850 < 74.0) & (precip_raw < 3.5)
+    # --- Rule 1: Break Monsoon ---
+    # Rationale: Suppressed rainfall, positive MSLP anomaly, dry mid-troposphere
+    is_break = (mslp_anom > 1.0) & (rh850 < 75.0) & (precip_raw < 3.5)
     labels[is_break] = 1
     
-    # --- Rule 4: Coastal ---
-    # Rationale: Arabian sea marine boundary layer, lon < 73.3°E, low elevation
-    is_coastal = (lon_3d < 73.3) & (elev < 150.0) & (rh850 > 82.0)
-    labels[is_coastal] = 4
-    
-    # --- Rule 3: Orographic ---
-    # Rationale: Western Ghats crest and windward slopes with strong westerly impingement
-    is_orographic = (elev > 250.0) & (upslope > 0.012) & (lon_3d >= 73.1) & (lon_3d <= 74.2)
+    # --- Rule 3: Orographic (Independent of Coast Distance) ---
+    # Rationale: Defined by terrain slope gradient (Western Ghats profile) combined with
+    # onshore/upslope wind component (upslope > 0.01 m/s, slope_mag > 0.0025, elev > 200m)
+    is_orographic = (slope_mag > 0.0025) & (upslope > 0.01) & (elev > 200.0)
     labels[is_orographic] = 3
     
-    # --- Rule 5 (WD): Western Disturbance ---
-    # Rationale: Strong upper westerly shear in northern Maharashtra
+    # --- Rule 4: Coastal (Narrowed to Exclude Orographic) ---
+    # Rationale: Arabian Sea marine boundary layer (lon < 73.3°E, elev < 180m, RH > 80%)
+    # strictly excluding cells with significant terrain orographic slope forcing
+    is_coastal = (lon_3d < 73.3) & (elev < 180.0) & (rh850 > 80.0) & (~is_orographic)
+    labels[is_coastal] = 4
+    
+    # --- Rule 5: Western Disturbance ---
+    # Rationale: Upper-tropospheric westerly shear in northern Maharashtra (lat > 20.8°N)
+    # with disrupted low-level westerly monsoon jet.
+    # Note: During JJAS, the Tropical Easterly Jet dominates at 200 hPa across central India;
+    # true mid-latitude troughs are sparse/rare in summer Maharashtra.
     is_wd = (lat_3d > 20.8) & (wind_shear > 30.0) & (u850 < 8.0)
     labels[is_wd] = 5
     

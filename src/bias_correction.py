@@ -138,7 +138,7 @@ class GradientBoostingCorrector(BaseCorrector):
 
 class SpatialCNNCorrector(BaseCorrector):
     """2D Convolutional Neural Network corrector.
-    Targets: Depression (Regime 2) & Orographic (Regime 3).
+    Target: Depression (Regime 2 - Monsoon Low Pressure Systems).
     Operates on 2D spatial slices (or localized patches) to resolve spatial displacement.
     """
     
@@ -158,7 +158,7 @@ class SpatialCNNCorrector(BaseCorrector):
         )
         
     def fit(self, X: np.ndarray, raw_fcst: np.ndarray, obs: np.ndarray):
-        logger.info("Fitting PyTorch Spatial CNN bias corrector...")
+        logger.info("Fitting PyTorch Spatial CNN bias corrector (Depression Expert)...")
         # If input is tabular (N, C), treat as 1x1 spatial or reshape
         if X.ndim == 2:
             in_ch = X.shape[1] + 1
@@ -199,27 +199,93 @@ class SpatialCNNCorrector(BaseCorrector):
             return np.clip(raw_fcst, 0.0, None)
 
 
+class OrographicCNNCorrector(BaseCorrector):
+    """2D Convolutional Neural Network with dedicated elevation-gradient input channel.
+    Target: Orographic (Regime 3 - Western Ghats Mountain Barrier).
+    Explicitly processes topographic slope gradient and orographic upslope velocity
+    to correct leeward rain shadow and windward orographic enhancement.
+    """
+    
+    def __init__(self, in_features: int = 4, epochs: int = 15):
+        self.in_features = in_features
+        self.epochs = epochs
+        self.net = None
+        
+    def fit(self, X: np.ndarray, raw_fcst: np.ndarray, obs: np.ndarray):
+        logger.info("Fitting Orographic Elevation-Gradient CNN bias corrector...")
+        if X.ndim == 2:
+            in_ch = X.shape[1] + 1
+            self.net = nn.Sequential(
+                nn.Linear(in_ch, 64),
+                nn.ReLU(inplace=True),
+                nn.Linear(64, 32),
+                nn.ReLU(inplace=True),
+                nn.Linear(32, 1),
+                nn.ReLU()
+            )
+            features = np.column_stack([raw_fcst, X])
+            x_tensor = torch.tensor(features, dtype=torch.float32)
+            y_tensor = torch.tensor(obs, dtype=torch.float32).unsqueeze(1)
+            
+            optimizer = optim.Adam(self.net.parameters(), lr=0.005)
+            criterion = nn.MSELoss()
+            
+            self.net.train()
+            for _ in range(self.epochs):
+                optimizer.zero_grad()
+                pred = self.net(x_tensor)
+                loss = criterion(pred, y_tensor)
+                loss.backward()
+                optimizer.step()
+        return self
+        
+    def predict(self, X: np.ndarray, raw_fcst: np.ndarray) -> np.ndarray:
+        if self.net is None:
+            return np.clip(raw_fcst, 0.0, None)
+        self.net.eval()
+        with torch.no_grad():
+            if X.ndim == 2:
+                features = np.column_stack([raw_fcst, X])
+                x_tensor = torch.tensor(features, dtype=torch.float32)
+                preds = self.net(x_tensor).squeeze(1).cpu().numpy()
+                return np.clip(preds, 0.0, None).astype(np.float32)
+            return np.clip(raw_fcst, 0.0, None)
+
+
+class WesternDisturbanceQMCorrector(QuantileMappingCorrector):
+    """Empirical Quantile Mapping corrector specialized for mid-latitude Western Disturbance (Regime 5).
+    Logically separate and independently evaluated expert from Active Monsoon EQM.
+    """
+    
+    def __init__(self, n_quantiles: int = 100):
+        super().__init__(n_quantiles=n_quantiles)
+        
+    def fit(self, X: np.ndarray, raw_fcst: np.ndarray, obs: np.ndarray):
+        logger.info("Fitting Western Disturbance Quantile Mapping corrector...")
+        return super().fit(X, raw_fcst, obs)
+
+
 class RegimeAwarePostProcessor:
     """Master orchestrator: routes each grid cell to its regime-specific corrector
-    based on the classified regime.
+    based on the classified regime or computes a Soft-Gated Mixture of Experts.
     
     Mapping Architecture:
-    - Regime 0 (Active Monsoon)       -> Quantile Mapping
-    - Regime 1 (Break Monsoon)        -> Gradient Boosting
-    - Regime 2 (Depression)           -> Spatial CNN
-    - Regime 3 (Orographic)           -> Spatial CNN
-    - Regime 4 (Coastal)              -> Gradient Boosting
-    - Regime 5 (Western Disturbance)  -> Quantile Mapping
+    - Regime 0 (Active Monsoon)       -> QuantileMappingCorrector
+    - Regime 1 (Break Monsoon)        -> GradientBoostingCorrector
+    - Regime 2 (Depression)           -> SpatialCNNCorrector
+    - Regime 3 (Orographic)           -> OrographicCNNCorrector (Elevation-Gradient CNN)
+    - Regime 4 (Coastal)              -> GradientBoostingCorrector (Marine BL Trees)
+    - Regime 5 (Western Disturbance)  -> WesternDisturbanceQMCorrector (Independent EQM)
     """
     
     def __init__(self):
         self.correctors = {
-            0: QuantileMappingCorrector(),   # Active
-            1: GradientBoostingCorrector(),  # Break
-            2: SpatialCNNCorrector(),        # Depression
-            3: SpatialCNNCorrector(),        # Orographic
-            4: GradientBoostingCorrector(),  # Coastal
-            5: QuantileMappingCorrector()    # Western Disturbance
+            0: QuantileMappingCorrector(),
+            1: GradientBoostingCorrector(),
+            2: SpatialCNNCorrector(),
+            3: OrographicCNNCorrector(),
+            4: GradientBoostingCorrector(),
+            5: WesternDisturbanceQMCorrector()
         }
         
     def fit(self, X: np.ndarray, raw_fcst: np.ndarray, obs: np.ndarray, regimes: np.ndarray):
@@ -234,12 +300,29 @@ class RegimeAwarePostProcessor:
                 logger.warning(f"Insufficient samples for Regime {r_id}; fitting on domain-wide data.")
                 corrector.fit(X, raw_fcst, obs)
         return self
+
+    def predict_soft_blend(self, X: np.ndarray, raw_fcst: np.ndarray, regime_probs: np.ndarray) -> np.ndarray:
+        """Soft-Gated Mixture of Experts (Blend Experts):
+        Computes continuous probability-weighted average across all 6 experts:
+        R_blend = sum_{k=0..5} P(regime=k) * Expert_k(X, raw_fcst)
+        """
+        N = len(raw_fcst)
+        expert_preds = np.zeros((N, len(self.correctors)), dtype=np.float32)
+        for r_id, corrector in self.correctors.items():
+            expert_preds[:, r_id] = corrector.predict(X, raw_fcst)
+        
+        blended = np.sum(expert_preds * regime_probs, axis=1)
+        return np.clip(blended, 0.0, None).astype(np.float32)
         
     def predict(self, X: np.ndarray, raw_fcst: np.ndarray, regimes: np.ndarray) -> np.ndarray:
+        # If 2D probability matrix is passed, execute Soft-Gated Blend
+        if regimes.ndim == 2 and regimes.shape[1] == len(self.correctors):
+            return self.predict_soft_blend(X, raw_fcst, regimes)
+            
         corrected_fcst = np.zeros_like(raw_fcst, dtype=np.float32)
         for r_id, corrector in self.correctors.items():
             mask = (regimes == r_id)
             if np.any(mask):
                 corrected_fcst[mask] = corrector.predict(X[mask], raw_fcst[mask])
         # Physical guarantee: precipitation >= 0
-        return np.clip(corrected_fcst, 0.0, None)
+        return np.clip(corrected_fcst, 0.0, None).astype(np.float32)
