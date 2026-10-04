@@ -1,0 +1,93 @@
+{
+  "benchmark_version": "1.0.0",
+  "title": "VarshaMitra WMO 5-Tier Baseline Progression Ladder (B0 - B4)",
+  "evaluation_protocol": "Chronological Holdout (Locked Test Split: September 2024)",
+  "sample_count": 28710,
+  "domain": "Maharashtra (15.5°N - 22.0°N, 72.5°E - 81.0°E, 0.25° grid)",
+  "target_variable": "24-hour Accumulated Precipitation (mm)",
+  "statistical_significance_status": "Descriptive metric differences; formal paired block bootstrap / permutation significance has not yet been established.",
+  "benchmarks": [
+    {
+      "tier": "B0",
+      "name": "Raw NWP Forecast",
+      "methodology": "NOAA NCEP GFS 0.25° uncalibrated raw grid output",
+      "rmse_mm": 24.71,
+      "mae_mm": 9.18,
+      "mbe_mm": 7.15,
+      "csi_10mm": 0.544,
+      "ets_10mm": 0.053,
+      "pod_10mm": 0.995,
+      "far_10mm": 0.455,
+      "heavy_rain_pod_64_5mm": 0.525,
+      "heavy_rain_far_64_5mm": 0.711,
+      "heavy_rain_csi_64_5mm": 0.229
+    },
+    {
+      "tier": "B1",
+      "name": "Global Statistical Scaling",
+      "methodology": "Domain-wide linear mean bias correction",
+      "rmse_mm": 17.23,
+      "mae_mm": 6.84,
+      "mbe_mm": 0.82,
+      "csi_10mm": 0.612,
+      "ets_10mm": 0.165,
+      "pod_10mm": 0.884,
+      "far_10mm": 0.320,
+      "heavy_rain_pod_64_5mm": 0.580,
+      "heavy_rain_far_64_5mm": 0.680,
+      "heavy_rain_csi_64_5mm": 0.235
+    },
+    {
+      "tier": "B2",
+      "name": "Global ML (Single HistGBDT)",
+      "methodology": "19-feature Histogram Gradient Boosting Regressor trained without regime routing",
+      "rmse_mm": 8.37,
+      "mae_mm": 4.12,
+      "mbe_mm": -0.15,
+      "csi_10mm": 0.765,
+      "ets_10mm": 0.342,
+      "pod_10mm": 0.812,
+      "far_10mm": 0.260,
+      "heavy_rain_pod_64_5mm": 0.780,
+      "heavy_rain_far_64_5mm": 0.345,
+      "heavy_rain_csi_64_5mm": 0.560
+    },
+    {
+      "tier": "B3",
+      "name": "Hard Regime Routing",
+      "methodology": "Argmax discrete selection of regime-specific expert correctors",
+      "rmse_mm": 9.43,
+      "mae_mm": 3.94,
+      "mbe_mm": -0.08,
+      "csi_10mm": 0.782,
+      "ets_10mm": 0.365,
+      "pod_10mm": 0.825,
+      "far_10mm": 0.248,
+      "heavy_rain_pod_64_5mm": 0.815,
+      "heavy_rain_far_64_5mm": 0.310,
+      "heavy_rain_csi_64_5mm": 0.595
+    },
+    {
+      "tier": "B4",
+      "name": "VarshaMitra Soft MoE",
+      "methodology": "Continuous probability-weighted blending across 6 canonical regime experts",
+      "rmse_mm": 9.40,
+      "mae_mm": 3.88,
+      "mbe_mm": 0.02,
+      "csi_10mm": 0.790,
+      "ets_10mm": 0.374,
+      "pod_10mm": 0.832,
+      "far_10mm": 0.244,
+      "heavy_rain_pod_64_5mm": 0.833,
+      "heavy_rain_far_64_5mm": 0.285,
+      "heavy_rain_csi_64_5mm": 0.625
+    }
+  ],
+  "scientific_comparison_summary": {
+    "overall_continuous_rmse_winner": "B2 (Global ML: 8.37 mm vs B4: 9.40 mm)",
+    "overall_continuous_mae_winner": "B4 (VarshaMitra Soft MoE: 3.88 mm vs B2: 4.12 mm)",
+    "categorical_skill_csi_winner": "B4 (VarshaMitra Soft MoE: 0.790 vs B2: 0.765)",
+    "extreme_heavy_rain_pod_winner": "B4 (VarshaMitra Soft MoE: 0.833 vs B2: 0.780)",
+    "honest_conclusion": "Global ML (B2) minimizes squared continuous residuals across widespread light-to-moderate rain. The Regime-Aware Soft MoE (B4) provides targeted physical advantages in absolute error (MAE), operational threshold threat score (CSI), and disaster-critical extreme precipitation detection (POD >= 64.5 mm)."
+  }
+}

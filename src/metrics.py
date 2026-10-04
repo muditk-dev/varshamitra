@@ -192,6 +192,11 @@ def compute_full_verification_suite(
                         "note": "N/A — offshore zero-rain test split"
                     }
                 else:
+                    skill_gain = (
+                        ((r_raw["rmse"] - r_corr["rmse"]) / r_raw["rmse"]) * 100.0
+                        if r_raw["rmse"] > 0
+                        else 0.0
+                    )
                     regime_breakdown[r_name] = {
                         "sample_count": int(np.sum(mask)),
                         "raw_rmse": r_raw["rmse"],

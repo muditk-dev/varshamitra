@@ -16,10 +16,20 @@ import pandas as pd
 import xarray as xr
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 import xgboost as xgb
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
+
+try:
+    import torch
+    import torch.nn as nn
+    import torch.optim as optim
+    from torch.utils.data import Dataset, DataLoader
+    HAS_TORCH = True
+except (ImportError, ModuleNotFoundError):
+    torch = None
+    nn = None
+    optim = None
+    Dataset = object
+    DataLoader = None
+    HAS_TORCH = False
 
 import sys
 logging.basicConfig(level=logging.INFO, stream=sys.stdout, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -78,59 +88,70 @@ class XGBoostRegimeClassifier:
         return self.model.predict_proba(X)
 
 
-class SpatialConvNetClassifier(nn.Module):
-    """Convolutional Neural Network capturing 2D spatial meteorological patterns.
-    Takes 2D feature maps over Maharashtra (channels = num_features, H = n_lats, W = n_lons)
-    and predicts per-cell regime logits (channels = NUM_REGIMES, H, W).
-    """
-    
-    def __init__(self, in_channels: int = len(FEATURE_COLS), num_classes: int = NUM_REGIMES):
-        super().__init__()
-        # Encoder
-        self.enc1 = nn.Sequential(
-            nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(32, 32, kernel_size=3, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(inplace=True)
-        )
-        self.enc2 = nn.Sequential(
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True)
-        )
-        # Decoder / Classifier Head (preserves full resolution)
-        self.out_conv = nn.Sequential(
-            nn.Conv2d(64, 32, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(32, num_classes, kernel_size=1)
-        )
+if HAS_TORCH:
+    class SpatialConvNetClassifier(nn.Module):
+        """Convolutional Neural Network capturing 2D spatial meteorological patterns.
+        Takes 2D feature maps over Maharashtra (channels = num_features, H = n_lats, W = n_lons)
+        and predicts per-cell regime logits (channels = NUM_REGIMES, H, W).
+        """
         
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x: (B, C, H, W) -> logits: (B, num_classes, H, W)
-        feat1 = self.enc1(x)
-        feat2 = self.enc2(feat1)
-        out = self.out_conv(feat2)
-        return out
+        def __init__(self, in_channels: int = len(FEATURE_COLS), num_classes: int = NUM_REGIMES):
+            super().__init__()
+            # Encoder
+            self.enc1 = nn.Sequential(
+                nn.Conv2d(in_channels, 32, kernel_size=3, padding=1),
+                nn.BatchNorm2d(32),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(32, 32, kernel_size=3, padding=1),
+                nn.BatchNorm2d(32),
+                nn.ReLU(inplace=True)
+            )
+            self.enc2 = nn.Sequential(
+                nn.Conv2d(32, 64, kernel_size=3, padding=1),
+                nn.BatchNorm2d(64),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(64, 64, kernel_size=3, padding=1),
+                nn.BatchNorm2d(64),
+                nn.ReLU(inplace=True)
+            )
+            # Decoder / Classifier Head (preserves full resolution)
+            self.out_conv = nn.Sequential(
+                nn.Conv2d(64, 32, kernel_size=3, padding=1),
+                nn.ReLU(inplace=True),
+                nn.Conv2d(32, num_classes, kernel_size=1)
+            )
+
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            # x: (B, C, H, W) -> logits: (B, num_classes, H, W)
+            feat1 = self.enc1(x)
+            feat2 = self.enc2(feat1)
+            out = self.out_conv(feat2)
+            return out
 
 
-class SpatialGridDataset(Dataset):
-    """PyTorch Dataset yielding 2D spatial maps for each forecast day."""
-    
-    def __init__(self, features: np.ndarray, labels: np.ndarray):
-        # features: (T, C, H, W), labels: (T, H, W)
-        self.features = torch.tensor(features, dtype=torch.float32)
-        self.labels = torch.tensor(labels, dtype=torch.long)
-        
-    def __len__(self):
-        return len(self.features)
-        
-    def __getitem__(self, idx):
-        return self.features[idx], self.labels[idx]
+    class SpatialGridDataset(Dataset):
+        """PyTorch Dataset yielding 2D spatial maps for each forecast day."""
+
+        def __init__(self, features: np.ndarray, labels: np.ndarray):
+            # features: (T, C, H, W), labels: (T, H, W)
+            self.features = torch.tensor(features, dtype=torch.float32)
+            self.labels = torch.tensor(labels, dtype=torch.long)
+
+        def __len__(self):
+            return len(self.features)
+
+        def __getitem__(self, idx):
+            return self.features[idx], self.labels[idx]
+else:
+    class SpatialConvNetClassifier:
+        """Lightweight placeholder when PyTorch is not installed in production."""
+        def __init__(self, *args, **kwargs):
+            raise ImportError("PyTorch is not installed. SpatialConvNetClassifier is an offline research model.")
+
+    class SpatialGridDataset:
+        """Lightweight placeholder when PyTorch is not installed in production."""
+        def __init__(self, *args, **kwargs):
+            raise ImportError("PyTorch is not installed. SpatialGridDataset requires PyTorch.")
 
 
 def train_and_evaluate_regime_classifiers(
@@ -180,42 +201,49 @@ def train_and_evaluate_regime_classifiers(
     xgb_report = classification_report(y_test_tab, y_pred_xgb, output_dict=True, zero_division=0)
     logger.info(f"XGBoost Baseline Test Accuracy: {xgb_acc * 100:.2f}%")
     
-    # 2. Train Spatial ConvNet
-    logger.info("Training Spatial ConvNet (U-Net style) in PyTorch...")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = SpatialConvNetClassifier(in_channels=C, num_classes=NUM_REGIMES).to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.003, weight_decay=1e-4)
-    
-    train_dataset = SpatialGridDataset(X_train_4d, y_train_3d)
-    train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-    
-    model.train()
-    for epoch in range(epochs):
-        epoch_loss = 0.0
-        for bx, by in train_loader:
-            bx, by = bx.to(device), by.to(device)
-            optimizer.zero_grad()
-            logits = model(bx)  # (B, 6, H, W)
-            loss = criterion(logits, by)
-            loss.backward()
-            optimizer.step()
-            epoch_loss += loss.item() * len(bx)
-        if (epoch + 1) % 5 == 0 or epoch == epochs - 1:
-            logger.info(f"  Epoch [{epoch+1}/{epochs}] Loss: {epoch_loss / len(train_dataset):.4f}")
-            
-    # Evaluate ConvNet
-    model.eval()
-    with torch.no_grad():
-        test_x_tensor = torch.tensor(X_test_4d, dtype=torch.float32).to(device)
-        test_logits = model(test_x_tensor)  # (T_te, 6, H, W)
-        test_preds = torch.argmax(test_logits, dim=1).cpu().numpy()  # (T_te, H, W)
-        
-    y_pred_cnn = test_preds.reshape(-1)
-    cnn_acc = float(accuracy_score(y_test_tab, y_pred_cnn))
-    cnn_cm = confusion_matrix(y_test_tab, y_pred_cnn, labels=list(range(NUM_REGIMES)))
-    cnn_report = classification_report(y_test_tab, y_pred_cnn, output_dict=True, zero_division=0)
-    logger.info(f"Spatial ConvNet Test Accuracy: {cnn_acc * 100:.2f}%")
+    # 2. Train Spatial ConvNet (if PyTorch is available)
+    if HAS_TORCH:
+        logger.info("Training Spatial ConvNet (U-Net style) in PyTorch...")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = SpatialConvNetClassifier(in_channels=C, num_classes=NUM_REGIMES).to(device)
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.003, weight_decay=1e-4)
+
+        train_dataset = SpatialGridDataset(X_train_4d, y_train_3d)
+        train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
+
+        model.train()
+        for epoch in range(epochs):
+            epoch_loss = 0.0
+            for bx, by in train_loader:
+                bx, by = bx.to(device), by.to(device)
+                optimizer.zero_grad()
+                logits = model(bx)  # (B, 6, H, W)
+                loss = criterion(logits, by)
+                loss.backward()
+                optimizer.step()
+                epoch_loss += loss.item() * len(bx)
+            if (epoch + 1) % 5 == 0 or epoch == epochs - 1:
+                logger.info(f"  Epoch [{epoch+1}/{epochs}] Loss: {epoch_loss / len(train_dataset):.4f}")
+
+        # Evaluate ConvNet
+        model.eval()
+        with torch.no_grad():
+            test_x_tensor = torch.tensor(X_test_4d, dtype=torch.float32).to(device)
+            test_logits = model(test_x_tensor)  # (T_te, 6, H, W)
+            test_preds = torch.argmax(test_logits, dim=1).cpu().numpy()  # (T_te, H, W)
+
+        y_pred_cnn = test_preds.reshape(-1)
+        cnn_acc = float(accuracy_score(y_test_tab, y_pred_cnn))
+        cnn_cm = confusion_matrix(y_test_tab, y_pred_cnn, labels=list(range(NUM_REGIMES)))
+        cnn_report = classification_report(y_test_tab, y_pred_cnn, output_dict=True, zero_division=0)
+        logger.info(f"Spatial ConvNet Test Accuracy: {cnn_acc * 100:.2f}%")
+    else:
+        logger.info("PyTorch not installed in this environment; skipping offline Spatial ConvNet evaluation.")
+        model = None
+        cnn_acc = 0.0
+        cnn_cm = np.zeros((NUM_REGIMES, NUM_REGIMES), dtype=int)
+        cnn_report = {}
     
     return {
         "xgb_model": xgb_clf,

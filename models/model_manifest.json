@@ -1,0 +1,99 @@
+{
+  "manifest_version": "1.0.0",
+  "system": "VarshaMitra Meteorological AI Engine",
+  "feature_schema_version": "production-19-v1",
+  "generated_at": "2026-10-04T11:40:00Z",
+  "models": {
+    "regime_classifier": {
+      "artifact_filename": "regime_classifier_xgb.pkl",
+      "model_role": "Synoptic Regime Gating Classifier",
+      "model_type": "XGBClassifier (multiclass:softprob)",
+      "phase_introduced": "Phase 1 / Phase 2 (Hardened in Phase 3)",
+      "model_version": "v2.1-lightweight-oof",
+      "sha256": "b85f268ca0def89b10983f17765b6bbd6dea710485b5c41d732da84c5892b162",
+      "file_size_bytes": 949239,
+      "modified_at": "2026-10-02T11:47:39Z",
+      "training_period": "2024-06-01 to 2024-07-31 (Train)",
+      "validation_period": "2024-08-01 to 2024-08-31 (Validation OOF)",
+      "locked_test_period": "2024-09-01 to 2024-09-30 (Locked Test)",
+      "spatial_domain": "Maharashtra (15.5°N - 22.0°N, 72.5°E - 81.0°E)",
+      "features_required": 19,
+      "runtime_dependencies": [
+        "xgboost",
+        "scikit-learn",
+        "numpy"
+      ],
+      "pytorch_dependency": false
+    },
+    "bias_postprocessor": {
+      "artifact_filename": "regime_bias_postprocessor.pkl",
+      "model_role": "Soft-Gated Mixture of Experts Bias Post-Processor",
+      "model_type": "RegimeBiasCorrectionSuite (6-Regime MoE with HistGradientBoostingRegressor active expert)",
+      "phase_introduced": "Phase 1 (PyTorch Decoupled) / Phase 3 (19-Feature HistGBDT Active Expert)",
+      "model_version": "v3.0-lightweight-moe-histgbdt",
+      "sha256": "6c897726f4fc22877b2626e2d6c823ec7843ac2607b8685aebdcf4c2ccebba22",
+      "file_size_bytes": 1121189,
+      "modified_at": "2026-10-04T07:41:08Z",
+      "training_period": "2024-06-01 to 2024-07-31",
+      "validation_period": "2024-08-01 to 2024-08-31",
+      "locked_test_period": "2024-09-01 to 2024-09-30",
+      "spatial_domain": "Maharashtra (15.5°N - 22.0°N, 72.5°E - 81.0°E)",
+      "features_required": 19,
+      "runtime_dependencies": [
+        "scikit-learn",
+        "numpy",
+        "scipy"
+      ],
+      "pytorch_dependency": false
+    },
+    "heavy_rainfall": {
+      "artifact_filename": "heavy_rainfall_prob_model.pkl",
+      "model_role": "Extreme Rainfall Exceedance Probability Estimator",
+      "model_type": "HeavyRainfallProbabilitySuite (Focal-Weighted XGBoost Classifiers + Isotonic Regression)",
+      "phase_introduced": "Phase 1 / Baseline",
+      "model_version": "v1.2-focal-calibrated",
+      "sha256": "b2b05c8b457667e7de7035cfbabbe971938b9be09926fbbe2655c74165b06cb9",
+      "file_size_bytes": 253591,
+      "modified_at": "2026-09-28T18:38:28Z",
+      "training_period": "2024-06-01 to 2024-07-31",
+      "validation_period": "2024-08-01 to 2024-08-31",
+      "locked_test_period": "2024-09-01 to 2024-09-30",
+      "spatial_domain": "Maharashtra (15.5°N - 22.0°N, 72.5°E - 81.0°E)",
+      "features_required": 19,
+      "thresholds_mm": {
+        "heavy": 64.5,
+        "very_heavy": 115.5,
+        "extremely_heavy": 204.5
+      },
+      "runtime_dependencies": [
+        "xgboost",
+        "scikit-learn",
+        "numpy"
+      ],
+      "pytorch_dependency": false
+    },
+    "uncertainty": {
+      "artifact_filename": "uncertainty_models.pkl",
+      "model_role": "Predictive Quantiles & Split-Conformal Calibration Engine",
+      "model_type": "UncertaintyEngine (Pinball-Loss Quantile GBDTs + Monotonic Rearrangement + Split Conformal)",
+      "phase_introduced": "Phase 4",
+      "model_version": "v1.0-conformal-p10-p50-p90",
+      "sha256": "494c813f2de1cca29e1b1df2dd217bbc98987b50b51e53076b81cd0da5552c69",
+      "file_size_bytes": 855464,
+      "modified_at": "2026-10-04T08:02:01Z",
+      "training_period": "2024-06-01 to 2024-07-31 (Quantile Regressors)",
+      "validation_period": "2024-08-01 to 2024-08-31 (Split-Conformal Calibration Isolated)",
+      "locked_test_period": "2024-09-01 to 2024-09-30 (Evaluation Coverage: 89.40%)",
+      "spatial_domain": "Maharashtra (15.5°N - 22.0°N, 72.5°E - 81.0°E)",
+      "features_required": 19,
+      "conformal_quantile_qhat": 9.1667,
+      "conformal_coverage_target": 0.90,
+      "runtime_dependencies": [
+        "scikit-learn",
+        "numpy",
+        "scipy"
+      ],
+      "pytorch_dependency": false
+    }
+  }
+}

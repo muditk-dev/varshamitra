@@ -23,6 +23,16 @@ if (fs.existsSync(srcProcessed)) {
     fs.copyFileSync(verifFile, path.join(dataDir, 'verification_scores_summary.json'));
   }
 
+  const benchmarkFile = path.join(srcProcessed, 'final_benchmark.json');
+  if (fs.existsSync(benchmarkFile)) {
+    fs.copyFileSync(benchmarkFile, path.join(dataDir, 'final_benchmark.json'));
+  }
+
+  const provProcessed = path.join(srcProcessed, 'data_provenance.json');
+  if (fs.existsSync(provProcessed)) {
+    fs.copyFileSync(provProcessed, path.join(dataDir, 'data_provenance.json'));
+  }
+
   // Copy Maharashtra 36-district alert GeoJSON files
   const geojsonActive = path.join(srcProcessed, 'district_alerts_2024-09-28.geojson');
   if (fs.existsSync(geojsonActive)) {

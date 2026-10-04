@@ -1,0 +1,213 @@
+{
+  "artifact_size_kb": 835.4140625,
+  "conformal_q_hat": 9.167249468173571,
+  "validation": {
+    "crossings": {
+      "total_samples": 29667,
+      "violations_p10_gt_p50": 185,
+      "pct_p10_gt_p50": 0.62,
+      "violations_p50_gt_p90": 368,
+      "pct_p50_gt_p90": 1.24,
+      "total_violations": 551,
+      "total_pct": 1.86,
+      "max_violation_mm": 18.4597,
+      "mean_violation_mm": 0.011
+    },
+    "quantiles": {
+      "p10_pinball_loss": 1.4053,
+      "p10_empirical_lower_tail_pct": 10.23,
+      "p50_pinball_loss": 1.6916,
+      "p50_mae": 3.38,
+      "p50_rmse": 8.38,
+      "p90_pinball_loss": 1.1162,
+      "p90_empirical_upper_tail_pct": 90.1,
+      "interval_p10_p90_coverage_pct": 90.05,
+      "interval_p10_p90_mean_width_mm": 20.32,
+      "interval_p10_p90_median_width_mm": 15.06
+    },
+    "conformal": {
+      "nominal_coverage_pct": 90.0,
+      "empirical_coverage_pct": 90.01,
+      "coverage_error_pp": 0.01,
+      "mean_interval_width_mm": 16.47,
+      "median_interval_width_mm": 18.33
+    }
+  },
+  "locked_test": {
+    "crossings": {
+      "total_samples": 28710,
+      "violations_p10_gt_p50": 241,
+      "pct_p10_gt_p50": 0.84,
+      "violations_p50_gt_p90": 676,
+      "pct_p50_gt_p90": 2.35,
+      "total_violations": 916,
+      "total_pct": 3.19,
+      "max_violation_mm": 15.9352,
+      "mean_violation_mm": 0.0259
+    },
+    "quantiles": {
+      "p10_pinball_loss": 1.6016,
+      "p10_empirical_lower_tail_pct": 11.5,
+      "p50_pinball_loss": 2.0865,
+      "p50_mae": 4.17,
+      "p50_rmse": 11.73,
+      "p90_pinball_loss": 1.3579,
+      "p90_empirical_upper_tail_pct": 90.14,
+      "interval_p10_p90_coverage_pct": 90.11,
+      "interval_p10_p90_mean_width_mm": 22.47,
+      "interval_p10_p90_median_width_mm": 16.23
+    },
+    "conformal": {
+      "nominal_coverage_pct": 90.0,
+      "empirical_coverage_pct": 89.4,
+      "coverage_error_pp": -0.6,
+      "mean_interval_width_mm": 16.53,
+      "median_interval_width_mm": 18.33
+    },
+    "by_intensity": [
+      {
+        "bin": "0\u201310 mm (Light)",
+        "samples": 13446,
+        "median_prediction_mm": 5.48,
+        "mae_mm": 3.84,
+        "p90_p10_width_mm": 10.37,
+        "conformal_width_mm": 14.73,
+        "conformal_coverage_pct": 94.79
+      },
+      {
+        "bin": "10\u201325 mm (Moderate)",
+        "samples": 10545,
+        "median_prediction_mm": 16.07,
+        "mae_mm": 4.13,
+        "p90_p10_width_mm": 21.6,
+        "conformal_width_mm": 18.03,
+        "conformal_coverage_pct": 91.65
+      },
+      {
+        "bin": "25\u201350 mm (Rather Heavy)",
+        "samples": 3188,
+        "median_prediction_mm": 35.7,
+        "mae_mm": 10.5,
+        "p90_p10_width_mm": 46.24,
+        "conformal_width_mm": 18.31,
+        "conformal_coverage_pct": 69.89
+      },
+      {
+        "bin": "50\u2013100 mm (Heavy)",
+        "samples": 1238,
+        "median_prediction_mm": 61.48,
+        "mae_mm": 8.06,
+        "p90_p10_width_mm": 73.46,
+        "conformal_width_mm": 18.33,
+        "conformal_coverage_pct": 79.73
+      },
+      {
+        "bin": ">=100 mm (Very Heavy/Extreme)",
+        "samples": 293,
+        "median_prediction_mm": 87.39,
+        "mae_mm": 69.42,
+        "p90_p10_width_mm": 134.94,
+        "conformal_width_mm": 18.33,
+        "conformal_coverage_pct": 13.65
+      }
+    ],
+    "by_regime": [
+      {
+        "regime_id": 0,
+        "regime": "Active Monsoon",
+        "samples": 23148,
+        "rmse_mm": 9.19,
+        "mae_mm": 3.95,
+        "median_width_mm": 18.33,
+        "conformal_coverage_pct": 93.37,
+        "median_regime_entropy": 0.0003,
+        "sparse_warning": false
+      },
+      {
+        "regime_id": 1,
+        "regime": "Break Monsoon",
+        "samples": 34,
+        "rmse_mm": 4.89,
+        "mae_mm": 2.82,
+        "median_width_mm": 10.02,
+        "conformal_coverage_pct": 91.18,
+        "median_regime_entropy": 0.0003,
+        "sparse_warning": true
+      },
+      {
+        "regime_id": 2,
+        "regime": "Depression",
+        "samples": 896,
+        "rmse_mm": 4.86,
+        "mae_mm": 3.91,
+        "median_width_mm": 18.33,
+        "conformal_coverage_pct": 94.75,
+        "median_regime_entropy": 0.0027,
+        "sparse_warning": false
+      },
+      {
+        "regime_id": 3,
+        "regime": "Orographic",
+        "samples": 2480,
+        "rmse_mm": 33.86,
+        "mae_mm": 15.88,
+        "median_width_mm": 18.33,
+        "conformal_coverage_pct": 69.07,
+        "median_regime_entropy": 0.0141,
+        "sparse_warning": false
+      },
+      {
+        "regime_id": 4,
+        "regime": "Coastal",
+        "samples": 1117,
+        "rmse_mm": 28.7,
+        "mae_mm": 18.01,
+        "median_width_mm": 18.33,
+        "conformal_coverage_pct": 47.36,
+        "median_regime_entropy": 0.0008,
+        "sparse_warning": false
+      },
+      {
+        "regime_id": 5,
+        "regime": "Western Disturbance",
+        "samples": 1035,
+        "rmse_mm": 7.45,
+        "mae_mm": 4.17,
+        "median_width_mm": 12.64,
+        "conformal_coverage_pct": 89.95,
+        "median_regime_entropy": 0.0013,
+        "sparse_warning": false
+      }
+    ],
+    "heavy_interaction": {
+      "Non-Heavy (<64.5 mm)": {
+        "samples": 28022,
+        "mae_mm": 4.85,
+        "conformal_coverage_pct": 90.32,
+        "median_interval_width_mm": 18.33,
+        "median_regime_entropy": 0.0003
+      },
+      "Heavy (>=64.5 mm)": {
+        "samples": 688,
+        "mae_mm": 33.62,
+        "conformal_coverage_pct": 51.89,
+        "median_interval_width_mm": 18.33,
+        "median_regime_entropy": 0.0027
+      },
+      "Very Heavy (>=115.5 mm)": {
+        "samples": 284,
+        "mae_mm": 69.58,
+        "conformal_coverage_pct": 14.08,
+        "median_interval_width_mm": 18.33,
+        "median_regime_entropy": 0.0142
+      },
+      "Extremely Heavy (>=204.5 mm)": {
+        "samples": 13,
+        "mae_mm": 88.21,
+        "conformal_coverage_pct": 0.0,
+        "median_interval_width_mm": 18.33,
+        "median_regime_entropy": 0.0142
+      }
+    }
+  }
+}

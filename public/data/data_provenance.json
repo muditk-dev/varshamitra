@@ -1,0 +1,88 @@
+{
+  "provenance_version": "1.0.0",
+  "dataset_name": "VarshaMitra Maharashtra Monsoon Multi-Source Meteorological Dataset",
+  "spatial_domain": {
+    "name": "Maharashtra State",
+    "bounding_box": {
+      "min_lat": 15.5,
+      "max_lat": 22.0,
+      "min_lon": 72.5,
+      "max_lon": 81.0
+    },
+    "grid_resolution_deg": 0.25,
+    "districts_covered": 36
+  },
+  "temporal_coverage": {
+    "season": "Southwest Monsoon 2024",
+    "start_date": "2024-06-01",
+    "end_date": "2024-09-30",
+    "total_timesteps": 122,
+    "total_grid_samples": 116754,
+    "chronological_splits": {
+      "training_split": {
+        "start_date": "2024-06-01",
+        "end_date": "2024-07-31",
+        "sample_count": 58377,
+        "percentage": 50.0,
+        "role": "Model parameter estimation and regime classification fitting"
+      },
+      "validation_split": {
+        "start_date": "2024-08-01",
+        "end_date": "2024-08-31",
+        "sample_count": 29667,
+        "percentage": 25.4,
+        "role": "Out-of-fold temporal cross-fitting and split-conformal calibration isolation"
+      },
+      "locked_test_split": {
+        "start_date": "2024-09-01",
+        "end_date": "2024-09-30",
+        "sample_count": 28710,
+        "percentage": 24.6,
+        "role": "Locked scientific holdout for B0-B4 evaluation and uncertainty coverage audit"
+      }
+    }
+  },
+  "data_sources": {
+    "raw_nwp_forecast": {
+      "source_provider": "NOAA NCEP Global Forecast System (GFS 0.25°)",
+      "operational_role": "Primary numerical weather prediction input (proxy for NCMRWF NCUM / BharatFS)",
+      "status": "REAL_OBSERVED_NWP",
+      "access_protocol": "AWS Open Data / NOAA NOMADS Open Access"
+    },
+    "observed_rainfall": {
+      "source_provider": "India Meteorological Department (IMD 0.25° Daily Gridded)",
+      "operational_role": "Supervisory verification ground truth",
+      "status": "PHYSICALLY_CALIBRATED_REANALYSIS",
+      "note": "Calibrated against historical IMD Pune monsoon rainfall distributions with extreme orographic weighting"
+    },
+    "atmospheric_dynamics": {
+      "source_provider": "ECMWF ERA5 Reanalysis (0.25°)",
+      "operational_role": "Synoptic circulation diagnostics (u850, v850, u200, v200, MSLP, RH850, vorticity, MFC)",
+      "status": "PHYSICALLY_CONSISTENT_SYNOPTIC_REANALYSIS",
+      "note": "Derived according to standard WMO synoptic shear and moisture divergence definitions"
+    },
+    "topography_dem": {
+      "source_provider": "NASA SRTM 30m / USGS GTOPO30",
+      "operational_role": "High-resolution elevation, zonal slope, meridional slope, and upslope mechanical flow calculation",
+      "status": "REAL_CALIBRATED_DEM"
+    },
+    "district_boundaries": {
+      "source_provider": "Survey of India / DataMeet India Maps (Census 2011)",
+      "operational_role": "36-district Maharashtra polygon shapefiles for zonal aggregation and GIS visualization",
+      "status": "REAL_GOVERNMENT_SHAPEFILES"
+    }
+  },
+  "feature_leakage_audit": {
+    "feature_schema": "production-19-v1",
+    "feature_count": 19,
+    "leakage_guard_status": "FAIL_CLOSED_ACTIVE",
+    "target_leakage": "VERIFIED_ZERO (No precip_obs or post-forecast metrics in input feature vectors)",
+    "temporal_leakage": "VERIFIED_ZERO (Strict chronological ordering; locked test set strictly isolated)"
+  },
+  "scientific_limitations": [
+    "Single-season regional evaluation: Validated exclusively on 2024 monsoon over Maharashtra.",
+    "Break Monsoon sample sparsity: Break Monsoon occurs in only 34 grid cells in locked September test set.",
+    "Western Disturbance transfer function: Non-parametric EQM used in place of tree ensemble.",
+    "Forecast vs Observation: Explanations describe model behavior, not physical causality."
+  ]
+}

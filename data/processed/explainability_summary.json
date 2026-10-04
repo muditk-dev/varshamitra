@@ -1,0 +1,2117 @@
+{
+  "metadata": {
+    "title": "VarshaMitra Phase 5 True Explainability & Evidence Chain Summary",
+    "protocol": "Chronological Evaluation (Locked Test: September 2024)",
+    "feature_set": [
+      "precip_raw",
+      "elevation",
+      "slope_lon",
+      "slope_lat",
+      "u850",
+      "v850",
+      "u200",
+      "v200",
+      "mslp",
+      "rh850",
+      "wind_shear",
+      "wind_speed_850",
+      "upslope_flow",
+      "vorticity",
+      "mslp_anomaly",
+      "q_850",
+      "mfc",
+      "precip_roll3",
+      "coastal_proximity"
+    ],
+    "feature_count": 19,
+    "target_leakage": "FAIL_CLOSED_VERIFIED_NONE",
+    "pytorch_runtime_dependency": false,
+    "generated_at": "2026-10-04T09:55:17Z",
+    "sample_size_evaluated": 500
+  },
+  "global_feature_importance": {
+    "active_monsoon_corrector_ranking": [
+      {
+        "rank": 1,
+        "feature": "precip_raw",
+        "mean_abs_shap_mm": 7.815,
+        "mean_shap_mm": -1.5094,
+        "primary_direction": "decreases_rainfall_delta"
+      },
+      {
+        "rank": 2,
+        "feature": "coastal_proximity",
+        "mean_abs_shap_mm": 1.5418,
+        "mean_shap_mm": 0.3049,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 3,
+        "feature": "elevation",
+        "mean_abs_shap_mm": 1.148,
+        "mean_shap_mm": 0.0897,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 4,
+        "feature": "slope_lon",
+        "mean_abs_shap_mm": 1.0294,
+        "mean_shap_mm": 0.746,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 5,
+        "feature": "u200",
+        "mean_abs_shap_mm": 0.9946,
+        "mean_shap_mm": 0.146,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 6,
+        "feature": "wind_shear",
+        "mean_abs_shap_mm": 0.7566,
+        "mean_shap_mm": -0.2874,
+        "primary_direction": "decreases_rainfall_delta"
+      },
+      {
+        "rank": 7,
+        "feature": "vorticity",
+        "mean_abs_shap_mm": 0.64,
+        "mean_shap_mm": 0.2145,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 8,
+        "feature": "upslope_flow",
+        "mean_abs_shap_mm": 0.6064,
+        "mean_shap_mm": 0.071,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 9,
+        "feature": "mslp",
+        "mean_abs_shap_mm": 0.5228,
+        "mean_shap_mm": 0.1139,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 10,
+        "feature": "u850",
+        "mean_abs_shap_mm": 0.3192,
+        "mean_shap_mm": -0.0504,
+        "primary_direction": "decreases_rainfall_delta"
+      },
+      {
+        "rank": 11,
+        "feature": "rh850",
+        "mean_abs_shap_mm": 0.2525,
+        "mean_shap_mm": 0.0472,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 12,
+        "feature": "mslp_anomaly",
+        "mean_abs_shap_mm": 0.2113,
+        "mean_shap_mm": 0.0318,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 13,
+        "feature": "wind_speed_850",
+        "mean_abs_shap_mm": 0.1901,
+        "mean_shap_mm": -0.0304,
+        "primary_direction": "decreases_rainfall_delta"
+      },
+      {
+        "rank": 14,
+        "feature": "v850",
+        "mean_abs_shap_mm": 0.1791,
+        "mean_shap_mm": 0.0874,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 15,
+        "feature": "v200",
+        "mean_abs_shap_mm": 0.0978,
+        "mean_shap_mm": 0.0029,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 16,
+        "feature": "precip_roll3",
+        "mean_abs_shap_mm": 0.0918,
+        "mean_shap_mm": -0.0454,
+        "primary_direction": "decreases_rainfall_delta"
+      },
+      {
+        "rank": 17,
+        "feature": "mfc",
+        "mean_abs_shap_mm": 0.0828,
+        "mean_shap_mm": 0.0037,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 18,
+        "feature": "slope_lat",
+        "mean_abs_shap_mm": 0.0259,
+        "mean_shap_mm": 0.0033,
+        "primary_direction": "increases_rainfall_delta"
+      },
+      {
+        "rank": 19,
+        "feature": "q_850",
+        "mean_abs_shap_mm": 0.0,
+        "mean_shap_mm": 0.0,
+        "primary_direction": "decreases_rainfall_delta"
+      }
+    ],
+    "regime_classifier_ranking": [
+      {
+        "rank": 1,
+        "feature": "upslope_flow",
+        "mean_abs_shap_logodds": 1.0853
+      },
+      {
+        "rank": 2,
+        "feature": "coastal_proximity",
+        "mean_abs_shap_logodds": 0.8701
+      },
+      {
+        "rank": 3,
+        "feature": "u850",
+        "mean_abs_shap_logodds": 0.6761
+      },
+      {
+        "rank": 4,
+        "feature": "mslp_anomaly",
+        "mean_abs_shap_logodds": 0.5703
+      },
+      {
+        "rank": 5,
+        "feature": "vorticity",
+        "mean_abs_shap_logodds": 0.5471
+      },
+      {
+        "rank": 6,
+        "feature": "rh850",
+        "mean_abs_shap_logodds": 0.3088
+      },
+      {
+        "rank": 7,
+        "feature": "precip_raw",
+        "mean_abs_shap_logodds": 0.2409
+      },
+      {
+        "rank": 8,
+        "feature": "slope_lat",
+        "mean_abs_shap_logodds": 0.1957
+      },
+      {
+        "rank": 9,
+        "feature": "mslp",
+        "mean_abs_shap_logodds": 0.1923
+      },
+      {
+        "rank": 10,
+        "feature": "elevation",
+        "mean_abs_shap_logodds": 0.1159
+      },
+      {
+        "rank": 11,
+        "feature": "mfc",
+        "mean_abs_shap_logodds": 0.0589
+      },
+      {
+        "rank": 12,
+        "feature": "slope_lon",
+        "mean_abs_shap_logodds": 0.0577
+      },
+      {
+        "rank": 13,
+        "feature": "wind_speed_850",
+        "mean_abs_shap_logodds": 0.0556
+      },
+      {
+        "rank": 14,
+        "feature": "precip_roll3",
+        "mean_abs_shap_logodds": 0.0391
+      },
+      {
+        "rank": 15,
+        "feature": "v200",
+        "mean_abs_shap_logodds": 0.0223
+      },
+      {
+        "rank": 16,
+        "feature": "wind_shear",
+        "mean_abs_shap_logodds": 0.018
+      },
+      {
+        "rank": 17,
+        "feature": "v850",
+        "mean_abs_shap_logodds": 0.0121
+      },
+      {
+        "rank": 18,
+        "feature": "u200",
+        "mean_abs_shap_logodds": 0.0009
+      },
+      {
+        "rank": 19,
+        "feature": "q_850",
+        "mean_abs_shap_logodds": 0.0
+      }
+    ],
+    "regime_specific_top_features": {
+      "Active Monsoon": {
+        "regime_id": 0,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "upslope_flow",
+            "mean_abs_shap_logodds": 2.4735,
+            "mean_shap_logodds": 1.7654,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 2,
+            "feature": "mslp_anomaly",
+            "mean_abs_shap_logodds": 0.4514,
+            "mean_shap_logodds": 0.0917,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 3,
+            "feature": "mslp",
+            "mean_abs_shap_logodds": 0.3566,
+            "mean_shap_logodds": 0.3566,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 4,
+            "feature": "vorticity",
+            "mean_abs_shap_logodds": 0.3267,
+            "mean_shap_logodds": 0.0544,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 5,
+            "feature": "u850",
+            "mean_abs_shap_logodds": 0.2367,
+            "mean_shap_logodds": 0.2367,
+            "direction": "promotes_regime"
+          }
+        ]
+      },
+      "Break Monsoon": {
+        "regime_id": 1,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "rh850",
+            "mean_abs_shap_logodds": 1.389,
+            "mean_shap_logodds": -1.389,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 2,
+            "feature": "precip_raw",
+            "mean_abs_shap_logodds": 1.1668,
+            "mean_shap_logodds": -1.1668,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 3,
+            "feature": "mslp_anomaly",
+            "mean_abs_shap_logodds": 0.7138,
+            "mean_shap_logodds": -0.5681,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 4,
+            "feature": "elevation",
+            "mean_abs_shap_logodds": 0.2336,
+            "mean_shap_logodds": -0.2336,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 5,
+            "feature": "slope_lon",
+            "mean_abs_shap_logodds": 0.1791,
+            "mean_shap_logodds": -0.1791,
+            "direction": "suppresses_regime"
+          }
+        ]
+      },
+      "Depression": {
+        "regime_id": 2,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "vorticity",
+            "mean_abs_shap_logodds": 2.9041,
+            "mean_shap_logodds": -2.4562,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 2,
+            "feature": "mslp_anomaly",
+            "mean_abs_shap_logodds": 1.4071,
+            "mean_shap_logodds": -1.2786,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 3,
+            "feature": "slope_lat",
+            "mean_abs_shap_logodds": 0.2604,
+            "mean_shap_logodds": -0.1818,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 4,
+            "feature": "mfc",
+            "mean_abs_shap_logodds": 0.035,
+            "mean_shap_logodds": 0.035,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 5,
+            "feature": "upslope_flow",
+            "mean_abs_shap_logodds": 0.0259,
+            "mean_shap_logodds": 0.0259,
+            "direction": "promotes_regime"
+          }
+        ]
+      },
+      "Orographic": {
+        "regime_id": 3,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "upslope_flow",
+            "mean_abs_shap_logodds": 3.9246,
+            "mean_shap_logodds": -3.2526,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 2,
+            "feature": "slope_lat",
+            "mean_abs_shap_logodds": 0.6578,
+            "mean_shap_logodds": -0.6578,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 3,
+            "feature": "coastal_proximity",
+            "mean_abs_shap_logodds": 0.3846,
+            "mean_shap_logodds": 0.0672,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 4,
+            "feature": "elevation",
+            "mean_abs_shap_logodds": 0.2643,
+            "mean_shap_logodds": 0.2643,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 5,
+            "feature": "u850",
+            "mean_abs_shap_logodds": 0.143,
+            "mean_shap_logodds": 0.143,
+            "direction": "promotes_regime"
+          }
+        ]
+      },
+      "Coastal": {
+        "regime_id": 4,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "coastal_proximity",
+            "mean_abs_shap_logodds": 4.6503,
+            "mean_shap_logodds": -4.6503,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 2,
+            "feature": "rh850",
+            "mean_abs_shap_logodds": 0.2124,
+            "mean_shap_logodds": 0.2124,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 3,
+            "feature": "wind_speed_850",
+            "mean_abs_shap_logodds": 0.0108,
+            "mean_shap_logodds": 0.0108,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 4,
+            "feature": "v850",
+            "mean_abs_shap_logodds": 0.0094,
+            "mean_shap_logodds": 0.0094,
+            "direction": "promotes_regime"
+          },
+          {
+            "rank": 5,
+            "feature": "mfc",
+            "mean_abs_shap_logodds": 0.0038,
+            "mean_shap_logodds": 0.0038,
+            "direction": "promotes_regime"
+          }
+        ]
+      },
+      "Western Disturbance": {
+        "regime_id": 5,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "u850",
+            "mean_abs_shap_logodds": 3.67,
+            "mean_shap_logodds": -3.67,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 2,
+            "feature": "mslp_anomaly",
+            "mean_abs_shap_logodds": 0.7751,
+            "mean_shap_logodds": -0.5349,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 3,
+            "feature": "mslp",
+            "mean_abs_shap_logodds": 0.7145,
+            "mean_shap_logodds": -0.7145,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 4,
+            "feature": "wind_speed_850",
+            "mean_abs_shap_logodds": 0.1665,
+            "mean_shap_logodds": -0.1665,
+            "direction": "suppresses_regime"
+          },
+          {
+            "rank": 5,
+            "feature": "v200",
+            "mean_abs_shap_logodds": 0.1155,
+            "mean_shap_logodds": -0.1091,
+            "direction": "suppresses_regime"
+          }
+        ]
+      }
+    },
+    "heavy_rainfall_exceedance_ranking": {
+      "heavy": {
+        "threshold_mm": 64.5,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "precip_roll3",
+            "mean_abs_shap_logodds": 1.0341,
+            "mean_shap_logodds": -0.6309,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 2,
+            "feature": "upslope_flow",
+            "mean_abs_shap_logodds": 0.6379,
+            "mean_shap_logodds": -0.5118,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 3,
+            "feature": "precip_raw",
+            "mean_abs_shap_logodds": 0.5961,
+            "mean_shap_logodds": -0.4436,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 4,
+            "feature": "vorticity",
+            "mean_abs_shap_logodds": 0.583,
+            "mean_shap_logodds": -0.5116,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 5,
+            "feature": "slope_lon",
+            "mean_abs_shap_logodds": 0.489,
+            "mean_shap_logodds": -0.3734,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 6,
+            "feature": "elevation",
+            "mean_abs_shap_logodds": 0.3994,
+            "mean_shap_logodds": -0.3157,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 7,
+            "feature": "rh850",
+            "mean_abs_shap_logodds": 0.2996,
+            "mean_shap_logodds": -0.2159,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 8,
+            "feature": "coastal_proximity",
+            "mean_abs_shap_logodds": 0.2803,
+            "mean_shap_logodds": -0.2528,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 9,
+            "feature": "mslp_anomaly",
+            "mean_abs_shap_logodds": 0.2559,
+            "mean_shap_logodds": -0.1964,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 10,
+            "feature": "mfc",
+            "mean_abs_shap_logodds": 0.2028,
+            "mean_shap_logodds": -0.0377,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 11,
+            "feature": "u200",
+            "mean_abs_shap_logodds": 0.1928,
+            "mean_shap_logodds": -0.1119,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 12,
+            "feature": "mslp",
+            "mean_abs_shap_logodds": 0.0716,
+            "mean_shap_logodds": -0.0624,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 13,
+            "feature": "v850",
+            "mean_abs_shap_logodds": 0.067,
+            "mean_shap_logodds": -0.0444,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 14,
+            "feature": "v200",
+            "mean_abs_shap_logodds": 0.0598,
+            "mean_shap_logodds": -0.032,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 15,
+            "feature": "wind_shear",
+            "mean_abs_shap_logodds": 0.0252,
+            "mean_shap_logodds": -0.014,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 16,
+            "feature": "u850",
+            "mean_abs_shap_logodds": 0.0142,
+            "mean_shap_logodds": 0.0007,
+            "direction": "escalates_heavy_risk"
+          },
+          {
+            "rank": 17,
+            "feature": "slope_lat",
+            "mean_abs_shap_logodds": 0.0127,
+            "mean_shap_logodds": -0.008,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 18,
+            "feature": "wind_speed_850",
+            "mean_abs_shap_logodds": 0.0123,
+            "mean_shap_logodds": -0.0046,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 19,
+            "feature": "q_850",
+            "mean_abs_shap_logodds": 0.0,
+            "mean_shap_logodds": 0.0,
+            "direction": "suppresses_heavy_risk"
+          }
+        ]
+      },
+      "very_heavy": {
+        "threshold_mm": 115.5,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "slope_lon",
+            "mean_abs_shap_logodds": 1.9326,
+            "mean_shap_logodds": -1.3403,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 2,
+            "feature": "elevation",
+            "mean_abs_shap_logodds": 1.0362,
+            "mean_shap_logodds": -0.9538,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 3,
+            "feature": "mslp_anomaly",
+            "mean_abs_shap_logodds": 0.4922,
+            "mean_shap_logodds": -0.4325,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 4,
+            "feature": "vorticity",
+            "mean_abs_shap_logodds": 0.4378,
+            "mean_shap_logodds": -0.2818,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 5,
+            "feature": "u200",
+            "mean_abs_shap_logodds": 0.3909,
+            "mean_shap_logodds": -0.3255,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 6,
+            "feature": "upslope_flow",
+            "mean_abs_shap_logodds": 0.1611,
+            "mean_shap_logodds": -0.1166,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 7,
+            "feature": "v200",
+            "mean_abs_shap_logodds": 0.1463,
+            "mean_shap_logodds": -0.0966,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 8,
+            "feature": "mfc",
+            "mean_abs_shap_logodds": 0.1314,
+            "mean_shap_logodds": -0.1283,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 9,
+            "feature": "wind_shear",
+            "mean_abs_shap_logodds": 0.0621,
+            "mean_shap_logodds": -0.05,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 10,
+            "feature": "v850",
+            "mean_abs_shap_logodds": 0.0542,
+            "mean_shap_logodds": -0.0173,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 11,
+            "feature": "mslp",
+            "mean_abs_shap_logodds": 0.0492,
+            "mean_shap_logodds": -0.0381,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 12,
+            "feature": "rh850",
+            "mean_abs_shap_logodds": 0.0436,
+            "mean_shap_logodds": -0.0332,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 13,
+            "feature": "slope_lat",
+            "mean_abs_shap_logodds": 0.034,
+            "mean_shap_logodds": -0.029,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 14,
+            "feature": "precip_raw",
+            "mean_abs_shap_logodds": 0.0121,
+            "mean_shap_logodds": -0.0098,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 15,
+            "feature": "wind_speed_850",
+            "mean_abs_shap_logodds": 0.0064,
+            "mean_shap_logodds": -0.0023,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 16,
+            "feature": "precip_roll3",
+            "mean_abs_shap_logodds": 0.003,
+            "mean_shap_logodds": 0.0011,
+            "direction": "escalates_heavy_risk"
+          },
+          {
+            "rank": 17,
+            "feature": "q_850",
+            "mean_abs_shap_logodds": 0.0,
+            "mean_shap_logodds": 0.0,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 18,
+            "feature": "u850",
+            "mean_abs_shap_logodds": 0.0,
+            "mean_shap_logodds": 0.0,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 19,
+            "feature": "coastal_proximity",
+            "mean_abs_shap_logodds": 0.0,
+            "mean_shap_logodds": 0.0,
+            "direction": "suppresses_heavy_risk"
+          }
+        ]
+      },
+      "extremely_heavy": {
+        "threshold_mm": 204.5,
+        "top_features": [
+          {
+            "rank": 1,
+            "feature": "upslope_flow",
+            "mean_abs_shap_logodds": 1.0349,
+            "mean_shap_logodds": -0.7034,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 2,
+            "feature": "elevation",
+            "mean_abs_shap_logodds": 0.2554,
+            "mean_shap_logodds": -0.2281,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 3,
+            "feature": "rh850",
+            "mean_abs_shap_logodds": 0.2545,
+            "mean_shap_logodds": -0.2262,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 4,
+            "feature": "precip_roll3",
+            "mean_abs_shap_logodds": 0.1939,
+            "mean_shap_logodds": -0.171,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 5,
+            "feature": "slope_lon",
+            "mean_abs_shap_logodds": 0.138,
+            "mean_shap_logodds": -0.1184,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 6,
+            "feature": "mslp_anomaly",
+            "mean_abs_shap_logodds": 0.0906,
+            "mean_shap_logodds": -0.0643,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 7,
+            "feature": "mfc",
+            "mean_abs_shap_logodds": 0.0629,
+            "mean_shap_logodds": -0.0239,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 8,
+            "feature": "u200",
+            "mean_abs_shap_logodds": 0.0524,
+            "mean_shap_logodds": -0.0374,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 9,
+            "feature": "v200",
+            "mean_abs_shap_logodds": 0.0468,
+            "mean_shap_logodds": -0.0382,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 10,
+            "feature": "slope_lat",
+            "mean_abs_shap_logodds": 0.0392,
+            "mean_shap_logodds": -0.036,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 11,
+            "feature": "vorticity",
+            "mean_abs_shap_logodds": 0.0385,
+            "mean_shap_logodds": -0.0187,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 12,
+            "feature": "precip_raw",
+            "mean_abs_shap_logodds": 0.0377,
+            "mean_shap_logodds": 0.0127,
+            "direction": "escalates_heavy_risk"
+          },
+          {
+            "rank": 13,
+            "feature": "mslp",
+            "mean_abs_shap_logodds": 0.0213,
+            "mean_shap_logodds": -0.0131,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 14,
+            "feature": "v850",
+            "mean_abs_shap_logodds": 0.0154,
+            "mean_shap_logodds": -0.007,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 15,
+            "feature": "wind_shear",
+            "mean_abs_shap_logodds": 0.0096,
+            "mean_shap_logodds": -0.0045,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 16,
+            "feature": "u850",
+            "mean_abs_shap_logodds": 0.0012,
+            "mean_shap_logodds": 0.0005,
+            "direction": "escalates_heavy_risk"
+          },
+          {
+            "rank": 17,
+            "feature": "q_850",
+            "mean_abs_shap_logodds": 0.0,
+            "mean_shap_logodds": 0.0,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 18,
+            "feature": "wind_speed_850",
+            "mean_abs_shap_logodds": 0.0,
+            "mean_shap_logodds": 0.0,
+            "direction": "suppresses_heavy_risk"
+          },
+          {
+            "rank": 19,
+            "feature": "coastal_proximity",
+            "mean_abs_shap_logodds": 0.0,
+            "mean_shap_logodds": 0.0,
+            "direction": "suppresses_heavy_risk"
+          }
+        ]
+      }
+    }
+  },
+  "shap_additivity_verification": {
+    "active_monsoon_corrector": {
+      "mean_error": 1.7129516555192127e-14,
+      "max_error": 1.4921397450962104e-13,
+      "tolerance": 1e-05,
+      "is_additive": true
+    },
+    "regime_classifier": {
+      "mean_error": 1.3505592733054073e-06,
+      "max_error": 3.337860107421875e-06,
+      "tolerance": 1e-05,
+      "is_additive": true
+    },
+    "heavy_rainfall_models": {
+      "heavy": {
+        "mean_error": 4.411488703226496e-07,
+        "max_error": 1.9073486328125e-06,
+        "tolerance": 1e-05,
+        "is_additive": true
+      },
+      "very_heavy": {
+        "mean_error": 7.536411317232705e-07,
+        "max_error": 2.86102294921875e-06,
+        "tolerance": 1e-05,
+        "is_additive": true
+      },
+      "extremely_heavy": {
+        "mean_error": 8.590295692556538e-07,
+        "max_error": 3.814697265625e-06,
+        "tolerance": 1e-05,
+        "is_additive": true
+      }
+    }
+  },
+  "explanation_stability": {
+    "active_monsoon_corrector_pearson_stability": 0.9864,
+    "regime_classifier_pearson_stability": 0.9961,
+    "interpretation": "High local stability under input perturbation (|r| > 0.95 indicates consistent local attribution)"
+  },
+  "district_shap_attributions": {
+    "Ahmednagar": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.99,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.38,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.89,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.27,
+        "direction": "negative"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": -0.98,
+        "direction": "negative"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.96,
+        "direction": "negative"
+      }
+    ],
+    "Akola": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.49,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.68,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.73,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 1.29,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.2,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.83,
+        "direction": "positive"
+      }
+    ],
+    "Amravati": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.62,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.74,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.86,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.18,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.81,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 0.75,
+        "direction": "positive"
+      }
+    ],
+    "Beed": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.56,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.77,
+        "direction": "negative"
+      }
+    ],
+    "Bhandara": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.38,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.25,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.8,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.78,
+        "direction": "negative"
+      }
+    ],
+    "Buldhana": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.7,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.6,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.87,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.27,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.77,
+        "direction": "negative"
+      }
+    ],
+    "Chandrapur": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.55,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.74,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.87,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.18,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.81,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 0.81,
+        "direction": "positive"
+      }
+    ],
+    "Chhatrapati Sambhaji Nagar": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.56,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.77,
+        "direction": "negative"
+      }
+    ],
+    "Dharashiv": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.55,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.74,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.75,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.16,
+        "direction": "negative"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 0.9,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.81,
+        "direction": "positive"
+      }
+    ],
+    "Dhule": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.38,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.25,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.8,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.78,
+        "direction": "negative"
+      }
+    ],
+    "Gadchiroli": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.33,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.66,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.75,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 1.53,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.19,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.83,
+        "direction": "positive"
+      }
+    ],
+    "Gondia": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.8,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.23,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.18,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.25,
+        "direction": "negative"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.88,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.87,
+        "direction": "positive"
+      }
+    ],
+    "Hingoli": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.7,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.66,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.85,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.2,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.8,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.75,
+        "direction": "negative"
+      }
+    ],
+    "Jalgaon": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.56,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.77,
+        "direction": "negative"
+      }
+    ],
+    "Jalna": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.56,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.77,
+        "direction": "negative"
+      }
+    ],
+    "Kolhapur": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.14,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": -4.5,
+        "direction": "negative"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.44,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.64,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 2.19,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.08,
+        "direction": "negative"
+      }
+    ],
+    "Latur": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.56,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.77,
+        "direction": "negative"
+      }
+    ],
+    "Mumbai City": [
+      {
+        "feature": "upslope_flow",
+        "impact": 4.6,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.36,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 4.17,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.17,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.9,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.75,
+        "direction": "negative"
+      }
+    ],
+    "Mumbai Suburban": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.06,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.48,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.05,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.23,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.85,
+        "direction": "positive"
+      }
+    ],
+    "Nagpur": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.61,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.87,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.75,
+        "direction": "negative"
+      }
+    ],
+    "Nanded": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.72,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.56,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.79,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.77,
+        "direction": "negative"
+      }
+    ],
+    "Nandurbar": [
+      {
+        "feature": "precip_raw",
+        "impact": -9.08,
+        "direction": "negative"
+      },
+      {
+        "feature": "upslope_flow",
+        "impact": 5.06,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 3.78,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 3.25,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 3.24,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -1.3,
+        "direction": "negative"
+      }
+    ],
+    "Nashik": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.85,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": -5.23,
+        "direction": "negative"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.43,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.71,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 2.41,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.1,
+        "direction": "negative"
+      }
+    ],
+    "Palghar": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.33,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.66,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.75,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 1.53,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.19,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.83,
+        "direction": "positive"
+      }
+    ],
+    "Parbhani": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.3,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.06,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.23,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.82,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.82,
+        "direction": "negative"
+      }
+    ],
+    "Pune": [
+      {
+        "feature": "precip_raw",
+        "impact": -8.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "upslope_flow",
+        "impact": 5.06,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 3.75,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 3.25,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.6,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -1.22,
+        "direction": "negative"
+      }
+    ],
+    "Raigad": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.31,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": -4.46,
+        "direction": "negative"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.4,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.68,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.42,
+        "direction": "negative"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -1.18,
+        "direction": "negative"
+      }
+    ],
+    "Ratnagiri": [
+      {
+        "feature": "precip_raw",
+        "impact": -5.91,
+        "direction": "negative"
+      },
+      {
+        "feature": "upslope_flow",
+        "impact": 5.73,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 3.98,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 3.35,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.8,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.18,
+        "direction": "negative"
+      }
+    ],
+    "Sangli": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.76,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.48,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.91,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.31,
+        "direction": "negative"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": -1.12,
+        "direction": "negative"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.96,
+        "direction": "negative"
+      }
+    ],
+    "Satara": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.13,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.5,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": -4.2,
+        "direction": "negative"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.48,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 1.95,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.44,
+        "direction": "negative"
+      }
+    ],
+    "Sindhudurg": [
+      {
+        "feature": "precip_raw",
+        "impact": -5.86,
+        "direction": "negative"
+      },
+      {
+        "feature": "upslope_flow",
+        "impact": 5.73,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 3.97,
+        "direction": "positive"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 3.35,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.8,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.18,
+        "direction": "negative"
+      }
+    ],
+    "Solapur": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.7,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.66,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.85,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.2,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.81,
+        "direction": "positive"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -0.75,
+        "direction": "negative"
+      }
+    ],
+    "Thane": [
+      {
+        "feature": "upslope_flow",
+        "impact": 6.95,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.23,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": -2.64,
+        "direction": "negative"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.53,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.18,
+        "direction": "negative"
+      },
+      {
+        "feature": "coastal_proximity",
+        "impact": -1.17,
+        "direction": "negative"
+      }
+    ],
+    "Wardha": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.22,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.49,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.02,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 1.82,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.26,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.84,
+        "direction": "positive"
+      }
+    ],
+    "Washim": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.33,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.66,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 1.75,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 1.53,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.19,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.83,
+        "direction": "positive"
+      }
+    ],
+    "Yavatmal": [
+      {
+        "feature": "upslope_flow",
+        "impact": 5.22,
+        "direction": "positive"
+      },
+      {
+        "feature": "slope_lon",
+        "impact": 4.48,
+        "direction": "positive"
+      },
+      {
+        "feature": "elevation",
+        "impact": 2.0,
+        "direction": "positive"
+      },
+      {
+        "feature": "precip_raw",
+        "impact": 1.68,
+        "direction": "positive"
+      },
+      {
+        "feature": "wind_shear",
+        "impact": -1.27,
+        "direction": "negative"
+      },
+      {
+        "feature": "vorticity",
+        "impact": 0.84,
+        "direction": "positive"
+      }
+    ]
+  }
+}

@@ -1795,8 +1795,10 @@
     <div id="tab-explainability" class="tab-content">
       <div class="card">
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:4px;">GLOBAL METEOROLOGICAL FEATURE ATTRIBUTION (TreeSHAP)</div>
-        <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Mean absolute TreeSHAP impact across the Maharashtra monsoon domain (Path-dependent Shapley values for tree ensembles):</div>
         <div id="chart-global-shap" style="height:320px;"></div>
+        <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:10px; padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--primary-blue);">
+          <b>Scientific Attribution Notice:</b> TreeSHAP values represent statistical feature sensitivity within trained decision tree ensembles and describe model behavior, not direct physical causality. Regime-weighted expert contributions reflect mixture weights, distinct from internal feature SHAP values.
+        </div>
       </div>
     </div>
 
@@ -1865,7 +1867,7 @@
           </tbody>
         </table>
         <div style="font-size:0.74rem; color:var(--text-secondary); margin-top:10px; padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--border-color);">
-          <b>Baseline B5 Note:</b> Spatial ConvNet baseline (RMSE: 16.12 mm, MAE: 10.45 mm, ETS: 0.318) evaluated as an internal deep learning benchmark. Operational production standardizes on B4 (6-Regime Soft-Gated Mixture of Experts) to guarantee sub-100ms deterministic inference latency and full TreeSHAP local explainability.
+          <b>Scientific Evaluation Notice:</b> Evaluated on the locked September 2024 test split (N = 28,710). Global ML (B2) achieves lowest overall continuous RMSE (8.37 mm), while VarshaMitra Soft MoE (B4) provides targeted advantages in MAE (3.88 mm), standard-rain CSI (0.790), and disaster-critical heavy precipitation POD (0.833 at &ge;64.5 mm). Metric differences are descriptive; formal paired block bootstrap significance has not yet been established.
         </div>
 
         <div style="font-size:0.85rem; font-weight:700; margin-top:20px; margin-bottom:8px;">6-REGIME STRATIFIED VERIFICATION SKILL MATRIX</div>

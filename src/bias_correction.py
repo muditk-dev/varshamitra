@@ -31,9 +31,9 @@ import numpy as np
 import pandas as pd
 from scipy import interpolate
 from sklearn.ensemble import HistGradientBoostingRegressor
-import torch
-import torch.nn as nn
-import torch.optim as optim
+
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import sys
 logging.basicConfig(level=logging.INFO, stream=sys.stdout, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -105,6 +105,32 @@ class QuantileMappingCorrector(BaseCorrector):
         return np.clip(corrected, 0.0, None).astype(np.float32)
 
 
+class ActiveMonsoonGradientBoostingCorrector(BaseCorrector):
+    """Histogram-based Gradient Boosting Regressor specialized for Active Monsoon (Regime 0).
+    Replaces 1D Empirical Quantile Mapping with a high-capacity multi-feature GBDT incorporating
+    boundary layer moisture (RH850, q850), low-level westerly jet speed (u850, wind_speed_850),
+    vertical wind shear, and moisture flux convergence (MFC).
+    """
+
+    def __init__(self, max_iter: int = 100, max_depth: int = 6, learning_rate: float = 0.08, random_state: int = 42):
+        self.model = HistGradientBoostingRegressor(
+            max_iter=max_iter,
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            random_state=random_state
+        )
+
+    def fit(self, X: np.ndarray, raw_fcst: np.ndarray, obs: np.ndarray):
+        logger.info("Fitting Active Monsoon Gradient Boosting bias corrector...")
+        self.model.fit(X, obs - raw_fcst)
+        return self
+
+    def predict(self, X: np.ndarray, raw_fcst: np.ndarray) -> np.ndarray:
+        delta = self.model.predict(X)
+        corrected = np.maximum(0.0, raw_fcst + delta)
+        return np.clip(corrected, 0.0, None).astype(np.float32)
+
+
 class GradientBoostingCorrector(BaseCorrector):
     """Histogram-based Gradient Boosting Regressor.
     Targets: Break Monsoon (Regime 1) & Coastal (Regime 4).
@@ -136,120 +162,73 @@ class GradientBoostingCorrector(BaseCorrector):
         return np.clip(preds, 0.0, None).astype(np.float32)
 
 
-class SpatialCNNCorrector(BaseCorrector):
-    """2D Convolutional Neural Network corrector.
-    Target: Depression (Regime 2 - Monsoon Low Pressure Systems).
-    Operates on 2D spatial slices (or localized patches) to resolve spatial displacement.
+class DepressionGradientBoostingCorrector(BaseCorrector):
+    """Histogram-based Gradient Boosting Regressor specialized for Monsoon Depression / Low (Regime 2).
+    Replaces heavyweight PyTorch SpatialCNNCorrector with a compact, ultra-fast scikit-learn
+    model capturing cyclonic vorticity, moisture flux convergence, and MSLP anomalies.
     """
     
-    def __init__(self, in_features: int = 4, epochs: int = 15):
+    def __init__(self, in_features: int = 4, epochs: int = 15, max_iter: int = 100, max_depth: int = 6, learning_rate: float = 0.08, random_state: int = 42, **kwargs):
         self.in_features = in_features
         self.epochs = epochs
-        self.net = None
-        
-    def _build_network(self, in_ch: int):
-        return nn.Sequential(
-            nn.Conv2d(in_ch, 32, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(32, 32, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(32, 1, kernel_size=1),
-            nn.ReLU()  # Enforces non-negative rainfall directly in forward pass
+        self.model = HistGradientBoostingRegressor(
+            max_iter=max_iter,
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            random_state=random_state
         )
         
     def fit(self, X: np.ndarray, raw_fcst: np.ndarray, obs: np.ndarray):
-        logger.info("Fitting PyTorch Spatial CNN bias corrector (Depression Expert)...")
-        # If input is tabular (N, C), treat as 1x1 spatial or reshape
-        if X.ndim == 2:
-            in_ch = X.shape[1] + 1
-            self.net = nn.Sequential(
-                nn.Linear(in_ch, 64),
-                nn.ReLU(inplace=True),
-                nn.Linear(64, 32),
-                nn.ReLU(inplace=True),
-                nn.Linear(32, 1),
-                nn.ReLU()
-            )
-            features = np.column_stack([raw_fcst, X])
-            x_tensor = torch.tensor(features, dtype=torch.float32)
-            y_tensor = torch.tensor(obs, dtype=torch.float32).unsqueeze(1)
-            
-            optimizer = optim.Adam(self.net.parameters(), lr=0.005)
-            criterion = nn.MSELoss()
-            
-            self.net.train()
-            for _ in range(self.epochs):
-                optimizer.zero_grad()
-                pred = self.net(x_tensor)
-                loss = criterion(pred, y_tensor)
-                loss.backward()
-                optimizer.step()
+        logger.info("Fitting Gradient Boosting bias corrector (Depression Expert)...")
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        features = np.column_stack([raw_fcst, X])
+        self.model.fit(features, obs)
         return self
         
     def predict(self, X: np.ndarray, raw_fcst: np.ndarray) -> np.ndarray:
-        if self.net is None:
-            return np.clip(raw_fcst, 0.0, None)
-        self.net.eval()
-        with torch.no_grad():
-            if X.ndim == 2:
-                features = np.column_stack([raw_fcst, X])
-                x_tensor = torch.tensor(features, dtype=torch.float32)
-                preds = self.net(x_tensor).squeeze(1).cpu().numpy()
-                return np.clip(preds, 0.0, None).astype(np.float32)
-            return np.clip(raw_fcst, 0.0, None)
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        features = np.column_stack([raw_fcst, X])
+        preds = self.model.predict(features)
+        return np.clip(preds, 0.0, None).astype(np.float32)
 
 
-class OrographicCNNCorrector(BaseCorrector):
-    """2D Convolutional Neural Network with dedicated elevation-gradient input channel.
-    Target: Orographic (Regime 3 - Western Ghats Mountain Barrier).
-    Explicitly processes topographic slope gradient and orographic upslope velocity
-    to correct leeward rain shadow and windward orographic enhancement.
+class OrographicElevationCorrector(BaseCorrector):
+    """Terrain-aware Gradient Boosting Regressor specialized for Orographic Rainfall (Regime 3).
+    Replaces heavyweight PyTorch OrographicCNNCorrector with a dedicated, compact tree ensemble
+    incorporating elevation, slope gradients, and orographic upslope velocity along the Western Ghats.
     """
     
-    def __init__(self, in_features: int = 4, epochs: int = 15):
+    def __init__(self, in_features: int = 4, epochs: int = 15, max_iter: int = 100, max_depth: int = 6, learning_rate: float = 0.08, random_state: int = 42, **kwargs):
         self.in_features = in_features
         self.epochs = epochs
-        self.net = None
+        self.model = HistGradientBoostingRegressor(
+            max_iter=max_iter,
+            max_depth=max_depth,
+            learning_rate=learning_rate,
+            random_state=random_state
+        )
         
     def fit(self, X: np.ndarray, raw_fcst: np.ndarray, obs: np.ndarray):
-        logger.info("Fitting Orographic Elevation-Gradient CNN bias corrector...")
-        if X.ndim == 2:
-            in_ch = X.shape[1] + 1
-            self.net = nn.Sequential(
-                nn.Linear(in_ch, 64),
-                nn.ReLU(inplace=True),
-                nn.Linear(64, 32),
-                nn.ReLU(inplace=True),
-                nn.Linear(32, 1),
-                nn.ReLU()
-            )
-            features = np.column_stack([raw_fcst, X])
-            x_tensor = torch.tensor(features, dtype=torch.float32)
-            y_tensor = torch.tensor(obs, dtype=torch.float32).unsqueeze(1)
-            
-            optimizer = optim.Adam(self.net.parameters(), lr=0.005)
-            criterion = nn.MSELoss()
-            
-            self.net.train()
-            for _ in range(self.epochs):
-                optimizer.zero_grad()
-                pred = self.net(x_tensor)
-                loss = criterion(pred, y_tensor)
-                loss.backward()
-                optimizer.step()
+        logger.info("Fitting Orographic Elevation-Gradient GBDT bias corrector...")
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        features = np.column_stack([raw_fcst, X])
+        self.model.fit(features, obs)
         return self
         
     def predict(self, X: np.ndarray, raw_fcst: np.ndarray) -> np.ndarray:
-        if self.net is None:
-            return np.clip(raw_fcst, 0.0, None)
-        self.net.eval()
-        with torch.no_grad():
-            if X.ndim == 2:
-                features = np.column_stack([raw_fcst, X])
-                x_tensor = torch.tensor(features, dtype=torch.float32)
-                preds = self.net(x_tensor).squeeze(1).cpu().numpy()
-                return np.clip(preds, 0.0, None).astype(np.float32)
-            return np.clip(raw_fcst, 0.0, None)
+        if X.ndim == 1:
+            X = X.reshape(-1, 1)
+        features = np.column_stack([raw_fcst, X])
+        preds = self.model.predict(features)
+        return np.clip(preds, 0.0, None).astype(np.float32)
+
+
+# Backward-compatible aliases for legacy imports
+SpatialCNNCorrector = DepressionGradientBoostingCorrector
+OrographicCNNCorrector = OrographicElevationCorrector
 
 
 class WesternDisturbanceQMCorrector(QuantileMappingCorrector):
@@ -270,20 +249,21 @@ class RegimeAwarePostProcessor:
     based on the classified regime or computes a Soft-Gated Mixture of Experts.
     
     Mapping Architecture:
-    - Regime 0 (Active Monsoon)       -> QuantileMappingCorrector
-    - Regime 1 (Break Monsoon)        -> GradientBoostingCorrector
-    - Regime 2 (Depression)           -> SpatialCNNCorrector
-    - Regime 3 (Orographic)           -> OrographicCNNCorrector (Elevation-Gradient CNN)
+    - Regime 0 (Active Monsoon)       -> ActiveMonsoonGradientBoostingCorrector (Multi-Feature GBDT)
+    - Regime 1 (Break Monsoon)        -> GradientBoostingCorrector (Threshold GBDT)
+    - Regime 2 (Depression)           -> DepressionGradientBoostingCorrector (Vorticity/MFC GBDT)
+    - Regime 3 (Orographic)           -> OrographicElevationCorrector (Terrain-Aware GBDT)
     - Regime 4 (Coastal)              -> GradientBoostingCorrector (Marine BL Trees)
     - Regime 5 (Western Disturbance)  -> WesternDisturbanceQMCorrector (Independent EQM)
     """
     
-    def __init__(self):
+    def __init__(self, use_eqm_active: bool = False):
+        active_corrector = QuantileMappingCorrector() if use_eqm_active else ActiveMonsoonGradientBoostingCorrector()
         self.correctors = {
-            0: QuantileMappingCorrector(),
+            0: active_corrector,
             1: GradientBoostingCorrector(),
-            2: SpatialCNNCorrector(),
-            3: OrographicCNNCorrector(),
+            2: DepressionGradientBoostingCorrector(),
+            3: OrographicElevationCorrector(),
             4: GradientBoostingCorrector(),
             5: WesternDisturbanceQMCorrector()
         }
