@@ -1397,11 +1397,11 @@
 
         <div class="metric-card">
           <div class="metric-header-row">
-            <span class="metric-label">ERROR REDUCTION</span>
-            <span class="tag-pill tag-green" style="font-size: 0.65rem;">VALIDATED</span>
+            <span class="metric-label">POST-PROCESSED RMSE</span>
+            <span class="tag-pill tag-green" style="font-size: 0.65rem;">LOCKED TEST</span>
           </div>
-          <div class="metric-val" style="color: var(--success);">-39.4% Error</div>
-          <div class="metric-sub">Variance reduction vs Raw NWP</div>
+          <div class="metric-val" style="color: var(--success);">9.40 mm</div>
+          <div class="metric-sub">B4 Soft MoE vs 24.71 mm Raw GFS</div>
         </div>
 
         <div class="metric-card">
@@ -1541,7 +1541,7 @@
               </div>
               <div class="insight-pt">
                 <span class="pt-bullet">•</span>
-                <div><b>Why Forecast Changed:</b> Raw GFS suffers from wet orographic spreading into leeward plains; VarshaMitra regime bias correction sharply reduces spurious inland precipitation by -39.4%.</div>
+                <div><b>Why Forecast Changed:</b> VarshaMitra applies regime-weighted bias correction to the raw NWP forecast, producing a -10.9 mm model delta relative to Raw GFS for Pune district.</div>
               </div>
               <div class="insight-pt">
                 <span class="pt-bullet">•</span>
@@ -1740,27 +1740,27 @@
             </div>
             <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
               <b>Indicators:</b> Latitude &gt; 20.8°N, vertical wind shear &gt; 30 m/s, upper-level westerly perturbation.<br>
-              <b>Dynamics:</b> Mid-latitude westerly trough extending to northern Maharashtra border; extensible pan-India expert.
+              <b>Dynamics:</b> Mid-latitude westerly trough extending along northern Maharashtra border (subtropical intrusion).
             </div>
           </div>
         </div>
 
-        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">6-CLASS REGIME CLASSIFIER EVALUATION & CONFUSION MATRIX</div>
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">6-CLASS REGIME CLASSIFIER & PRODUCTION EXPERT SPECIFICATION</div>
         <table>
           <thead>
-            <tr><th>Regime</th><th>Training Samples</th><th>Test Accuracy</th><th>Precision</th><th>Recall</th><th>Specialized Bias Expert</th></tr>
+            <tr><th>Regime</th><th>Detection Criterion</th><th>Synoptic Mechanism</th><th>Production Expert</th></tr>
           </thead>
           <tbody>
-            <tr><td><b>Active Monsoon</b></td><td>56,110 (48.1%)</td><td>99.8%</td><td>99.7%</td><td>99.8%</td><td>LightGBM Active Expert (Ridge + Residual)</td></tr>
-            <tr><td><b>Break Monsoon</b></td><td>34,704 (29.7%)</td><td>99.7%</td><td>99.8%</td><td>99.7%</td><td>Zero-Rainfall Shrinkage Corrector</td></tr>
-            <tr><td><b>Monsoon Depression / Low</b></td><td>12,389 (10.6%)</td><td>99.8%</td><td>99.8%</td><td>99.8%</td><td>XGBoost Heavy-Tails Quantile Corrector</td></tr>
-            <tr><td><b>Orographic</b></td><td>8,368 (7.2%)</td><td>98.7%</td><td>99.0%</td><td>98.7%</td><td>Terrain-Aware CNN Corrector (Elevation Gradient)</td></tr>
-            <tr><td><b>Coastal</b></td><td>2,652 (2.3%)</td><td>97.4%</td><td>98.7%</td><td>97.4%</td><td>Konkan Marine Boundary Layer Corrector</td></tr>
-            <tr><td><b>Western Disturbance</b></td><td>2,531 (2.2%)</td><td>98.2%</td><td>98.6%</td><td>98.2%</td><td>Subtropical Trough Quantile Mapping Corrector</td></tr>
+            <tr><td><b>Active Monsoon</b></td><td>u850 &ge; 10 m/s &amp; RH850 &ge; 75%</td><td>Strong cross-equatorial monsoon westerly jet &amp; high moisture flux</td><td>HistGradientBoosting residual corrector</td></tr>
+            <tr><td><b>Break Monsoon</b></td><td>u850 &lt; 6 m/s &amp; vertical shear &lt; 15 m/s</td><td>Monsoon trough shifted north to Himalayan foothills; peninsular deficit</td><td>QuantileRegressor</td></tr>
+            <tr><td><b>Monsoon Depression / Low</b></td><td>MSLP anomaly &lt; -2.0 hPa &amp; cyclonic vorticity &ge; 2.5&times;10⁻⁵ s⁻¹</td><td>Synoptic low/depression propagating across Central India</td><td>HistGradientBoosting corrector</td></tr>
+            <tr><td><b>Orographic</b></td><td>Slope gradient &gt; 0.0025 m⁻¹ &amp; elevation &gt; 200 m</td><td>Mechanical forced ascent along Western Ghats escarpment</td><td>HistGradientBoosting corrector</td></tr>
+            <tr><td><b>Coastal</b></td><td>Longitude &lt; 73.3°E, elevation &lt; 180 m &amp; boundary RH &gt; 80%</td><td>Konkan maritime boundary layer convergence &amp; shallow offshore troughs</td><td>HistGradientBoosting corrector</td></tr>
+            <tr><td><b>Western Disturbance</b></td><td>Latitude &gt; 20.8°N &amp; vertical wind shear &gt; 30 m/s</td><td>Subtropical mid-latitude westerly trough intrusion along northern border</td><td>HistGradientBoosting corrector</td></tr>
           </tbody>
         </table>
         <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">
-          *Overall 6-Class Test Accuracy: <b>99.65%</b> (XGBoost Classifier on 23,351 held-out test grid cells). Extensible pan-India architecture: during summer monsoon (JJAS), the Tropical Easterly Jet dominates at 200 hPa (-26 m/s); mid-latitude westerly intrusions are localized along the northern border (20.8°N+) and fully operationalized for winter/pre-monsoon extension.
+          *Final Locked Test Classification: Overall Accuracy: <b>97.73%</b> | Macro F1: <b>0.9034</b> (Evaluated on locked September 2024 test split, N = 28,710). Note: Western Disturbance is the least frequent active regime in JJAS (Recall &asymp; 0.437, F1 &asymp; 0.608); Break Monsoon is sparse in September. All production experts are PyTorch-free lightweight models.
         </div>
       </div>
     </div>
@@ -1825,6 +1825,9 @@
           </div>
         </div>
         <div id="chart-whatif-response" style="height:280px;"></div>
+        <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:10px; padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--primary-blue);">
+          <b>Counterfactual Sensitivity Notice:</b> Sliders represent model perturbation scenarios. The plotted response depicts estimated model sensitivity under synthetic input shifts, not direct empirical physical causality.
+        </div>
       </div>
     </div>
 
@@ -1838,7 +1841,7 @@
           <button id="btn-case-b" class="layer-btn" onclick="loadCaseStudy('break')">Case B: 13 July 2024 Break Monsoon Deficit (Verified IMD Observational Re-analysis)</button>
         </div>
         <div id="case-study-desc" style="font-size:0.75rem; color:#1E293B; background:#F1F5F9; padding:8px 12px; border-radius:6px; margin-bottom:12px;">
-          <b>Case A Synopsis:</b> Extreme orographic precipitation event along Western Ghats crest. Raw GFS exhibited severe leeward wet diffusion into Pune and Satara plains (+48 mm error). VarshaMitra's Orographic CNN corrector constrained peak precipitation to the crest, matching IMD ground truth.
+          <b>Case A Synopsis: 28 Sept 2024 Ghats Deluge (Historical Case Study / Replay):</b> Extreme orographic precipitation event along Western Ghats crest. Raw GFS exhibited severe leeward wet diffusion into Pune and Satara plains (+48 mm error). VarshaMitra localized peak precipitation to the crest and reduced plain false-alarms by 53%, compared against the historical gridded observational reference.
         </div>
         <div id="chart-replay" style="height:320px;"></div>
       </div>
@@ -1847,43 +1850,46 @@
     <!-- TAB 9: VERIFICATION LAB -->
     <div id="tab-verification-lab" class="tab-content">
       <div class="metric-grid-3">
-        <div class="metric-card"><div class="metric-label">Raw GFS RMSE</div><div class="metric-val">24.57 mm</div></div>
-        <div class="metric-card"><div class="metric-label">VarshaMitra RMSE</div><div class="metric-val" style="color:var(--success);">14.90 mm</div></div>
-        <div class="metric-card"><div class="metric-label">Variance Reduction</div><div class="metric-val" style="color:var(--primary-blue);">-39.4%</div></div>
+        <div class="metric-card"><div class="metric-label">Raw NWP (B0) RMSE</div><div class="metric-val">24.71 mm</div><div style="font-size:0.72rem; color:var(--text-secondary);">MAE: 9.18 mm | CSI: 0.544</div></div>
+        <div class="metric-card"><div class="metric-label">Global ML (B2) RMSE</div><div class="metric-val" style="color:var(--primary-blue);">8.37 mm</div><div style="font-size:0.72rem; color:var(--text-secondary);">Lowest continuous RMSE</div></div>
+        <div class="metric-card"><div class="metric-label">VarshaMitra (B4) RMSE</div><div class="metric-val" style="color:var(--success);">9.40 mm</div><div style="font-size:0.72rem; color:var(--text-secondary);">Best MAE: 3.88 mm | CSI: 0.790</div></div>
       </div>
       <div class="card">
-        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">5-TIER BASELINE PROGRESSION LADDER (B0 → B4)</div>
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">5-TIER BASELINE PROGRESSION LADDER (B0 → B4) — LOCKED TEST SET (N = 28,710)</div>
         <div id="chart-ladder" style="height:260px;"></div>
         <table>
           <thead>
-            <tr><th>Tier</th><th>Methodology</th><th>RMSE (mm)</th><th>MAE (mm)</th><th>CSI</th><th>ETS</th></tr>
+            <tr><th>Tier</th><th>Methodology</th><th>RMSE (mm)</th><th>MAE (mm)</th><th>CSI (10mm)</th><th>ETS</th><th>Heavy POD (&ge;64.5mm)</th></tr>
           </thead>
           <tbody>
-            <tr><td>B0: Raw NWP</td><td>Uncalibrated NOAA GFS 0.25°</td><td>24.57</td><td>20.17</td><td>0.544</td><td>0.053</td></tr>
-            <tr><td>B1: Climatology</td><td>Historical 30-year grid-cell mean</td><td>28.40</td><td>22.85</td><td>0.310</td><td>0.012</td></tr>
-            <tr><td>B2: Linear Scaling</td><td>Uniform monthly mean bias correction</td><td>19.85</td><td>14.20</td><td>0.582</td><td>0.165</td></tr>
-            <tr><td>B3: Global EQM</td><td>Standard Empirical Quantile Mapping</td><td>17.62</td><td>11.45</td><td>0.618</td><td>0.254</td></tr>
-            <tr style="font-weight:700; color:var(--primary-blue);"><td>B4: VarshaMitra</td><td>6-Regime Soft-Gated Mixture of Experts (XGBoost + Orographic CNN + QM)</td><td>14.90</td><td>7.89</td><td>0.656</td><td>0.374</td></tr>
+            <tr><td>B0: Raw NWP</td><td>Uncalibrated NOAA NCEP GFS 0.25°</td><td>24.71</td><td>9.18</td><td>0.544</td><td>0.053</td><td>0.525</td></tr>
+            <tr><td>B1: Global Statistical</td><td>Domain-wide linear mean bias correction</td><td>17.23</td><td>6.84</td><td>0.612</td><td>0.165</td><td>0.580</td></tr>
+            <tr style="background:#F0F7FF;"><td><b>B2: Global ML</b></td><td>19-feature Histogram Gradient Boosting Regressor</td><td><b>8.37</b></td><td>4.12</td><td>0.765</td><td>0.342</td><td>0.780</td></tr>
+            <tr><td>B3: Hard Regime</td><td>Argmax discrete selection of regime-specific experts</td><td>9.43</td><td>3.94</td><td>0.782</td><td>0.365</td><td>0.815</td></tr>
+            <tr style="font-weight:700; color:var(--primary-blue); background:#F0FDF4;"><td>B4: VarshaMitra Soft MoE</td><td>6-regime soft probability-weighted mixture of lightweight experts</td><td>9.40</td><td><b>3.88</b></td><td><b>0.790</b></td><td><b>0.374</b></td><td><b>0.833</b></td></tr>
           </tbody>
         </table>
         <div style="font-size:0.74rem; color:var(--text-secondary); margin-top:10px; padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--border-color);">
-          <b>Scientific Evaluation Notice:</b> Evaluated on the locked September 2024 test split (N = 28,710). Global ML (B2) achieves lowest overall continuous RMSE (8.37 mm), while VarshaMitra Soft MoE (B4) provides targeted advantages in MAE (3.88 mm), standard-rain CSI (0.790), and disaster-critical heavy precipitation POD (0.833 at &ge;64.5 mm). Metric differences are descriptive; formal paired block bootstrap significance has not yet been established.
+          <b>Scientific Evaluation Notice:</b> Evaluated on the locked September 2024 test split (N = 28,710). Global ML (B2) achieves lowest overall continuous RMSE (8.37 mm). VarshaMitra Soft MoE (B4) provides targeted operational advantages in MAE (3.88 mm), standard-rain CSI (0.790), and disaster-critical heavy precipitation POD (0.833 at &ge;64.5 mm). Metric differences are descriptive; formal paired block bootstrap / permutation significance has not been established.
         </div>
 
-        <div style="font-size:0.85rem; font-weight:700; margin-top:20px; margin-bottom:8px;">6-REGIME STRATIFIED VERIFICATION SKILL MATRIX</div>
+        <div style="font-size:0.85rem; font-weight:700; margin-top:20px; margin-bottom:8px;">6-REGIME STRATIFIED VERIFICATION SKILL MATRIX (Validation Dataset Baseline, N = 29,667)</div>
         <table>
           <thead>
-            <tr><th>Synoptic Regime</th><th>Sample Grid Cells</th><th>Raw GFS RMSE</th><th>VarshaMitra RMSE</th><th>MAE Improvement</th><th>Skill Gain</th></tr>
+            <tr><th>Synoptic Regime</th><th>Validation Grid Cells</th><th>Raw GFS RMSE</th><th>VarshaMitra RMSE</th><th>CSI (10mm)</th><th>RMSE Skill Gain</th></tr>
           </thead>
           <tbody>
-            <tr><td><b>Active Monsoon</b></td><td>56,110</td><td>28.45 mm</td><td>15.20 mm</td><td>-51.4%</td><td><span style="color:var(--success); font-weight:700;">+46.6%</span></td></tr>
-            <tr><td><b>Break Monsoon</b></td><td>34,704</td><td>14.30 mm</td><td>6.15 mm</td><td>-62.8%</td><td><span style="color:var(--success); font-weight:700;">+57.0%</span></td></tr>
-            <tr><td><b>Monsoon Depression / Low</b></td><td>12,389</td><td>34.12 mm</td><td>19.80 mm</td><td>-44.2%</td><td><span style="color:var(--success); font-weight:700;">+42.0%</span></td></tr>
-            <tr><td><b>Orographic</b></td><td>8,368</td><td>42.60 mm</td><td>21.40 mm</td><td>-53.1%</td><td><span style="color:var(--success); font-weight:700;">+49.8%</span></td></tr>
-            <tr><td><b>Coastal</b></td><td>2,652</td><td>26.70 mm</td><td>14.90 mm</td><td>-48.5%</td><td><span style="color:var(--success); font-weight:700;">+44.2%</span></td></tr>
-            <tr><td><b>Western Disturbance</b></td><td>2,531</td><td>18.90 mm</td><td>11.20 mm</td><td>-43.9%</td><td><span style="color:var(--success); font-weight:700;">+40.7%</span></td></tr>
+            <tr><td><b>Active Monsoon</b></td><td>23,963</td><td>22.59 mm</td><td>8.11 mm</td><td>0.593</td><td><span style="color:var(--success); font-weight:700;">+64.1%</span></td></tr>
+            <tr><td><b>Break Monsoon</b></td><td>34 (sparse)</td><td>4.48 mm</td><td>4.71 mm</td><td>0.000</td><td><span style="color:var(--text-secondary); font-weight:700;">-5.1%</span></td></tr>
+            <tr><td><b>Monsoon Depression / Low</b></td><td>896</td><td>18.77 mm</td><td>14.37 mm</td><td>1.000</td><td><span style="color:var(--success); font-weight:700;">+23.4%</span></td></tr>
+            <tr><td><b>Orographic</b></td><td>2,564</td><td>42.27 mm</td><td>42.78 mm</td><td>0.963</td><td><span style="color:var(--text-secondary); font-weight:700;">-1.2%</span></td></tr>
+            <tr><td><b>Coastal</b></td><td>1,175</td><td>20.47 mm</td><td>N/A*</td><td>N/A*</td><td><span style="color:var(--text-secondary);">N/A*</span></td></tr>
+            <tr><td><b>Western Disturbance</b></td><td>1,035</td><td>16.70 mm</td><td>11.25 mm</td><td>0.310</td><td><span style="color:var(--success); font-weight:700;">+32.6%</span></td></tr>
           </tbody>
         </table>
+        <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">
+          *Source: Operational verification artifact (public/data/verification_scores_summary.json, N = 29,667 validation cohort). Full domain-wide B0–B4 locked test holdout (September 2024, N = 28,710) is presented in the primary benchmark table above. Coastal regime samples reflect offshore zero-precipitation cells; Break Monsoon occurrences were sparse in this validation window.
+        </div>
       </div>
     </div>
 
@@ -1897,6 +1903,9 @@
       <div class="card">
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">RELIABILITY DIAGRAM (Predicted vs Observed Frequency)</div>
         <div id="chart-calibration" style="height:320px;"></div>
+        <div style="font-size:0.74rem; color:var(--text-secondary); margin-top:10px; padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--border-color);">
+          <b>Calibration & Uncertainty Notice:</b> Reliability diagram evaluates isotonic probability calibration for heavy rainfall exceedance (P &ge; 64.5 mm). Split-conformal prediction achieves 89.4% marginal coverage across the locked test domain; extreme-tail conditional coverage remains a documented physical limitation.
+        </div>
       </div>
     </div>
 
@@ -1905,11 +1914,39 @@
       <div class="card">
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">COMPONENT REMOVAL IMPACT (Physical Necessity Verification)</div>
         <div id="chart-ablation" style="height:320px;"></div>
+        <div style="font-size:0.74rem; color:var(--text-secondary); margin-top:10px; padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--border-color);">
+          <b>Historical Ablation Analysis Notice:</b> This feature ablation analysis reflects early exploratory sensitivity experiments on the development dataset. It demonstrates relative degradation when individual meteorological drivers are ablated (regime routing showing highest sensitivity). These values are experimental and distinct from the final locked September 2024 B0–B4 benchmark ladder.
+        </div>
       </div>
     </div>
 
     <!-- TAB 12: DATA PROVENANCE -->
     <div id="tab-data-provenance" class="tab-content">
+      <div class="card" style="margin-bottom:16px;">
+        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">CHRONOLOGICAL VALIDATION & TEMPORAL DATA SPLITS</div>
+        <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Strict forward-in-time chronological partitioning (zero future leakage, locked holdout protocol across 36 Maharashtra districts):</div>
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:12px;">
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+            <div style="font-size:0.72rem; color:var(--text-secondary); font-weight:600;">TRAINING SPLIT</div>
+            <div style="font-size:1.05rem; font-weight:700; color:var(--primary-blue);">Jun 1 – Jul 31, 2024</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">58,377 grid samples (61 days) • 36 districts</div>
+          </div>
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+            <div style="font-size:0.72rem; color:var(--text-secondary); font-weight:600;">VALIDATION SPLIT</div>
+            <div style="font-size:1.05rem; font-weight:700; color:var(--warning);">Aug 1 – Aug 31, 2024</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">29,667 grid samples (31 days) • Hyperparameter tuning & OOF</div>
+          </div>
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:6px; padding:12px;">
+            <div style="font-size:0.72rem; color:var(--text-secondary); font-weight:600;">LOCKED TEST HOLDOUT</div>
+            <div style="font-size:1.05rem; font-weight:700; color:var(--success);">Sep 1 – Sep 30, 2024</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:4px;">28,710 grid samples (30 days) • Sealed final benchmark evaluation</div>
+          </div>
+        </div>
+        <div style="font-size:0.74rem; color:var(--text-secondary); padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--primary-blue);">
+          <b>Temporal Integrity Disclosure:</b> Total JJAS 2024 cohort: 116,754 spatio-temporal observations. All models were trained exclusively on pre-August data. No September 2024 data was accessed during feature selection, architecture design, or hyperparameter optimization.
+        </div>
+      </div>
+
       <div class="card">
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">OPERATIONAL DATA ACQUISITION & PROVENANCE AUDIT</div>
         <table>
@@ -1948,7 +1985,7 @@ HEAVY RAINFALL WARNING (STANDARDIZED IMD CRITERIA):
   • Orange Alert: Pune Ghats, Satara, Kolhapur (Heavy spells 64.5 - 115.5 mm/24h)
   • Yellow Watch: Thane, Palghar, Nashik (Moderate to heavy spells 15.6 - 64.4 mm/24h)
   • Green / Normal: Marathwada and Vidarbha interiors (Light to moderate < 15.5 mm/24h)
-MODEL PERFORMANCE: 6-Regime Soft Blend achieved -39.4% RMSE reduction over NOAA GFS NWP.
+MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (Global ML B2 lowest continuous RMSE: 8.37 mm; B4 leads in MAE [3.88 mm], CSI [0.790] & heavy rain POD [0.833]).
 ================================================================================
         </pre>
       </div>
@@ -2010,11 +2047,11 @@ MODEL PERFORMANCE: 6-Regime Soft Blend achieved -39.4% RMSE reduction over NOAA 
         <table>
           <tbody>
             <tr><td>Inference Framework</td><td>FastAPI Meteorological Intelligence Engine (Asynchronous REST Pipeline)</td></tr>
-            <tr><td>Machine Learning Core</td><td>XGBoost 2.0+ • Scikit-Learn • PyTorch • GeoPandas • Xarray</td></tr>
+            <tr><td>Machine Learning Core</td><td>XGBoost 2.0+ • Scikit-Learn (HistGBDT & Quantile Regressors) • GeoPandas • Xarray (PyTorch-Free Production Inference)</td></tr>
             <tr><td>Spatial Domain</td><td>36 Districts of Maharashtra (0.25° × 0.25° Coordinate Resolution)</td></tr>
             <tr><td>Synoptic Cycle</td><td>12:00 UTC (14:20 IST Ingestion & Postprocessing)</td></tr>
-            <tr><td>Pipeline Validation</td><td>11 / 11 Physical Boundary Tests Passing (Conservation & Monotonicity Verified)</td></tr>
-            <tr><td>Operational SLA</td><td>Sub-100ms Regional Inference Response Latency</td></tr>
+            <tr><td>Pipeline Validation</td><td>81 / 81 Tests Passing (Physical Conservation, Leakage Guard, MoE & SHAP Verified)</td></tr>
+            <tr><td>Operational SLA</td><td>Warm standard endpoints: ~0.5–2 s; full prediction: ~6.5 s; Render free-tier cold start: ~35–45 s.</td></tr>
           </tbody>
         </table>
       </div>
@@ -2398,13 +2435,13 @@ MODEL PERFORMANCE: 6-Regime Soft Blend achieved -39.4% RMSE reduction over NOAA 
         plot_bgcolor: 'transparent'
       }, { displayModeBar: false });
 
-      // 2. Ladder Progression
+      // 2. Ladder Progression (Locked September 2024 Test Holdout, N = 28,710)
       Plotly.newPlot('chart-ladder', [{
         type: 'bar',
-        x: ['B0: Raw GFS', 'B1: Climatology', 'B2: Linear Scaling', 'B3: Global EQM', 'B4: VarshaMitra'],
-        y: [24.57, 28.40, 19.85, 17.62, 14.90],
+        x: ['B0: Raw NWP', 'B1: Global Statistical', 'B2: Global ML', 'B3: Hard Regime', 'B4: VarshaMitra Soft MoE'],
+        y: [24.71, 17.23, 8.37, 9.43, 9.40],
         marker: { color: ['#94A3B8', '#94A3B8', '#2563A6', '#2563A6', '#2E9B72'] },
-        text: ['24.57 mm', '28.40 mm', '19.85 mm', '17.62 mm', '14.90 mm'],
+        text: ['24.71 mm', '17.23 mm', '8.37 mm', '9.43 mm', '9.40 mm'],
         textposition: 'auto'
       }], {
         margin: { l: 40, r: 20, t: 10, b: 40 },
@@ -2530,12 +2567,12 @@ MODEL PERFORMANCE: 6-Regime Soft Blend achieved -39.4% RMSE reduction over NOAA 
           if (btnA) btnA.classList.add('active');
           if (btnB) btnB.classList.remove('active');
           if (desc) {
-            desc.innerHTML = '<b>Case A Synopsis: 28 Sept 2024 Ghats Deluge (Verified IMD Observational Re-analysis):</b> Extreme orographic precipitation event along Western Ghats crest. Raw GFS exhibited severe leeward wet diffusion into Pune and Satara plains (+48 mm error). VarshaMitra localized peak precipitation to the crest and reduced plain false-alarms by 53%, matching IMD ground truth.';
+            desc.innerHTML = '<b>Case A Synopsis: 28 Sept 2024 Ghats Deluge (Historical Case Study / Replay):</b> Extreme orographic precipitation event along Western Ghats crest. Raw GFS exhibited severe leeward wet diffusion into Pune and Satara plains (+48 mm error). VarshaMitra localized peak precipitation to the crest and reduced plain false-alarms by 53%, compared against the historical gridded observational reference.';
           }
           Plotly.react('chart-replay', [
             { name: 'Raw NWP (NOAA GFS)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [142, 198, 48, 22, 18], type: 'bar', marker: { color: '#94A3B8' } },
             { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [118, 162, 34, 16, 14], type: 'bar', marker: { color: '#2563A6' } },
-            { name: 'IMD Ground Truth (Verified)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [122, 158, 31, 15, 12], type: 'bar', marker: { color: '#2E9B72' } }
+            { name: 'Observational Reference (IMD Gridded)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [122, 158, 31, 15, 12], type: 'bar', marker: { color: '#2E9B72' } }
           ], {
             barmode: 'group',
             margin: { l: 40, r: 20, t: 20, b: 40 },
@@ -2547,12 +2584,12 @@ MODEL PERFORMANCE: 6-Regime Soft Blend achieved -39.4% RMSE reduction over NOAA 
           if (btnB) btnB.classList.add('active');
           if (btnA) btnA.classList.remove('active');
           if (desc) {
-            desc.innerHTML = '<b>Case B Synopsis: 13 July 2024 Break Monsoon Deficit (Verified IMD Observational Re-analysis):</b> Synoptic break monsoon condition over Peninsular India with trough shifted north to Himalayan foothills. Raw GFS severely over-forecasted convective activity (+28 mm wet bias). VarshaMitra detected weak low-level westerly winds (u850 < 6 m/s) and suppressed rainfall towards verified IMD dry conditions.';
+            desc.innerHTML = '<b>Case B Synopsis: 13 July 2024 Break Monsoon Deficit (Historical Case Study / Replay):</b> Synoptic break monsoon condition over Peninsular India with trough shifted north to Himalayan foothills. Raw GFS severely over-forecasted convective activity (+28 mm wet bias). VarshaMitra detected weak low-level westerly winds (u850 < 6 m/s) and suppressed rainfall towards the gridded observational reference.';
           }
           Plotly.react('chart-replay', [
             { name: 'Raw NWP (NOAA GFS)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [48, 62, 28, 24, 20], type: 'bar', marker: { color: '#94A3B8' } },
             { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [16, 22, 8, 4, 5], type: 'bar', marker: { color: '#2563A6' } },
-            { name: 'IMD Ground Truth (Verified)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [14, 19, 6, 3, 4], type: 'bar', marker: { color: '#2E9B72' } }
+            { name: 'Observational Reference (IMD Gridded)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [14, 19, 6, 3, 4], type: 'bar', marker: { color: '#2E9B72' } }
           ], {
             barmode: 'group',
             margin: { l: 40, r: 20, t: 20, b: 40 },
@@ -2586,7 +2623,7 @@ HEAVY RAINFALL WARNING (STANDARDIZED IMD CRITERIA):
   • Orange Alert: Pune Ghats, Satara, Kolhapur (Heavy spells 64.5 - 115.5 mm/24h)
   • Yellow Watch: Thane, Palghar, Nashik (Moderate to heavy spells 15.6 - 64.4 mm/24h)
   • Green / Normal: Marathwada and Vidarbha interiors (Light to moderate < 15.5 mm/24h)
-MODEL PERFORMANCE: 6-Regime Soft Blend achieved -39.4% RMSE reduction over NOAA GFS NWP.
+MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (Global ML B2 lowest continuous RMSE: 8.37 mm; B4 leads in MAE [3.88 mm], CSI [0.790] & heavy rain POD [0.833]).
 ================================================================================`;
         }
       } catch (e) { console.error('Bulletin format error:', e); }
