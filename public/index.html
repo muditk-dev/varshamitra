@@ -1212,9 +1212,822 @@
       .metric-grid-3, .metric-grid-4 { grid-template-columns: 1fr; }
       .hero-grid { grid-template-columns: 1fr; }
     }
+
+    /* =========================================================================
+       STAGE 1 & 2: CINEMATIC ENTRY & SYSTEM INITIALIZATION (SIH 26080 EXPERIENCE)
+       ========================================================================= */
+    .app-stage-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      background: radial-gradient(circle at 50% 30%, #0E2442 0%, #081326 50%, #040A14 100%);
+      color: #F8FAFC;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 30px 16px;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+      box-sizing: border-box;
+    }
+    .app-stage-overlay > .login-wrapper,
+    .app-stage-overlay > .init-wrapper {
+      margin: auto;
+    }
+    .app-stage-overlay *,
+    .app-stage-overlay *::before,
+    .app-stage-overlay *::after {
+      box-sizing: border-box;
+    }
+    .app-stage-overlay.stage-hidden {
+      opacity: 0 !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      transform: scale(1.02);
+    }
+    #stage-init {
+      z-index: 9999;
+    }
+
+    /* Atmospheric Backdrop */
+    .stage-bg-backdrop {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .radar-sweep-disc {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 800px;
+      height: 800px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 1px dashed rgba(56, 189, 248, 0.12);
+      box-shadow: 0 0 80px rgba(37, 99, 235, 0.08) inset;
+    }
+    .radar-sweep-disc::before {
+      content: '';
+      position: absolute;
+      inset: 18%;
+      border-radius: 50%;
+      border: 1px solid rgba(56, 189, 248, 0.08);
+    }
+    .radar-sweep-disc::after {
+      content: '';
+      position: absolute;
+      inset: 38%;
+      border-radius: 50%;
+      border: 1px dashed rgba(56, 189, 248, 0.06);
+    }
+    .radar-beam {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 400px;
+      height: 400px;
+      transform-origin: 0 0;
+      background: conic-gradient(from 0deg, rgba(37, 99, 235, 0.2) 0deg, rgba(56, 189, 248, 0.05) 45deg, transparent 90deg);
+      border-radius: 50%;
+      animation: radarRotate 12s linear infinite;
+    }
+    @keyframes radarRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .rain-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+    .isobar-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.18;
+      stroke: #38BDF8;
+      stroke-width: 1.2;
+      fill: none;
+    }
+
+    /* Stage 1: Login Layout */
+    .login-wrapper {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 440px;
+      min-width: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: stageFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes stageFadeIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .login-brand-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .login-logo-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1E40AF 0%, #1D4ED8 50%, #0284C7 100%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      box-shadow: 0 10px 25px -5px rgba(29, 78, 216, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
+      margin-bottom: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .login-brand-title {
+      font-family: var(--font-heading);
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #FFFFFF;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    .login-brand-sub {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #93C5FD;
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+    .login-brand-desc {
+      font-size: 0.78rem;
+      color: #94A3B8;
+      margin-top: 4px;
+      max-width: 380px;
+      line-height: 1.4;
+    }
+
+    .login-glass-card {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 24px 26px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+    .login-card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #F8FAFC;
+      margin-bottom: 4px;
+    }
+    .login-card-sub {
+      font-size: 0.78rem;
+      color: #94A3B8;
+      margin-bottom: 20px;
+    }
+    .login-field {
+      margin-bottom: 16px;
+    }
+    .login-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #CBD5E1;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+    }
+    .stage-input {
+      width: 100%;
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: #F8FAFC;
+      font-family: var(--font-sans);
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    .stage-input:focus {
+      border-color: #38BDF8;
+      background: rgba(2, 6, 23, 0.85);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    .stage-btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 18px;
+      font-family: var(--font-sans);
+    }
+    .stage-btn-primary:hover {
+      background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+      transform: translateY(-1px);
+    }
+    .stage-btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .login-footer-security {
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: center;
+    }
+    .security-badge-text {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #94A3B8;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .security-inst-text {
+      font-size: 0.68rem;
+      color: #64748B;
+      margin-top: 4px;
+    }
+
+    .login-env-pills {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+    .env-pill {
+      font-size: 0.68rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 4px 10px;
+      border-radius: 20px;
+      color: #94A3B8;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .env-pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px #10B981;
+    }
+
+    /* Stage 2: System Initialization Layout */
+    .init-wrapper {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 980px;
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: stageFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .init-brand-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .init-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: #38BDF8;
+      margin-bottom: 10px;
+    }
+    .init-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #FFFFFF;
+    }
+    .init-sub {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #93C5FD;
+      margin-top: 4px;
+      letter-spacing: 0.5px;
+    }
+    .init-context {
+      font-size: 0.75rem;
+      color: #64748B;
+      margin-top: 4px;
+    }
+
+    /* Progress bar overall */
+    .init-progress-bar-wrap {
+      width: 100%;
+      max-width: 920px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin-bottom: 22px;
+      overflow: hidden;
+      position: relative;
+    }
+    .init-progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563EB, #38BDF8, #10B981);
+      box-shadow: 0 0 12px #38BDF8;
+      transition: width 0.35s ease;
+    }
+
+    /* Pipeline Container */
+    .init-pipeline-card {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+      margin-bottom: 22px;
+    }
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      position: relative;
+    }
+    .pipeline-stage-node {
+      background: rgba(2, 6, 23, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      border-radius: 8px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      transition: all 0.35s ease;
+      min-height: 135px;
+      justify-content: space-between;
+    }
+    .pipeline-stage-node.node-active {
+      border-color: #38BDF8;
+      background: rgba(30, 58, 138, 0.3);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
+      transform: translateY(-2px);
+    }
+    .pipeline-stage-node.node-ready {
+      border-color: rgba(16, 185, 129, 0.6);
+      background: rgba(6, 78, 59, 0.25);
+    }
+    .node-idx {
+      font-size: 0.62rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #64748B;
+      margin-bottom: 4px;
+    }
+    .pipeline-stage-node.node-active .node-idx { color: #38BDF8; }
+    .pipeline-stage-node.node-ready .node-idx { color: #34D399; }
+    .node-icon-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94A3B8;
+      margin-bottom: 6px;
+      transition: all 0.3s ease;
+    }
+    .pipeline-stage-node.node-active .node-icon-circle {
+      background: #1E40AF;
+      color: #38BDF8;
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.5);
+    }
+    .pipeline-stage-node.node-ready .node-icon-circle {
+      background: #065F46;
+      color: #34D399;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+    .node-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #E2E8F0;
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .node-desc {
+      font-size: 0.62rem;
+      color: #64748B;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .node-status-pill {
+      font-size: 0.6rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #64748B;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .pipeline-stage-node.node-active .node-status-pill {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38BDF8;
+    }
+    .pipeline-stage-node.node-ready .node-status-pill {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34D399;
+    }
+
+    /* Bottom Control Bar */
+    .init-control-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+    .init-ready-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .ready-chip {
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34D399;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.35;
+      transition: all 0.4s ease;
+    }
+    .ready-chip.active {
+      opacity: 1;
+      box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    }
+    .enter-btn {
+      background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      padding: 13px 30px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      font-family: var(--font-sans);
+      opacity: 0.35;
+      pointer-events: none;
+      transform: scale(0.98);
+    }
+    .enter-btn.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+      animation: pulseBtn 2s infinite ease-in-out;
+    }
+    .enter-btn.active:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.55);
+      transform: translateY(-1px);
+    }
+    @keyframes pulseBtn {
+      0%, 100% { box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35); }
+      50% { box-shadow: 0 12px 32px rgba(16, 185, 129, 0.65); }
+    }
+    .skip-btn {
+      background: transparent;
+      border: none;
+      color: #64748B;
+      font-size: 0.72rem;
+      cursor: pointer;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+    .skip-btn:hover { color: #94A3B8; }
+
+    /* Lock session button in sidebar */
+    .lock-session-btn {
+      width: 100%;
+      margin-top: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-sans);
+    }
+    .lock-session-btn:hover {
+      background: #F1F5F9;
+      color: var(--primary-blue);
+      border-color: #BFDBFE;
+    }
+
+    /* Responsive for Stage 1 & 2 */
+    @media (max-width: 1024px) {
+      .pipeline-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 768px) {
+      .app-stage-overlay { padding: 16px 8px; }
+      .login-wrapper { padding: 8px 4px; max-width: 100%; width: 100%; }
+      .login-brand-title { font-size: 1.4rem; letter-spacing: 1px; }
+      .login-brand-desc { max-width: 100%; font-size: 0.72rem; }
+      .login-glass-card { padding: 16px 12px; border-radius: 12px; width: 100%; }
+      .stage-btn-primary { font-size: 0.72rem; padding: 10px 6px; letter-spacing: 0.4px; gap: 6px; }
+      .stage-input { font-size: 0.82rem; padding: 8px 10px; }
+      .security-inst-text { font-size: 0.62rem; }
+      .login-env-pills { gap: 6px; }
+      .env-pill { font-size: 0.60rem; padding: 3px 6px; }
+      .pipeline-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .pipeline-stage-node {
+        flex-direction: row;
+        min-height: auto;
+        text-align: left;
+        padding: 10px 12px;
+        gap: 12px;
+        align-items: center;
+      }
+      .node-icon-circle { margin-bottom: 0; flex-shrink: 0; }
+      .init-wrapper { padding: 16px 6px; }
+      .init-title { font-size: 1.35rem; }
+    }
   </style>
 </head>
 <body>
+  <!-- =========================================================================
+       STAGE 1: CINEMATIC LOGIN (RESEARCH / DEMONSTRATION WORKSTATION)
+       ========================================================================= -->
+  <div id="stage-login" class="app-stage-overlay">
+    <div class="stage-bg-backdrop">
+      <div class="radar-sweep-disc">
+        <div class="radar-beam"></div>
+      </div>
+      <!-- SVG Isobars -->
+      <svg class="isobar-svg" viewBox="0 0 1200 800" preserveAspectRatio="none">
+        <path d="M-100,200 C300,100 600,350 1300,150" />
+        <path d="M-100,350 C250,280 650,480 1300,300" />
+        <path d="M-100,500 C350,420 700,600 1300,450" />
+        <path d="M-100,650 C400,580 800,720 1300,600" />
+      </svg>
+      <canvas id="login-rain-canvas" class="rain-canvas"></canvas>
+    </div>
+
+    <div class="login-wrapper">
+      <div class="login-brand-header">
+        <div class="login-logo-box">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+            <path d="M16 14v6"></path>
+            <path d="M8 14v6"></path>
+            <path d="M12 16v6"></path>
+          </svg>
+        </div>
+        <div class="login-brand-title">VARSHAMITRA</div>
+        <div class="login-brand-sub">AI-Powered Monsoon Intelligence</div>
+        <div class="login-brand-desc">Regime-Aware AI Post-Processing of Monsoon Rainfall Forecasts</div>
+      </div>
+
+      <div class="login-glass-card">
+        <div class="login-card-title">Welcome to VarshaMitra</div>
+        <div class="login-card-sub">Access the meteorological operational intelligence workstation</div>
+
+        <form id="login-form" onsubmit="event.preventDefault(); handleLoginSubmit();">
+          <div class="login-field">
+            <label class="login-label" for="login-user">Email / Operational User ID</label>
+            <input id="login-user" type="text" class="stage-input" value="analyst@ncmrwf.gov.in" autocomplete="username" spellcheck="false" required>
+          </div>
+          <div class="login-field">
+            <label class="login-label" for="login-pass">Security Access Key / Password</label>
+            <input id="login-pass" type="password" class="stage-input" value="Monsoon2026Secure" autocomplete="current-password" required>
+          </div>
+          <button id="btn-login-submit" type="submit" class="stage-btn-primary">
+            <span>SIGN IN TO INTELLIGENCE PLATFORM</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </form>
+
+        <div class="login-footer-security">
+          <div class="security-badge-text">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Secure Research Environment</span>
+          </div>
+          <div class="security-inst-text">NCMRWF • IMD • AI-POWERED MONSOON INTELLIGENCE</div>
+        </div>
+      </div>
+
+      <div class="login-env-pills">
+        <div class="env-pill"><span class="env-pill-dot"></span> <span>MONSOON RESEARCH MODE</span></div>
+        <div class="env-pill"><span>36 DISTRICTS</span></div>
+        <div class="env-pill"><span>6 WEATHER REGIMES</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       STAGE 2: VARSHAMITRA SYSTEM INITIALIZATION
+       ========================================================================= -->
+  <div id="stage-init" class="app-stage-overlay stage-hidden">
+    <div class="stage-bg-backdrop">
+      <div class="radar-sweep-disc">
+        <div class="radar-beam"></div>
+      </div>
+      <canvas id="init-rain-canvas" class="rain-canvas"></canvas>
+    </div>
+
+    <div class="init-wrapper">
+      <div class="init-brand-header">
+        <div class="init-badge">
+          <span class="pulse-dot"></span>
+          <span>SYSTEM PIPELINE INITIALIZATION</span>
+        </div>
+        <div class="init-title">VARSHAMITRA</div>
+        <div class="init-sub">REGIME-AWARE MONSOON INTELLIGENCE ENGINE</div>
+        <div class="init-context">Research &amp; Demonstration Environment • Spatio-Temporal Pipeline Verification</div>
+      </div>
+
+      <div class="init-progress-bar-wrap">
+        <div id="init-progress-bar" class="init-progress-bar-fill"></div>
+      </div>
+
+      <div class="init-pipeline-card">
+        <div class="pipeline-grid" id="pipeline-nodes-container">
+          <!-- 1. GFS Forecast -->
+          <div class="pipeline-stage-node" id="pnode-1">
+            <div class="node-idx">STAGE 01</div>
+            <div class="node-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            </div>
+            <div class="node-title">GFS FORECAST</div>
+            <div class="node-desc">Raw NWP Numerical Ingestion (0.25°)</div>
+            <div class="node-status-pill" id="pstatus-1">QUEUED</div>
+          </div>
+
+          <!-- 2. Feature Extraction -->
+          <div class="pipeline-stage-node" id="pnode-2">
+            <div class="node-idx">STAGE 02</div>
+            <div class="node-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            </div>
+            <div class="node-title">ATMOSPHERIC FEATURE EXTRACTION</div>
+            <div class="node-desc">19 Forecast-Side Physical Features</div>
+            <div class="node-status-pill" id="pstatus-2">QUEUED</div>
+          </div>
+
+          <!-- 3. Regime Detection -->
+          <div class="pipeline-stage-node" id="pnode-3">
+            <div class="node-idx">STAGE 03</div>
+            <div class="node-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+            </div>
+            <div class="node-title">6-REGIME DETECTION</div>
+            <div class="node-desc">Synoptic Gating Classifier (97.73% Acc)</div>
+            <div class="node-status-pill" id="pstatus-3">QUEUED</div>
+          </div>
+
+          <!-- 4. Regime-Aware Bias Correction -->
+          <div class="pipeline-stage-node" id="pnode-4">
+            <div class="node-idx">STAGE 04</div>
+            <div class="node-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <div class="node-title">REGIME-AWARE BIAS CORRECTION</div>
+            <div class="node-desc">Soft-Gated Lightweight MoE Suite</div>
+            <div class="node-status-pill" id="pstatus-4">QUEUED</div>
+          </div>
+
+          <!-- 5. Uncertainty Quantification -->
+          <div class="pipeline-stage-node" id="pnode-5">
+            <div class="node-idx">STAGE 05</div>
+            <div class="node-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <div class="node-title">UNCERTAINTY QUANTIFICATION</div>
+            <div class="node-desc">P10/P50/P90 Pinball &amp; Conformal</div>
+            <div class="node-status-pill" id="pstatus-5">QUEUED</div>
+          </div>
+
+          <!-- 6. Heavy Rainfall Probability -->
+          <div class="pipeline-stage-node" id="pnode-6">
+            <div class="node-idx">STAGE 06</div>
+            <div class="node-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
+            <div class="node-title">HEAVY RAINFALL PROBABILITY</div>
+            <div class="node-desc">Isotonic Calibrated Risk (&ge;64.5 mm)</div>
+            <div class="node-status-pill" id="pstatus-6">QUEUED</div>
+          </div>
+
+          <!-- 7. District-Level Risk Intelligence -->
+          <div class="pipeline-stage-node" id="pnode-7">
+            <div class="node-idx">STAGE 07</div>
+            <div class="node-icon-circle">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div class="node-title">DISTRICT-LEVEL RISK INTELLIGENCE</div>
+            <div class="node-desc">36 Maharashtra GIS Alert Polygons</div>
+            <div class="node-status-pill" id="pstatus-7">QUEUED</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="init-control-bar">
+        <div class="init-ready-status">
+          <div class="ready-chip" id="system-ready-chip">
+            <span class="pulse-dot"></span>
+            <span>SYSTEM READY</span>
+          </div>
+          <div class="env-pill"><span>36 DISTRICTS</span></div>
+          <div class="env-pill"><span>6 WEATHER REGIMES</span></div>
+          <div class="env-pill"><span>19 FORECAST FEATURES</span></div>
+          <div class="env-pill"><span>UNCERTAINTY-AWARE</span></div>
+        </div>
+
+        <button id="btn-enter-dashboard" class="enter-btn" onclick="enterDashboard()">
+          <span>ENTER VARSHAMITRA</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+
+        <button class="skip-btn" onclick="skipToReady()">Skip initialization &rarr;</button>
+      </div>
+    </div>
+  </div>
   <!-- Sidebar -->
   <aside>
     <div class="brand-box">
@@ -1321,6 +2134,10 @@
         </div>
       </div>
       <div class="user-org">Ministry of Earth Sciences • NCMRWF</div>
+      <button class="lock-session-btn" onclick="lockSessionAndLogout()" title="Return to Cinematic Entry Flow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Lock Session / Replay Flow</span>
+      </button>
     </div>
   </aside>
 
@@ -2738,6 +3555,212 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         plot_bgcolor: 'transparent'
       });
     }
+
+    // =========================================================================
+    // 3-STAGE EXPERIENCE CONTROLLER (LOGIN -> INITIALIZATION -> DASHBOARD)
+    // =========================================================================
+    let currentAppStage = 'LOGIN'; // 'LOGIN' | 'INIT' | 'DASHBOARD'
+    let initSequenceRunning = false;
+
+    // Rain Particle Animation Canvas (Lightweight, pure 2D Canvas)
+    function initRainCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      const drops = [];
+      const numDrops = 40;
+      for (let i = 0; i < numDrops; i++) {
+        drops.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          l: Math.random() * 20 + 10,
+          speed: Math.random() * 4 + 3,
+          alpha: Math.random() * 0.25 + 0.1
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = '#38BDF8';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < drops.length; i++) {
+          const d = drops[i];
+          ctx.globalAlpha = d.alpha;
+          ctx.beginPath();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x - 0.5, d.y + d.l);
+          ctx.stroke();
+          d.y += d.speed;
+          d.x -= 0.3;
+          if (d.y > h) {
+            d.y = -20;
+            d.x = Math.random() * w;
+          }
+        }
+        if (currentAppStage !== 'DASHBOARD') {
+          requestAnimationFrame(draw);
+        }
+      }
+      draw();
+
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+    }
+
+    function handleLoginSubmit() {
+      const btn = document.getElementById('btn-login-submit');
+      if (btn) {
+        btn.innerHTML = `<span>INITIALIZING WORKSTATION...</span>`;
+        btn.style.opacity = '0.85';
+      }
+      setTimeout(() => {
+        transitionToInit();
+      }, 550);
+    }
+
+    function transitionToInit() {
+      currentAppStage = 'INIT';
+      const loginStage = document.getElementById('stage-login');
+      const initStage = document.getElementById('stage-init');
+      if (loginStage) loginStage.classList.add('stage-hidden');
+      if (initStage) {
+        initStage.classList.remove('stage-hidden');
+        initRainCanvas('init-rain-canvas');
+        startInitializationSequence();
+      }
+    }
+
+    function startInitializationSequence() {
+      if (initSequenceRunning) return;
+      initSequenceRunning = true;
+
+      const stages = [
+        { id: 1, name: 'DATA FOUNDATION', label: 'GFS FORECAST' },
+        { id: 2, name: 'FEATURE REGISTRY', label: 'FEATURE EXTRACTION' },
+        { id: 3, name: 'REGIME ENGINE', label: '6-REGIME DETECTION' },
+        { id: 4, name: 'BIAS CORRECTION', label: 'REGIME-AWARE CORRECTION' },
+        { id: 5, name: 'UNCERTAINTY ENGINE', label: 'QUANTILE & CONFORMAL' },
+        { id: 6, name: 'RAINFALL RISK ENGINE', label: 'EXCEEDANCE PROBABILITY' },
+        { id: 7, name: 'DISTRICT INTELLIGENCE', label: 'OPERATIONAL BRIEFINGS' }
+      ];
+
+      const progressBar = document.getElementById('init-progress-bar');
+      const stepDuration = 480; // ms per step
+
+      stages.forEach((st, idx) => {
+        setTimeout(() => {
+          // Set current step active
+          const node = document.getElementById(`pnode-${st.id}`);
+          const status = document.getElementById(`pstatus-${st.id}`);
+          if (node) node.classList.add('node-active');
+          if (status) status.textContent = 'INITIALIZING...';
+
+          if (progressBar) {
+            const pct = Math.round(((idx + 0.5) / stages.length) * 100);
+            progressBar.style.width = pct + '%';
+          }
+
+          // Complete current step shortly
+          setTimeout(() => {
+            if (node) {
+              node.classList.remove('node-active');
+              node.classList.add('node-ready');
+            }
+            if (status) status.textContent = '✓ READY';
+
+            if (idx === stages.length - 1) {
+              // Final stage complete
+              if (progressBar) progressBar.style.width = '100%';
+              markSystemReady();
+            }
+          }, stepDuration * 0.7);
+
+        }, idx * stepDuration);
+      });
+    }
+
+    function markSystemReady() {
+      const readyChip = document.getElementById('system-ready-chip');
+      const enterBtn = document.getElementById('btn-enter-dashboard');
+      if (readyChip) readyChip.classList.add('active');
+      if (enterBtn) enterBtn.classList.add('active');
+    }
+
+    function skipToReady() {
+      for (let i = 1; i <= 7; i++) {
+        const node = document.getElementById(`pnode-${i}`);
+        const status = document.getElementById(`pstatus-${i}`);
+        if (node) {
+          node.classList.remove('node-active');
+          node.classList.add('node-ready');
+        }
+        if (status) status.textContent = '✓ READY';
+      }
+      const progressBar = document.getElementById('init-progress-bar');
+      if (progressBar) progressBar.style.width = '100%';
+      markSystemReady();
+    }
+
+    function enterDashboard() {
+      currentAppStage = 'DASHBOARD';
+      sessionStorage.setItem('vm_session_active', '1');
+      const initStage = document.getElementById('stage-init');
+      const loginStage = document.getElementById('stage-login');
+      if (initStage) initStage.classList.add('stage-hidden');
+      if (loginStage) loginStage.classList.add('stage-hidden');
+
+      // Refresh map and charts
+      setTimeout(() => {
+        if (leafletMap) leafletMap.invalidateSize();
+        window.dispatchEvent(new Event('resize'));
+      }, 200);
+    }
+
+    function lockSessionAndLogout() {
+      sessionStorage.removeItem('vm_session_active');
+      currentAppStage = 'LOGIN';
+      initSequenceRunning = false;
+      const initStage = document.getElementById('stage-init');
+      const loginStage = document.getElementById('stage-login');
+      if (initStage) initStage.classList.add('stage-hidden');
+      if (loginStage) {
+        loginStage.classList.remove('stage-hidden');
+        const btn = document.getElementById('btn-login-submit');
+        if (btn) {
+          btn.innerHTML = `<span>SIGN IN TO INTELLIGENCE PLATFORM</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+          btn.style.opacity = '1';
+        }
+        initRainCanvas('login-rain-canvas');
+      }
+    }
+
+    // Startup check
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check session
+      const isSessionActive = sessionStorage.getItem('vm_session_active') === '1';
+      const hash = window.location.hash;
+
+      if ((isSessionActive || hash === '#dashboard') && hash !== '#login' && hash !== '#init') {
+        // Direct to dashboard
+        currentAppStage = 'DASHBOARD';
+        const loginStage = document.getElementById('stage-login');
+        const initStage = document.getElementById('stage-init');
+        if (loginStage) loginStage.classList.add('stage-hidden');
+        if (initStage) initStage.classList.add('stage-hidden');
+      } else if (hash === '#init') {
+        transitionToInit();
+      } else {
+        // Show login
+        currentAppStage = 'LOGIN';
+        initRainCanvas('login-rain-canvas');
+      }
+    });
   </script>
 </body>
 </html>
