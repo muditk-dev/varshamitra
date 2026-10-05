@@ -7,6 +7,7 @@ heavy rainfall exceedance probabilities, and SHAP explainability.
 
 import os
 import sys
+import re
 import json
 import pickle
 import time
@@ -19,7 +20,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 import traceback
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import numpy as np
@@ -38,6 +39,11 @@ from src.model_registry import (
     validate_production_environment,
     FEATURE_SCHEMA_VERSION,
     ModelRegistryError
+)
+from api.services.report_service import (
+    generate_pdf_report,
+    generate_csv_report,
+    get_canonical_report_id
 )
 
 
@@ -807,3 +813,86 @@ def get_regime_profiles():
             {"id": 5, "name": "Western Disturbance", "color": "#7C3AED", "westerly_850": "Mid-latitude Westerly Shear", "rh_850": "50-70%", "description": "Subtropical westerly trough and upper-level shear anomaly along Maharashtra's northern border."}
         ]
     }
+
+
+# -----------------------------------------------------------------------------
+# 11. DECISION-SUPPORT REPORT GENERATION & EXPORTS
+# -----------------------------------------------------------------------------
+@app.get("/api/reports/{report_id}/pdf", tags=["Reports"])
+def download_pdf_report(
+    report_id: str,
+    district: Optional[str] = Query(None, description="Focus district name for quantitative synthesis")
+):
+    """Generates an operational decision-support PDF report (A4, multi-page)
+    with genuine quantitative forecast statistics, canonical regime telemetry,
+    heavy rainfall risk matrix, explainability attributions, and locked benchmark verification.
+    """
+    clean_id = re.sub(r'[^a-zA-Z0-9_\-\.]', '_', report_id.strip())
+    if not clean_id or len(clean_id) < 3:
+        clean_id = get_canonical_report_id()
+
+    try:
+        pdf_bytes = generate_pdf_report(
+            report_id=clean_id,
+            district_name=district or "Pune",
+            data_store=DATA_STORE
+        )
+        filename = f"VarshaMitra_Report_{clean_id}.pdf"
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "X-Report-Id": clean_id,
+                "X-Report-Type": "decision-support-pdf"
+            }
+        )
+    except Exception as exc:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"PDF report generation failed: {str(exc)}")
+
+
+@app.get("/api/reports/{report_id}/csv", tags=["Reports"])
+def download_csv_report(report_id: str):
+    """Generates a structured machine-readable CSV export covering all 36 Maharashtra
+    meteorological subdivisions with real postprocessed rainfall, uncertainty percentiles,
+    regime detection, and risk categorization.
+    """
+    clean_id = re.sub(r'[^a-zA-Z0-9_\-\.]', '_', report_id.strip())
+    if not clean_id or len(clean_id) < 3:
+        clean_id = get_canonical_report_id()
+
+    try:
+        csv_content = generate_csv_report(
+            report_id=clean_id,
+            data_store=DATA_STORE
+        )
+        filename = f"VarshaMitra_Data_{clean_id}.csv"
+        return Response(
+            content=csv_content,
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": f'attachment; filename="{filename}"',
+                "X-Report-Id": clean_id,
+                "X-Report-Type": "decision-support-csv"
+            }
+        )
+    except Exception as exc:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"CSV report generation failed: {str(exc)}")
+
+
+@app.get("/api/reports/pdf", tags=["Reports"])
+def download_default_pdf_report(
+    district: Optional[str] = Query(None, description="Focus district name for quantitative synthesis")
+):
+    """Convenience alias to download the active operational cycle PDF report."""
+    canonical_id = get_canonical_report_id()
+    return download_pdf_report(report_id=canonical_id, district=district)
+
+
+@app.get("/api/reports/csv", tags=["Reports"])
+def download_default_csv_report():
+    """Convenience alias to download the active operational cycle CSV data export."""
+    canonical_id = get_canonical_report_id()
+    return download_csv_report(report_id=canonical_id)

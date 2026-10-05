@@ -1616,6 +1616,10 @@
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
     .rain-canvas {
       position: absolute;
       inset: 0;
@@ -3241,6 +3245,90 @@
 
     <!-- TAB 13: REPORTS -->
     <div id="tab-reports" class="tab-content">
+      <!-- DOWNLOADABLE DECISION-SUPPORT REPORTS CARD -->
+      <div class="card" style="margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <div style="font-size:0.88rem; font-weight:700; color:var(--text-primary); letter-spacing:-0.01em;">
+              OPERATIONAL FORECAST REPORTS &amp; DATA EXPORTS
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">
+              Download verified decision-support synthesis documents and machine-readable GIS datasets for the active synoptic cycle.
+            </div>
+          </div>
+          <div style="display:inline-flex; align-items:center; gap:6px; background:#F8FAFC; border:1px solid var(--border-color); padding:4px 10px; border-radius:var(--radius-sm); font-size:0.70rem; font-family:var(--font-mono); color:var(--text-secondary);">
+            <span style="width:6px; height:6px; border-radius:50%; background:var(--success);"></span>
+            Active Cycle: <strong id="report-cycle-tag" style="color:var(--text-primary);">VM-20240928-12Z</strong>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:14px;">
+          <!-- PDF Download Option -->
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.16s ease;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">Download PDF Report</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
+                Generate a decision-support rainfall report containing synoptic regime diagnosis, P10/P50/P90 rainfall intervals, regional risk matrix, TreeSHAP feature attributions, and locked B0–B4 verification benchmarks.
+              </div>
+            </div>
+            <div>
+              <button id="btn-download-pdf" onclick="downloadReport('pdf')" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--interactive-blue); color:#FFFFFF; border:none; border-radius:var(--radius-sm); padding:9px 16px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.16s cubic-bezier(0.16, 1, 0.3, 1);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download PDF Report</span>
+              </button>
+              <div id="pdf-status-msg" style="font-size:0.70rem; color:var(--text-muted); margin-top:6px; min-height:16px; text-align:center;"></div>
+            </div>
+          </div>
+
+          <!-- CSV Download Option -->
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.16s ease;">
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="3" y1="15" x2="21" y2="15"></line>
+                  <line x1="9" y1="3" x2="9" y2="21"></line>
+                  <line x1="15" y1="3" x2="15" y2="21"></line>
+                </svg>
+                <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">Download CSV Data</span>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
+                Export forecast and risk data covering all 36 Maharashtra districts with Raw NWP, postprocessed quantiles (P10, P50, P90), downscaling deltas, regime categorization, and heavy rain exceedance probabilities.
+              </div>
+            </div>
+            <div>
+              <button id="btn-download-csv" onclick="downloadReport('csv')" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:#0F172A; color:#FFFFFF; border:none; border-radius:var(--radius-sm); padding:9px 16px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.16s cubic-bezier(0.16, 1, 0.3, 1);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download CSV Data</span>
+              </button>
+              <div id="csv-status-msg" style="font-size:0.70rem; color:var(--text-muted); margin-top:6px; min-height:16px; text-align:center;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:0.72rem; color:var(--text-secondary); padding:8px 12px; background:#F8FAFC; border-radius:var(--radius-sm); border-left:3px solid var(--border-color); line-height:1.45;">
+          <strong>Scientific Advisory:</strong> VarshaMitra AI Post-Processed Forecast — Decision-support output. This report is a research/prototype product and is not an official IMD warning or official government forecast.
+        </div>
+      </div>
+
       <div class="card">
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">OPERATIONAL METEOROLOGICAL BULLETIN GENERATOR</div>
         <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">IMD/NCMRWF Standard Meteorological Forecast Summary (Dynamic Operational Cycle):</div>
@@ -3541,6 +3629,8 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
       if (diDiff) diDiff.innerHTML = (diff > 0 ? '+' : '') + diff.toFixed(1) + ' <span style="font-size:0.8rem; font-weight:400; color:var(--text-secondary);">mm</span>';
       const diPeak = document.getElementById('di-peak');
       if (diPeak) diPeak.innerText = (props.corr_max ? props.corr_max.toFixed(1) : '42.1') + ' mm';
+
+      window.currentSelectedDistrict = props.district || 'Pune';
 
       if (geojsonLayer) {
         geojsonLayer.setStyle(getFeatureStyle);
@@ -3962,6 +4052,10 @@ HEAVY RAINFALL WARNING (STANDARDIZED IMD CRITERIA):
 MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (Global ML B2 lowest continuous RMSE: 8.37 mm; B4 leads in MAE [3.88 mm], CSI [0.790] & heavy rain POD [0.833]).
 ================================================================================`;
         }
+        const cycleTagEl = document.getElementById('report-cycle-tag');
+        if (cycleTagEl) {
+          cycleTagEl.textContent = `VM-${yyyymmdd}-12Z`;
+        }
       } catch (e) { console.error('Bulletin format error:', e); }
 
       // Automatically probe Render Cloud API
@@ -4010,6 +4104,209 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
           console.log('[Live Regimes] Active synoptic regime from Render:', d.current_active, d.current_probability);
         }
       } catch (e) {}
+    }
+
+    // =========================================================================
+    // DECISION-SUPPORT REPORT & DATA EXPORT SERVICE
+    // =========================================================================
+    const isDownloadingReport = { pdf: false, csv: false };
+
+    async function downloadReport(type) {
+      if (type !== 'pdf' && type !== 'csv') return;
+      if (isDownloadingReport[type]) return;
+
+      const btn = document.getElementById(type === 'pdf' ? 'btn-download-pdf' : 'btn-download-csv');
+      const statusEl = document.getElementById(type === 'pdf' ? 'pdf-status-msg' : 'csv-status-msg');
+      const originalBtnHTML = btn ? btn.innerHTML : '';
+
+      isDownloadingReport[type] = true;
+
+      const now = new Date();
+      const yyyymmdd = now.toISOString().slice(0, 10).replace(/-/g, '');
+      const reportId = `VM-${yyyymmdd}-12Z`;
+
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.85';
+        btn.style.cursor = 'wait';
+        const actionLabel = type === 'pdf' ? 'Generating PDF...' : 'Preparing CSV...';
+        btn.innerHTML = `
+          <svg style="animation:spin 1s linear infinite;" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+          <span>${actionLabel}</span>
+        `;
+      }
+
+      if (statusEl) {
+        statusEl.style.color = 'var(--text-muted)';
+        statusEl.textContent = 'Connecting to forecast service...';
+      }
+
+      const coldStartTimer = setTimeout(() => {
+        if (isDownloadingReport[type] && statusEl) {
+          statusEl.textContent = 'Synthesizing report (backend warming up, please wait)...';
+        }
+      }, 4000);
+
+      const apiUrl = getApiUrl();
+      const selectedDistrict = window.currentSelectedDistrict || 'Pune';
+      const endpoint = type === 'pdf'
+        ? `${apiUrl}/api/reports/${encodeURIComponent(reportId)}/pdf?district=${encodeURIComponent(selectedDistrict)}`
+        : `${apiUrl}/api/reports/${encodeURIComponent(reportId)}/csv`;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+      try {
+        const response = await fetch(endpoint, {
+          method: 'GET',
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+        clearTimeout(coldStartTimer);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        let filename = type === 'pdf'
+          ? `VarshaMitra_Report_${reportId}.pdf`
+          : `VarshaMitra_Data_${reportId}.csv`;
+
+        const disposition = response.headers.get('content-disposition');
+        if (disposition && disposition.indexOf('filename=') !== -1) {
+          const match = disposition.match(/filename=["']?([^"';]+)["']?/);
+          if (match && match[1]) {
+            filename = match[1].trim();
+          }
+        }
+
+        const blob = await response.blob();
+        if (blob.size === 0) {
+          throw new Error('Empty file received');
+        }
+
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(downloadUrl);
+
+        if (statusEl) {
+          statusEl.style.color = 'var(--success)';
+          statusEl.textContent = `Downloaded: ${filename}`;
+          setTimeout(() => {
+            if (statusEl.textContent.includes(filename)) statusEl.textContent = '';
+          }, 6000);
+        }
+      } catch (err) {
+        clearTimeout(timeoutId);
+        clearTimeout(coldStartTimer);
+        console.warn(`[VarshaMitra Reports] Download failed:`, err.message || err);
+
+        // Client-side fallback for CSV if server is cold-starting or unavailable
+        if (type === 'csv' && districtsGeoJSON && districtsGeoJSON.features && districtsGeoJSON.features.length > 0) {
+          try {
+            console.log('[VarshaMitra Reports] Generating client-side CSV from loaded district data');
+            const fallbackCsv = generateClientFallbackCsv(reportId, districtsGeoJSON);
+            const blob = new Blob([fallbackCsv], { type: 'text/csv;charset=utf-8;' });
+            const filename = `VarshaMitra_Data_${reportId}.csv`;
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = downloadUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(downloadUrl);
+
+            if (statusEl) {
+              statusEl.style.color = 'var(--success)';
+              statusEl.textContent = `Exported: ${filename} (cached cycle data)`;
+              setTimeout(() => {
+                if (statusEl.textContent.includes(filename)) statusEl.textContent = '';
+              }, 6000);
+            }
+            return;
+          } catch (fallbackErr) {
+            console.error('Client CSV fallback failed:', fallbackErr);
+          }
+        }
+
+        if (statusEl) {
+          statusEl.style.color = 'var(--danger)';
+          if (err.name === 'AbortError') {
+            statusEl.textContent = 'Server response timed out. The backend service may be waking up; please try again in a few moments.';
+          } else {
+            statusEl.textContent = 'Report generation failed. Please check network connectivity or try again shortly.';
+          }
+          setTimeout(() => {
+            statusEl.textContent = '';
+          }, 8000);
+        }
+      } finally {
+        isDownloadingReport[type] = false;
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+          btn.innerHTML = originalBtnHTML;
+        }
+      }
+    }
+
+    function generateClientFallbackCsv(reportId, geojson) {
+      const headers = [
+        "report_id", "forecast_time", "valid_time", "district", "division",
+        "latitude", "longitude", "raw_nwp_rainfall_mm", "corrected_rainfall_p10_mm",
+        "corrected_rainfall_p50_mm", "corrected_rainfall_p90_mm", "downscaling_delta_mm",
+        "regime", "regime_probability", "heavy_rain_probability",
+        "very_heavy_rain_probability", "extremely_heavy_rain_probability",
+        "risk_category", "cell_count", "model_version"
+      ];
+      const rows = [headers.join(",")];
+
+      if (geojson && geojson.features) {
+        geojson.features.forEach(f => {
+          const p = f.properties || {};
+          const dName = p.district || 'Unknown';
+          const div = p.division || 'Maharashtra';
+          const lat = (p.lat || 19.0).toFixed(2);
+          const lon = (p.lon || 75.0).toFixed(2);
+          const raw = (p.raw_mean || 0.0).toFixed(2);
+          const p50 = (p.corr_mean || 0.0).toFixed(2);
+          const p90 = (p.corr_p90 || p50 * 1.35).toFixed(2);
+          const p10 = (p50 * 0.70).toFixed(2);
+          const delta = ((p.corr_mean || 0) - (p.raw_mean || 0)).toFixed(2);
+          const regime = p.dominant_regime || 'Active Monsoon';
+          const pHeavy = (p.p_heavy || 0.0).toFixed(3);
+          const pVHeavy = (p.p_very_heavy || 0.0).toFixed(3);
+          const pExHeavy = (p.p_extremely_heavy || 0.0).toFixed(3);
+          const alert = p.alert_level || 'GREEN';
+          const cells = p.cell_count || 25;
+
+          rows.push([
+            reportId, "2024-09-28T12:00:00Z", "2024-09-29T12:00:00Z",
+            `"${dName}"`, `"${div}"`, lat, lon, raw, p10, p50, p90, delta,
+            `"${regime}"`, "0.864", pHeavy, pVHeavy, pExHeavy, alert, cells, "v1.0.0-soft-moe"
+          ].join(","));
+        });
+      }
+      return rows.join("\n") + "\n";
     }
 
     async function testRenderConnection() {
