@@ -18,6 +18,16 @@
   <!-- Plotly Scientific Charts -->
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
+  <script>
+    (function() {
+      try {
+        if (localStorage.getItem('vm_theme') === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <style>
     /* =========================================================================
        VARSHAMITRA SCIENTIFIC METEOROLOGICAL WORKSTATION — GLOBAL DESIGN SYSTEM
@@ -1558,6 +1568,370 @@
     /* Disclaimer (Hidden from Dashboard UI; preserved inside downloadable PDF) */
     .disclaimer {
       display: none !important;
+    }
+
+    /* =========================================================================
+       THEME TRANSITIONS, DARK MODE & WORKSTATION SETTINGS
+       ========================================================================= */
+    body, aside, main, .universal-header, .card, .metric-card, .slider-box, input, select, button {
+      transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body, aside, main, .universal-header, .card, .metric-card, .slider-box, input, select, button {
+        transition: none !important;
+      }
+    }
+
+    /* Dark Mode Palette */
+    html[data-theme="dark"] body,
+    body.theme-dark {
+      --bg-main: #0B0F17;
+      --bg-surface: #111827;
+      --bg-surface-hover: #1E293B;
+      --bg-subtle: #1E293B;
+      --bg-muted: #1E293B;
+      --border-color: #2D3748;
+      --border-subtle: #1F2937;
+      --border-light: #2D3748;
+      --text-primary: #F8FAFC;
+      --text-body: #CBD5E1;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --text-tertiary: #475569;
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+      --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+      --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.6);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.7);
+    }
+    body.theme-dark .nav-btn { color: #CBD5E1; }
+    body.theme-dark .nav-btn:hover { background: #1E293B; color: #FFFFFF; }
+    body.theme-dark .nav-btn.active { background: rgba(37, 99, 235, 0.18); color: #60A5FA; border-color: #2563EB; }
+    body.theme-dark .nav-icon { color: #94A3B8; }
+    body.theme-dark .nav-btn.active .nav-icon { color: #60A5FA; }
+    body.theme-dark .universal-header { background: #111827; border-color: #2D3748; }
+    body.theme-dark .header-pill { background: #1E293B; border-color: #2D3748; }
+    body.theme-dark .pill-v { color: #F8FAFC; }
+    body.theme-dark .pill-k { color: #94A3B8; }
+    body.theme-dark .user-chip { background: #1E293B; border-color: #2D3748; color: #F8FAFC; }
+    body.theme-dark .status-badge { background: rgba(16, 185, 129, 0.15) !important; border-color: rgba(16, 185, 129, 0.3) !important; color: #34D399 !important; }
+    body.theme-dark .user-card { background: #111827 !important; border-color: #2D3748 !important; }
+    body.theme-dark .user-avatar-circle { background: #1E293B !important; color: #94A3B8 !important; }
+    body.theme-dark .user-name { color: #F8FAFC !important; }
+    body.theme-dark .user-role { color: #94A3B8 !important; }
+    body.theme-dark .user-org { color: #64748B !important; }
+    body.theme-dark .lock-session-btn { background: #1E293B !important; border-color: #334155 !important; color: #CBD5E1 !important; }
+    body.theme-dark .lock-session-btn:hover { background: #334155 !important; color: #60A5FA !important; border-color: #2563EB !important; }
+    body.theme-dark .card { background: #111827; border-color: #2D3748; }
+    body.theme-dark .card:hover { border-color: #475569; }
+    body.theme-dark .metric-card { background: #111827; border-color: #2D3748; }
+    body.theme-dark .metric-card:hover { border-color: #475569; }
+    body.theme-dark .command-hero { background: #111827; border-color: #2D3748; }
+    body.theme-dark .command-hero-badge { background: rgba(30, 58, 138, 0.35); border-color: #2563EB; color: #93C5FD; }
+    body.theme-dark table th { color: #94A3B8; border-color: #2D3748; }
+    body.theme-dark table td { border-color: #1E293B; color: #E2E8F0; }
+    body.theme-dark tr:hover td { background: #1E293B !important; }
+    body.theme-dark pre, body.theme-dark code { background: #0A0F1A !important; border-color: #2D3748 !important; color: #E2E8F0 !important; }
+    body.theme-dark .slider-box { background: #1E293B; border-color: #2D3748; }
+    body.theme-dark .slider-legend-direction { background: #111827; border-color: #2D3748; color: #94A3B8; }
+    body.theme-dark .regime-chip { background: #111827 !important; border-color: #2D3748 !important; }
+    body.theme-dark .regime-chip.active-regime { background: rgba(37, 99, 235, 0.12) !important; border-color: #2563EB !important; }
+    body.theme-dark .regime-dist-card { background: #111827 !important; border-color: #2D3748 !important; }
+    body.theme-dark .regime-bar-track { background: #1E293B !important; }
+    body.theme-dark .brand-icon-box { background: #1E293B; border-color: #2D3748; }
+    body.theme-dark [style*="background:#F8FAFC"],
+    body.theme-dark [style*="background: #F8FAFC"] { background: #1E293B !important; border-color: #2D3748 !important; color: #E2E8F0 !important; }
+    body.theme-dark [style*="background:#EFF6FF"],
+    body.theme-dark [style*="background: #EFF6FF"] { background: rgba(37, 99, 235, 0.15) !important; border-color: #2563EB !important; }
+    body.theme-dark [style*="background:#F0FDF4"],
+    body.theme-dark [style*="background: #F0FDF4"] { background: rgba(22, 163, 74, 0.15) !important; border-color: #16A34A !important; }
+    body.theme-dark [style*="background:#FFFFFF"],
+    body.theme-dark [style*="background: #FFFFFF"] { background: #111827 !important; border-color: #2D3748 !important; }
+    body.theme-dark .leaflet-tile { filter: brightness(0.75) invert(1) contrast(1.1) hue-rotate(200deg) saturate(0.6); }
+    body.theme-dark .plotly .xtick text,
+    body.theme-dark .plotly .ytick text,
+    body.theme-dark .plotly .legendtext,
+    body.theme-dark .plotly .polartick text { fill: #94A3B8 !important; }
+    body.theme-dark .plotly .gtitle,
+    body.theme-dark .plotly .xtitle,
+    body.theme-dark .plotly .ytitle { fill: #F1F5F9 !important; }
+    body.theme-dark .plotly .gridpath { stroke: #1E293B !important; }
+    body.theme-dark .plotly .zeroline { stroke: #2D3748 !important; }
+
+    /* Animations Toggle */
+    body.no-animations *,
+    body.no-animations *::before,
+    body.no-animations *::after {
+      animation-duration: 0.001s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001s !important;
+    }
+
+    /* Compact View Toggle */
+    body.compact-view .card {
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }
+    body.compact-view .metric-card {
+      padding: 10px 14px;
+    }
+    body.compact-view .metric-grid-3,
+    body.compact-view .metric-grid-4 {
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    body.compact-view .universal-header {
+      padding: 6px 14px;
+      margin-bottom: 12px;
+    }
+    body.compact-view main {
+      padding: 10px 16px 16px 16px;
+    }
+    body.compact-view .setting-row {
+      padding: 7px 0;
+    }
+
+    /* Settings Page Component Styles */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 960px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .setting-card-title {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .setting-row:last-child {
+      border-bottom: none;
+      padding-bottom: 2px;
+    }
+    .setting-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-right: 12px;
+    }
+    .setting-label {
+      font-family: var(--font-sans);
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .setting-desc {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      line-height: 1.35;
+    }
+
+    /* Theme Segmented Control */
+    .theme-segmented-control {
+      display: inline-flex;
+      background: #F1F5F9;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    body.theme-dark .theme-segmented-control {
+      background: #1E293B;
+      border-color: #334155;
+    }
+    .theme-choice-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: var(--font-sans);
+      font-size: 0.80rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .theme-choice-btn:hover {
+      color: var(--text-primary);
+    }
+    .theme-choice-btn.active {
+      background: #FFFFFF;
+      color: var(--interactive-blue);
+      border-color: var(--border-color);
+      box-shadow: var(--shadow-xs);
+      font-weight: 700;
+    }
+    body.theme-dark .theme-choice-btn.active {
+      background: #0F172A;
+      color: #60A5FA;
+      border-color: #334155;
+    }
+
+    /* Setting Toggle Switch */
+    .setting-toggle-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      width: 76px;
+      height: 30px;
+      border-radius: 15px;
+      border: 1px solid var(--border-color);
+      background: #E2E8F0;
+      cursor: pointer;
+      padding: 0 8px;
+      font-family: var(--font-mono);
+      font-size: 0.70rem;
+      font-weight: 700;
+      color: #64748B;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .setting-toggle-btn .toggle-knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .setting-toggle-btn.is-active {
+      background: var(--interactive-blue);
+      border-color: var(--primary-blue);
+      color: #FFFFFF;
+    }
+    .setting-toggle-btn.is-active .toggle-knob {
+      transform: translateX(46px);
+    }
+    .setting-toggle-btn .toggle-label-on {
+      display: none;
+      margin-left: 3px;
+    }
+    .setting-toggle-btn .toggle-label-off {
+      display: block;
+      margin-left: auto;
+      margin-right: 3px;
+    }
+    .setting-toggle-btn.is-active .toggle-label-on {
+      display: block;
+      margin-left: 3px;
+    }
+    .setting-toggle-btn.is-active .toggle-label-off {
+      display: none;
+    }
+    body.theme-dark .setting-toggle-btn {
+      background: #334155;
+      border-color: #475569;
+      color: #94A3B8;
+    }
+    body.theme-dark .setting-toggle-btn .toggle-knob {
+      background: #F8FAFC;
+    }
+    body.theme-dark .setting-toggle-btn.is-active {
+      background: var(--interactive-blue);
+      border-color: var(--primary-blue);
+      color: #FFFFFF;
+    }
+
+    /* Account Action Buttons */
+    .btn-account-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: #F8FAFC;
+      color: var(--text-primary);
+      transition: all 0.16s ease;
+    }
+    .btn-account-action:hover {
+      background: #F1F5F9;
+      border-color: #CBD5E1;
+    }
+    .btn-account-action.btn-logout {
+      background: #FEF2F2;
+      border-color: #FECACA;
+      color: var(--danger);
+    }
+    .btn-account-action.btn-logout:hover {
+      background: #FEE2E2;
+      border-color: #FCA5A5;
+    }
+    body.theme-dark .btn-account-action {
+      background: #1E293B;
+      border-color: #334155;
+      color: #E2E8F0;
+    }
+    body.theme-dark .btn-account-action:hover {
+      background: #334155;
+    }
+    body.theme-dark .btn-account-action.btn-logout {
+      background: rgba(185, 28, 28, 0.15);
+      border-color: rgba(185, 28, 28, 0.35);
+      color: #F87171;
+    }
+    body.theme-dark .btn-account-action.btn-logout:hover {
+      background: rgba(185, 28, 28, 0.25);
+    }
+
+    /* Reset Button */
+    .btn-reset-settings {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.80rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      transition: all 0.16s ease;
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-reset-settings:hover {
+      background: #FEE2E2;
+      border-color: #FCA5A5;
+      color: var(--danger);
+    }
+    body.theme-dark .btn-reset-settings {
+      background: #111827;
+      border-color: #334155;
+      color: #94A3B8;
+    }
+    body.theme-dark .btn-reset-settings:hover {
+      background: rgba(185, 28, 28, 0.2);
+      border-color: #EF4444;
+      color: #FCA5A5;
     }
 
     /* Responsive Breakpoints & Zoom Scaling */
@@ -3475,7 +3849,7 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
       </div>
     </div>
 
-    <!-- TAB 14: SETTINGS & BACKEND DIAGNOSTICS -->
+    <!-- TAB 14: SETTINGS -->
     <div id="tab-settings" class="tab-content">
       <!-- Silent telemetry DOM hooks preserved for background automated probes -->
       <div style="display:none !important;" aria-hidden="true">
@@ -3483,61 +3857,154 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         <div id="render-status-log"></div>
       </div>
 
-      <div class="card" style="margin-bottom:16px;">
-        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">CANDIDATE RETRAINING & MODEL REGISTRY GATEWAY</div>
-        <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Candidate shadow retraining architecture with rigorous validation gating prior to production model registry promotion:</div>
-        <table>
-          <thead>
-            <tr><th>Pipeline Stage</th><th>Configuration / Gate Criterion</th><th>Gate Status</th><th>Operational Policy</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><b>Retraining Trigger</b></td>
-              <td>Pentad cycle (5-day) or Synoptic Drift (KL-Divergence &gt; 0.15 on u850/MFC)</td>
-              <td><span style="color:var(--success); font-weight:700;">ARMED</span></td>
-              <td>Spawns isolated candidate container; never touches active production endpoints.</td>
-            </tr>
-            <tr>
-              <td><b>Validation Gate 1: Skill Score</b></td>
-              <td>Held-out test Equitable Threat Score (ETS at &ge; 64.5 mm) must satisfy &Delta;ETS &ge; +0.02</td>
-              <td><span style="color:var(--success); font-weight:700;">PASSED (+0.120)</span></td>
-              <td>Candidate model must beat current registry baseline on extreme precipitation tails.</td>
-            </tr>
-            <tr>
-              <td><b>Validation Gate 2: Error Metric</b></td>
-              <td>Domain-wide test RMSE reduction must satisfy &Delta;RMSE &le; -0.5 mm</td>
-              <td><span style="color:var(--success); font-weight:700;">PASSED (-2.72 mm)</span></td>
-              <td>Prevents error regression across leeward interior rainshadow districts.</td>
-            </tr>
-            <tr>
-              <td><b>Validation Gate 3: Physical Boundary</b></td>
-              <td>11 / 11 Physical boundary conservation tests passing (non-negativity, zero-RH monotonic limit)</td>
-              <td><span style="color:var(--success); font-weight:700;">PASSED (11/11)</span></td>
-              <td>Guarantees zero physical hallucinations under perturbed atmospheric scenarios.</td>
-            </tr>
-            <tr>
-              <td><b>Model Registry Promotion</b></td>
-              <td>Atomic hot-swap of <code>models/regime_bias_postprocessor.pkl</code> & audit log commit</td>
-              <td><span style="color:var(--primary-blue); font-weight:700;">PROMOTED (v2.4)</span></td>
-              <td>If any gate fails, candidate is rejected, active model retained, and alert logged.</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="settings-grid">
+        <!-- COLUMN 1: Appearance & Notifications -->
+        <div class="settings-col" style="display:flex; flex-direction:column; gap:16px;">
+          <!-- 1. APPEARANCE -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="setting-card-title">APPEARANCE</div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Theme</div>
+                <div class="setting-desc">Switch between light scientific canvas and high-contrast dark workstation mode</div>
+              </div>
+              <div class="theme-segmented-control" role="group" aria-label="Theme Selection">
+                <button type="button" class="theme-choice-btn active" id="theme-btn-light" onclick="setTheme('light')">
+                  <span>☀</span> <span>Light</span>
+                </button>
+                <button type="button" class="theme-choice-btn" id="theme-btn-dark" onclick="setTheme('dark')">
+                  <span>🌙</span> <span>Dark</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. NOTIFICATIONS -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="setting-card-title">NOTIFICATIONS</div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Forecast Alerts</div>
+                <div class="setting-desc">Operational cycle and model updates</div>
+              </div>
+              <button type="button" role="switch" aria-checked="true" class="setting-toggle-btn is-active" id="toggle-forecast_alerts" onclick="toggleSetting('forecast_alerts')">
+                <span class="toggle-knob"></span>
+                <span class="toggle-label-on">ON</span>
+                <span class="toggle-label-off">OFF</span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Heavy Rainfall Alerts</div>
+                <div class="setting-desc">Severe weather exceedance notifications (&ge; 64.5 mm/24h)</div>
+              </div>
+              <button type="button" role="switch" aria-checked="true" class="setting-toggle-btn is-active" id="toggle-heavy_alerts" onclick="toggleSetting('heavy_alerts')">
+                <span class="toggle-knob"></span>
+                <span class="toggle-label-on">ON</span>
+                <span class="toggle-label-off">OFF</span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">System Notifications</div>
+                <div class="setting-desc">Operational platform health and system alerts</div>
+              </div>
+              <button type="button" role="switch" aria-checked="true" class="setting-toggle-btn is-active" id="toggle-system_notifications" onclick="toggleSetting('system_notifications')">
+                <span class="toggle-knob"></span>
+                <span class="toggle-label-on">ON</span>
+                <span class="toggle-label-off">OFF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMN 2: Interface, Account & About -->
+        <div class="settings-col" style="display:flex; flex-direction:column; gap:16px;">
+          <!-- 3. INTERFACE -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="setting-card-title">INTERFACE</div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Animations</div>
+                <div class="setting-desc">UI transitions, pulses, and interactive animations</div>
+              </div>
+              <button type="button" role="switch" aria-checked="true" class="setting-toggle-btn is-active" id="toggle-animations" onclick="toggleSetting('animations')">
+                <span class="toggle-knob"></span>
+                <span class="toggle-label-on">ON</span>
+                <span class="toggle-label-off">OFF</span>
+              </button>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-label">Compact View</div>
+                <div class="setting-desc">Reduce card and padding spacing for higher data density</div>
+              </div>
+              <button type="button" role="switch" aria-checked="false" class="setting-toggle-btn" id="toggle-compact_view" onclick="toggleSetting('compact_view')">
+                <span class="toggle-knob"></span>
+                <span class="toggle-label-on">ON</span>
+                <span class="toggle-label-off">OFF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. ACCOUNT -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="setting-card-title">ACCOUNT</div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-desc" style="text-transform:uppercase; letter-spacing:0.04em;">Profile</div>
+                <div class="setting-label font-mono" style="font-size:0.95rem; font-weight:700;">muditk-dev</div>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info">
+                <div class="setting-desc" style="text-transform:uppercase; letter-spacing:0.04em;">Role</div>
+                <div class="setting-label" style="font-size:0.86rem; color:var(--text-secondary);">Operations Analyst</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:14px;">
+              <button type="button" class="btn-account-action btn-lock" onclick="lockSessionAndLogout()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <span>Lock Session</span>
+              </button>
+              <button type="button" class="btn-account-action btn-logout" onclick="performLogout()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 5. ABOUT VARSHAMITRA -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="setting-card-title">ABOUT VARSHAMITRA</div>
+            <div style="padding:4px 0;">
+              <div style="font-family:var(--font-heading); font-size:1.02rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.02em;">VARSHAMITRA</div>
+              <div style="font-family:var(--font-sans); font-size:0.65rem; font-weight:700; color:var(--interactive-blue); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px;">AI FOR A RESILIENT MONSOON INDIA</div>
+              <div style="margin-top:10px; font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">
+                <div>SIH 2026 &bull; PS 26080</div>
+                <div>Team RAYA</div>
+                <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Version 1.0</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="card">
-        <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">METEOROLOGICAL RUNTIME & PIPELINE SPECIFICATION</div>
-        <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:12px;">Active operational parameters, cycle scheduling, and inference stack telemetry:</div>
-        <table>
-          <tbody>
-            <tr><td>Inference Framework</td><td>FastAPI Meteorological Intelligence Engine (Asynchronous REST Pipeline)</td></tr>
-            <tr><td>Machine Learning Core</td><td>XGBoost 2.0+ • Scikit-Learn (HistGBDT & Quantile Regressors) • GeoPandas • Xarray (PyTorch-Free Production Inference)</td></tr>
-            <tr><td>Spatial Domain</td><td>36 Districts of Maharashtra (0.25° × 0.25° Coordinate Resolution)</td></tr>
-            <tr><td>Synoptic Cycle</td><td>12:00 UTC (14:20 IST Ingestion & Postprocessing)</td></tr>
-            <tr><td>Pipeline Validation</td><td>81 / 81 Tests Passing (Physical Conservation, Leakage Guard, MoE & SHAP Verified)</td></tr>
-            <tr><td>Operational SLA</td><td>Warm standard endpoints: ~0.5–2 s; full prediction: ~6.5 s; Render free-tier cold start: ~35–45 s.</td></tr>
-          </tbody>
-        </table>
+      <!-- 6. RESET SETTINGS BAR -->
+      <div class="card" style="padding:14px 18px; margin-top:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <div style="font-weight:700; font-size:0.84rem; color:var(--text-primary);">Reset Application Preferences</div>
+            <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:2px;">Restore theme, notification toggles, and layout view to initial system defaults. Application data is preserved.</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span id="reset-status-feedback" style="font-size:0.76rem; font-weight:600; color:var(--success); display:none;"></span>
+            <button type="button" id="btn-reset-settings" class="btn-reset-settings" onclick="handleResetSettings()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+              <span>Reset Settings</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -3615,7 +4082,7 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         'ablation-study': ['Ablation Study', 'Component removal impact & physical necessity verification'],
         'data-provenance': ['Data Provenance', 'Operational data lineage & reproducible pipeline audit'],
         'reports': ['Operational Reports', 'Formatted meteorological bulletins and CSV/PDF export'],
-        'settings': ['Operational Controls', 'Synoptic cycle initialization and hardware diagnostics']
+        'settings': ['Settings', 'Workstation appearance, notifications & interface preferences']
       };
 
       if (titles[tabId]) {
@@ -4755,8 +5222,118 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
       }
     }
 
+    // =========================================================================
+    // APPLICATION SETTINGS CONTROLLERS
+    // =========================================================================
+    function setTheme(theme) {
+      const isDark = (theme === 'dark');
+      if (isDark) {
+        document.body.classList.add('theme-dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.body.classList.remove('theme-dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+      localStorage.setItem('vm_theme', isDark ? 'dark' : 'light');
+
+      const btnLight = document.getElementById('theme-btn-light');
+      const btnDark = document.getElementById('theme-btn-dark');
+      if (btnLight && btnDark) {
+        btnLight.classList.toggle('active', !isDark);
+        btnDark.classList.toggle('active', isDark);
+      }
+    }
+
+    function toggleSetting(key) {
+      if (key === 'forecast_alerts' || key === 'heavy_alerts' || key === 'system_notifications') {
+        const current = localStorage.getItem('vm_pref_' + key) !== 'false';
+        setNotificationSetting(key, !current);
+      } else if (key === 'animations') {
+        const current = localStorage.getItem('vm_pref_animations') !== 'false';
+        setInterfaceSetting('animations', !current);
+      } else if (key === 'compact_view') {
+        const current = localStorage.getItem('vm_pref_compact_view') === 'true';
+        setInterfaceSetting('compact_view', !current);
+      }
+    }
+
+    function setNotificationSetting(key, enabled) {
+      localStorage.setItem('vm_pref_' + key, enabled ? 'true' : 'false');
+      const btn = document.getElementById('toggle-' + key);
+      if (btn) {
+        btn.classList.toggle('is-active', enabled);
+        btn.setAttribute('aria-checked', enabled ? 'true' : 'false');
+      }
+    }
+
+    function setInterfaceSetting(key, enabled) {
+      localStorage.setItem('vm_pref_' + key, enabled ? 'true' : 'false');
+      const btn = document.getElementById('toggle-' + key);
+      if (btn) {
+        btn.classList.toggle('is-active', enabled);
+        btn.setAttribute('aria-checked', enabled ? 'true' : 'false');
+      }
+      if (key === 'animations') {
+        if (!enabled) {
+          document.body.classList.add('no-animations');
+        } else {
+          document.body.classList.remove('no-animations');
+        }
+      } else if (key === 'compact_view') {
+        if (enabled) {
+          document.body.classList.add('compact-view');
+        } else {
+          document.body.classList.remove('compact-view');
+        }
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+      }
+    }
+
+    function performLogout() {
+      sessionStorage.removeItem('vm_session_active');
+      lockSessionAndLogout();
+    }
+
+    function handleResetSettings() {
+      if (!confirm('Reset all application preferences (theme, notifications, interface) to default?')) {
+        return;
+      }
+      setTheme('light');
+      setNotificationSetting('forecast_alerts', true);
+      setNotificationSetting('heavy_alerts', true);
+      setNotificationSetting('system_notifications', true);
+      setInterfaceSetting('animations', true);
+      setInterfaceSetting('compact_view', false);
+
+      const fb = document.getElementById('reset-status-feedback');
+      if (fb) {
+        fb.textContent = 'Settings reset to default values.';
+        fb.style.display = 'inline-block';
+        setTimeout(() => { fb.style.display = 'none'; }, 3000);
+      }
+    }
+
+    function initApplicationSettings() {
+      const savedTheme = localStorage.getItem('vm_theme') || 'light';
+      setTheme(savedTheme);
+
+      ['forecast_alerts', 'heavy_alerts', 'system_notifications'].forEach(k => {
+        const val = localStorage.getItem('vm_pref_' + k) !== 'false';
+        setNotificationSetting(k, val);
+      });
+
+      const anims = localStorage.getItem('vm_pref_animations') !== 'false';
+      setInterfaceSetting('animations', anims);
+
+      const compact = localStorage.getItem('vm_pref_compact_view') === 'true';
+      setInterfaceSetting('compact_view', compact);
+    }
+
     // Startup check
     window.addEventListener('DOMContentLoaded', () => {
+      // Initialize settings & themes
+      initApplicationSettings();
+
       // Check session
       const isSessionActive = sessionStorage.getItem('vm_session_active') === '1';
       const hash = window.location.hash;
