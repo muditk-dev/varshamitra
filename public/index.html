@@ -72,11 +72,55 @@
 
       /* Typography Scale & Metrics */
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-heading: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: 'JetBrains Mono', 'IBM Plex Mono', Consolas, monospace;
       --radius-sm: 6px;
       --radius-md: 8px;
       --radius-lg: 10px;
+    }
+
+    /* Global Typography Enforcements */
+    h1, h2, h3, h4, h5, h6,
+    .brand-title,
+    .header-brand-title,
+    .header-page-title,
+    .card-section-title,
+    .command-hero-tagline,
+    .hero-title,
+    .init-title,
+    .login-title,
+    .modal-title {
+      font-family: var(--font-heading);
+    }
+
+    body,
+    p,
+    button,
+    input,
+    select,
+    table th,
+    .nav-btn,
+    .nav-group-title,
+    .metric-label,
+    .card-section-sub,
+    .header-page-sub {
+      font-family: var(--font-sans);
+    }
+
+    .metric-val,
+    .kpi-num,
+    .stat-val,
+    .slider-val-badge,
+    .prov-step,
+    .regime-bar-pct,
+    .env-pill,
+    .node-idx,
+    .command-hero-date,
+    .live-chip,
+    table td,
+    pre,
+    code {
+      font-family: var(--font-mono);
     }
 
     /* Reset & Base Setup */
@@ -146,20 +190,22 @@
 
     .brand-title {
       font-family: var(--font-heading);
-      font-size: 1.10rem;
+      font-size: 1.15rem;
       font-weight: 800;
       color: var(--text-primary);
-      letter-spacing: -0.025em;
-      line-height: 1.15;
+      letter-spacing: -0.015em;
+      line-height: 1.1;
     }
 
     .brand-sub {
-      font-size: 0.60rem;
+      font-family: var(--font-sans);
+      font-size: 0.58rem;
       font-weight: 700;
       color: var(--interactive-blue);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-top: 1px;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+      line-height: 1.1;
     }
 
     .nav-group-title {
@@ -358,18 +404,22 @@
 
     .header-brand-title {
       font-family: var(--font-heading);
-      font-size: 1.05rem;
+      font-size: 1.10rem;
       font-weight: 800;
       color: var(--text-primary);
-      line-height: 1.15;
-      letter-spacing: -0.02em;
+      line-height: 1.1;
+      letter-spacing: -0.015em;
     }
 
     .header-brand-sub {
-      font-size: 0.62rem;
-      font-weight: 600;
+      font-family: var(--font-sans);
+      font-size: 0.58rem;
+      font-weight: 700;
       color: var(--interactive-blue);
-      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+      line-height: 1.1;
     }
 
     .header-sep {
@@ -391,6 +441,7 @@
       color: var(--text-primary);
       line-height: 1.2;
       letter-spacing: -0.02em;
+      white-space: nowrap;
     }
 
     .header-page-sub {
@@ -498,6 +549,15 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 14px;
       margin-bottom: 16px;
+    }
+
+    .regime-split-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+    .regime-split-grid > div {
+      min-width: 0;
     }
 
     .metric-card {
@@ -1495,29 +1555,32 @@
       }
     }
 
-    /* Disclaimer */
+    /* Disclaimer (Hidden from Dashboard UI; preserved inside downloadable PDF) */
     .disclaimer {
-      font-size: 0.74rem;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-color);
-      padding-top: 16px;
-      margin-top: 24px;
-      text-align: center;
-      line-height: 1.45;
+      display: none !important;
     }
 
-    /* Responsive Breakpoints */
-    @media (max-width: 1180px) {
+    /* Responsive Breakpoints & Zoom Scaling */
+    @media (max-width: 1440px) {
+      aside { width: 235px; min-width: 235px; }
+      main { padding: 14px 20px 24px 20px; }
+      .universal-header { padding: 8px 14px; }
+    }
+
+    @media (max-width: 1280px) {
+      aside { width: 220px; min-width: 220px; }
+      main { padding: 12px 16px 20px 16px; }
+      .universal-header { flex-wrap: wrap; gap: 8px; }
       .header-meta { gap: 6px; }
       .header-pill { padding: 3px 6px; font-size: 0.68rem; }
-    }
-
-    @media (max-width: 1024px) {
-      aside { width: 220px; min-width: 220px; }
-      main { padding: 14px 18px; }
-      .universal-header { flex-wrap: wrap; }
       .metric-grid-4 { grid-template-columns: repeat(2, 1fr); }
       .hero-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 1100px) {
+      .overview-main-grid { grid-template-columns: 1fr !important; }
+      .regime-split-grid { grid-template-columns: 1fr !important; }
+      .metric-grid-3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
     }
 
     @media (max-width: 768px) {
@@ -1526,6 +1589,7 @@
       .header-meta { justify-content: flex-start; flex-wrap: wrap; }
       .metric-grid-3, .metric-grid-4 { grid-template-columns: 1fr; }
       .hero-grid { grid-template-columns: 1fr; }
+      main { padding: 12px 12px 24px 12px; }
     }
 
     /* =========================================================================
@@ -2467,7 +2531,7 @@
       <div class="header-left">
         <div class="header-brand-group">
           <div class="header-brand-title">VARSHAMITRA</div>
-          <div class="header-brand-sub">AI-powered monsoon rainfall intelligence</div>
+          <div class="header-brand-sub">AI FOR A RESILIENT MONSOON INDIA</div>
         </div>
         <div class="header-sep"></div>
         <div class="header-titles">
@@ -2551,7 +2615,7 @@
       </div>
 
       <!-- Main Operational Split: Left GIS Map (63%) + Right District Intelligence (37%) -->
-      <div style="display:grid; grid-template-columns:63% 37%; gap:16px;">
+      <div class="overview-main-grid" style="display:grid; grid-template-columns:63% 37%; gap:16px;">
         <!-- Left: Interactive GIS Workstation -->
         <div class="card">
           <div class="map-card-header">
@@ -2809,14 +2873,14 @@
             <div style="font-size:0.75rem; color:var(--text-secondary);">Upper tropospheric shear: 31.2 m/s</div>
           </div>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="regime-split-grid">
           <div>
             <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px;">6-REGIME CLIMATOLOGICAL FREQUENCY & LIVE DISTRIBUTION</div>
-            <div id="chart-regimes" style="height:290px;"></div>
+            <div id="chart-regimes" style="height:260px;"></div>
           </div>
           <div>
             <div style="font-size:0.8rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px;">SYNOPTIC STATE RADAR (PHYSICAL DRIVERS)</div>
-            <div id="chart-regime-radar" style="height:290px;"></div>
+            <div id="chart-regime-radar" style="height:260px;"></div>
           </div>
         </div>
 
@@ -2854,90 +2918,127 @@
           </div>
         </div>
 
-        <div style="font-size:0.85rem; font-weight:700; margin-top:20px; margin-bottom:10px;">6 CANONICAL MONSOON REGIMES (OPERATIONAL TAXONOMY)</div>
-        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:20px;">
-          <!-- 1. Active Monsoon -->
-          <div class="metric-card" style="border-left:4px solid #2563A6;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:700; color:#2563A6; font-size:0.85rem;">Active Monsoon</span>
-              <span class="badge" style="background:#EBF5FF; color:#2563A6; font-size:0.7rem; font-weight:700;">48.1% Share</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <div style="font-family:var(--font-heading); font-size:0.88rem; font-weight:800; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.03em;">
+            6 CANONICAL MONSOON REGIMES (OPERATIONAL TAXONOMY)
+          </div>
+          <div style="font-size:0.72rem; color:var(--text-secondary);">
+            Dominant Live Synoptic State: <strong style="color:var(--interactive-blue);">Active Monsoon (86.4% Posterior)</strong>
+          </div>
+        </div>
+
+        <div class="regime-chips-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; margin-bottom:20px;">
+          <!-- 1. Active Monsoon (Active / Dominant) -->
+          <div class="regime-chip active-regime" style="background:#EFF6FF; border:1.5px solid var(--interactive-blue); border-radius:var(--radius-sm); padding:10px 12px; box-shadow:0 1px 4px rgba(37,99,235,0.08); transition:all 0.16s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="pulse-dot" style="width:7px; height:7px; background:var(--interactive-blue);"></span>
+                <span style="font-family:var(--font-heading); font-weight:800; color:var(--interactive-blue); font-size:0.82rem; letter-spacing:0.02em;">ACTIVE MONSOON</span>
+              </div>
+              <span class="tag-pill tag-green" style="font-size:0.62rem; font-weight:700;">CURRENT ACTIVE</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
-              <b>Indicators:</b> 850 hPa westerly jet &gt; 10 m/s, RH850 &gt; 75%, high moisture flux convergence.<br>
-              <b>Dynamics:</b> Continuous onshore flow, Ghats windward precipitation crest, broad synoptic coverage.
+            <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.70rem; color:var(--text-muted); margin-bottom:4px;">
+              <span>Climatological Share: <strong style="color:var(--text-primary); font-family:var(--font-mono);">48.1%</strong></span>
+              <span>Live Post: <strong style="color:var(--interactive-blue); font-family:var(--font-mono);">86.4%</strong></span>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.35; border-top:1px solid #DBEAFE; padding-top:4px;">
+              <strong>Trigger:</strong> 850 hPa westerly jet &gt; 10 m/s, RH850 &gt; 75%.<br>
+              <strong>Dynamics:</strong> Onshore flow, Ghats windward precipitation crest.
             </div>
           </div>
+
           <!-- 2. Break Monsoon -->
-          <div class="metric-card" style="border-left:4px solid #D99A24;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:700; color:#D99A24; font-size:0.85rem;">Break Monsoon</span>
-              <span class="badge" style="background:#FEF3C7; color:#D99A24; font-size:0.7rem; font-weight:700;">29.7% Share</span>
+          <div class="regime-chip" style="background:#FFFFFF; border:1px solid var(--border-color); border-left:3px solid #D99A24; border-radius:var(--radius-sm); padding:10px 12px; transition:all 0.16s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-heading); font-weight:800; color:#D99A24; font-size:0.82rem; letter-spacing:0.02em;">BREAK MONSOON</span>
+              <span class="badge" style="background:#FEF3C7; color:#B45309; font-size:0.64rem; font-weight:700;">29.7% Share</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
-              <b>Indicators:</b> 850 hPa westerly &lt; 6 m/s, RH850 &lt; 60%, suppressed moisture flux.<br>
-              <b>Dynamics:</b> Monsoon trough migrates north to Himalayan foothills; widespread peninsular rainfall deficit.
+            <div style="font-size:0.70rem; color:var(--text-muted); margin-bottom:4px;">
+              Climatological Share: <strong style="color:var(--text-primary); font-family:var(--font-mono);">29.7%</strong>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.35; border-top:1px solid var(--border-light); padding-top:4px;">
+              <strong>Trigger:</strong> Westerly &lt; 6 m/s, RH850 &lt; 60%.<br>
+              <strong>Dynamics:</strong> Trough at Himalayan foothills; peninsular deficit.
             </div>
           </div>
+
           <!-- 3. Monsoon Depression / Low -->
-          <div class="metric-card" style="border-left:4px solid #DC2626;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:700; color:#DC2626; font-size:0.85rem;">Monsoon Depression / Low</span>
-              <span class="badge" style="background:#FEE2E2; color:#DC2626; font-size:0.7rem; font-weight:700;">10.6% Share</span>
+          <div class="regime-chip" style="background:#FFFFFF; border:1px solid var(--border-color); border-left:3px solid #DC2626; border-radius:var(--radius-sm); padding:10px 12px; transition:all 0.16s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-heading); font-weight:800; color:#DC2626; font-size:0.82rem; letter-spacing:0.02em;">MONSOON DEPRESSION</span>
+              <span class="badge" style="background:#FEE2E2; color:#DC2626; font-size:0.64rem; font-weight:700;">10.6% Share</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
-              <b>Indicators:</b> MSLP anomaly &lt; -2.0 hPa, cyclonic vorticity &gt; 2.5×10⁻⁵ s⁻¹, RH850 &gt; 85%.<br>
-              <b>Dynamics:</b> Bay of Bengal cyclonic depression tracking west-northwest across Central India.
+            <div style="font-size:0.70rem; color:var(--text-muted); margin-bottom:4px;">
+              Climatological Share: <strong style="color:var(--text-primary); font-family:var(--font-mono);">10.6%</strong>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.35; border-top:1px solid var(--border-light); padding-top:4px;">
+              <strong>Trigger:</strong> MSLP anomaly &lt; -2.0 hPa, vorticity &gt; 2.5&times;10⁻⁵.<br>
+              <strong>Dynamics:</strong> Bay of Bengal cyclonic depression tracking WNW.
             </div>
           </div>
+
           <!-- 4. Orographic -->
-          <div class="metric-card" style="border-left:4px solid #16A34A;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:700; color:#16A34A; font-size:0.85rem;">Orographic</span>
-              <span class="badge" style="background:#DCFCE7; color:#16A34A; font-size:0.7rem; font-weight:700;">7.2% Share</span>
+          <div class="regime-chip" style="background:#FFFFFF; border:1px solid var(--border-color); border-left:3px solid #16A34A; border-radius:var(--radius-sm); padding:10px 12px; transition:all 0.16s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-heading); font-weight:800; color:#16A34A; font-size:0.82rem; letter-spacing:0.02em;">OROGRAPHIC</span>
+              <span class="badge" style="background:#DCFCE7; color:#16A34A; font-size:0.64rem; font-weight:700;">7.2% Share</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
-              <b>Indicators:</b> Slope gradient &gt; 0.0025 m⁻¹, upslope flow &gt; 0.01, elevation &gt; 200 m.<br>
-              <b>Dynamics:</b> Mechanical forced ascent along Western Ghats escarpment producing localized torrential deluges.
+            <div style="font-size:0.70rem; color:var(--text-muted); margin-bottom:4px;">
+              Climatological Share: <strong style="color:var(--text-primary); font-family:var(--font-mono);">7.2%</strong>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.35; border-top:1px solid var(--border-light); padding-top:4px;">
+              <strong>Trigger:</strong> Slope gradient &gt; 0.0025, elevation &gt; 200 m.<br>
+              <strong>Dynamics:</strong> Mechanical forced ascent along Ghats crest line.
             </div>
           </div>
+
           <!-- 5. Coastal -->
-          <div class="metric-card" style="border-left:4px solid #0D9488;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:700; color:#0D9488; font-size:0.85rem;">Coastal</span>
-              <span class="badge" style="background:#CCFBF1; color:#0D9488; font-size:0.7rem; font-weight:700;">2.3% Share</span>
+          <div class="regime-chip" style="background:#FFFFFF; border:1px solid var(--border-color); border-left:3px solid #0D9488; border-radius:var(--radius-sm); padding:10px 12px; transition:all 0.16s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-heading); font-weight:800; color:#0D9488; font-size:0.82rem; letter-spacing:0.02em;">COASTAL</span>
+              <span class="badge" style="background:#CCFBF1; color:#0D9488; font-size:0.64rem; font-weight:700;">2.3% Share</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
-              <b>Indicators:</b> Longitude &lt; 73.3°E, elevation &lt; 180 m, boundary RH &gt; 80%, non-orographic.<br>
-              <b>Dynamics:</b> Konkan marine boundary layer convergence, shallow offshore troughs, intense maritime showers.
+            <div style="font-size:0.70rem; color:var(--text-muted); margin-bottom:4px;">
+              Climatological Share: <strong style="color:var(--text-primary); font-family:var(--font-mono);">2.3%</strong>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.35; border-top:1px solid var(--border-light); padding-top:4px;">
+              <strong>Trigger:</strong> Longitude &lt; 73.3&deg;E, elevation &lt; 180 m, RH &gt; 80%.<br>
+              <strong>Dynamics:</strong> Konkan marine boundary convergence &amp; offshore troughs.
             </div>
           </div>
+
           <!-- 6. Western Disturbance -->
-          <div class="metric-card" style="border-left:4px solid #7C3AED;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <span style="font-weight:700; color:#7C3AED; font-size:0.85rem;">Western Disturbance</span>
-              <span class="badge" style="background:#F3E8FF; color:#7C3AED; font-size:0.7rem; font-weight:700;">2.2% Share</span>
+          <div class="regime-chip" style="background:#FFFFFF; border:1px solid var(--border-color); border-left:3px solid #7C3AED; border-radius:var(--radius-sm); padding:10px 12px; transition:all 0.16s ease;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-family:var(--font-heading); font-weight:800; color:#7C3AED; font-size:0.82rem; letter-spacing:0.02em;">WESTERN DISTURBANCE</span>
+              <span class="badge" style="background:#F3E8FF; color:#7C3AED; font-size:0.64rem; font-weight:700;">2.2% Share</span>
             </div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
-              <b>Indicators:</b> Latitude &gt; 20.8°N, vertical wind shear &gt; 30 m/s, upper-level westerly perturbation.<br>
-              <b>Dynamics:</b> Mid-latitude westerly trough extending along northern Maharashtra border (subtropical intrusion).
+            <div style="font-size:0.70rem; color:var(--text-muted); margin-bottom:4px;">
+              Climatological Share: <strong style="color:var(--text-primary); font-family:var(--font-mono);">2.2%</strong>
+            </div>
+            <div style="font-size:0.72rem; color:var(--text-secondary); line-height:1.35; border-top:1px solid var(--border-light); padding-top:4px;">
+              <strong>Trigger:</strong> Latitude &gt; 20.8&deg;N, vertical shear &gt; 30 m/s.<br>
+              <strong>Dynamics:</strong> Subtropical mid-latitude westerly trough intrusion.
             </div>
           </div>
         </div>
 
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">6-CLASS REGIME CLASSIFIER & PRODUCTION EXPERT SPECIFICATION</div>
-        <table>
-          <thead>
-            <tr><th>Regime</th><th>Detection Criterion</th><th>Synoptic Mechanism</th><th>Production Expert</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><b>Active Monsoon</b></td><td>u850 &ge; 10 m/s &amp; RH850 &ge; 75%</td><td>Strong cross-equatorial monsoon westerly jet &amp; high moisture flux</td><td>HistGradientBoosting residual corrector</td></tr>
-            <tr><td><b>Break Monsoon</b></td><td>u850 &lt; 6 m/s &amp; vertical shear &lt; 15 m/s</td><td>Monsoon trough shifted north to Himalayan foothills; peninsular deficit</td><td>QuantileRegressor</td></tr>
-            <tr><td><b>Monsoon Depression / Low</b></td><td>MSLP anomaly &lt; -2.0 hPa &amp; cyclonic vorticity &ge; 2.5&times;10⁻⁵ s⁻¹</td><td>Synoptic low/depression propagating across Central India</td><td>HistGradientBoosting corrector</td></tr>
-            <tr><td><b>Orographic</b></td><td>Slope gradient &gt; 0.0025 m⁻¹ &amp; elevation &gt; 200 m</td><td>Mechanical forced ascent along Western Ghats escarpment</td><td>HistGradientBoosting corrector</td></tr>
-            <tr><td><b>Coastal</b></td><td>Longitude &lt; 73.3°E, elevation &lt; 180 m &amp; boundary RH &gt; 80%</td><td>Konkan maritime boundary layer convergence &amp; shallow offshore troughs</td><td>HistGradientBoosting corrector</td></tr>
-            <tr><td><b>Western Disturbance</b></td><td>Latitude &gt; 20.8°N &amp; vertical wind shear &gt; 30 m/s</td><td>Subtropical mid-latitude westerly trough intrusion along northern border</td><td>HistGradientBoosting corrector</td></tr>
-          </tbody>
-        </table>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>Regime</th><th>Detection Criterion</th><th>Synoptic Mechanism</th><th>Production Expert</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Active Monsoon</b></td><td>u850 &ge; 10 m/s &amp; RH850 &ge; 75%</td><td>Strong cross-equatorial monsoon westerly jet &amp; high moisture flux</td><td>HistGradientBoosting residual corrector</td></tr>
+              <tr><td><b>Break Monsoon</b></td><td>u850 &lt; 6 m/s &amp; vertical shear &lt; 15 m/s</td><td>Monsoon trough shifted north to Himalayan foothills; peninsular deficit</td><td>QuantileRegressor</td></tr>
+              <tr><td><b>Monsoon Depression / Low</b></td><td>MSLP anomaly &lt; -2.0 hPa &amp; cyclonic vorticity &ge; 2.5&times;10⁻⁵ s⁻¹</td><td>Synoptic low/depression propagating across Central India</td><td>HistGradientBoosting corrector</td></tr>
+              <tr><td><b>Orographic</b></td><td>Slope gradient &gt; 0.0025 m⁻¹ &amp; elevation &gt; 200 m</td><td>Mechanical forced ascent along Western Ghats escarpment</td><td>HistGradientBoosting corrector</td></tr>
+              <tr><td><b>Coastal</b></td><td>Longitude &lt; 73.3°E, elevation &lt; 180 m &amp; boundary RH &gt; 80%</td><td>Konkan maritime boundary layer convergence &amp; shallow offshore troughs</td><td>HistGradientBoosting corrector</td></tr>
+              <tr><td><b>Western Disturbance</b></td><td>Latitude &gt; 20.8°N &amp; vertical wind shear &gt; 30 m/s</td><td>Subtropical mid-latitude westerly trough intrusion along northern border</td><td>HistGradientBoosting corrector</td></tr>
+            </tbody>
+          </table>
+        </div>
         <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">
           *Final Locked Test Classification: Overall Accuracy: <b>97.73%</b> | Macro F1: <b>0.9034</b> (Evaluated on locked September 2024 test split, N = 28,710). Note: Western Disturbance is the least frequent active regime in JJAS (Recall &asymp; 0.437, F1 &asymp; 0.608); Break Monsoon is sparse in September. All production experts are PyTorch-free lightweight models.
         </div>
@@ -3095,37 +3196,86 @@
       </div>
       <div class="card">
         <div style="font-size:0.85rem; font-weight:700; margin-bottom:8px;">5-TIER BASELINE PROGRESSION LADDER (B0 → B4) — LOCKED TEST SET (N = 28,710)</div>
-        <div id="chart-ladder" style="height:260px;"></div>
-        <table>
-          <thead>
-            <tr><th>Tier</th><th>Methodology</th><th>RMSE (mm)</th><th>MAE (mm)</th><th>CSI (10mm)</th><th>ETS</th><th>Heavy POD (&ge;64.5mm)</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>B0: Raw NWP</td><td>Uncalibrated NOAA NCEP GFS 0.25°</td><td>24.71</td><td>9.18</td><td>0.544</td><td>0.053</td><td>0.525</td></tr>
-            <tr><td>B1: Global Statistical</td><td>Domain-wide linear mean bias correction</td><td>17.23</td><td>6.84</td><td>0.612</td><td>0.165</td><td>0.580</td></tr>
-            <tr style="background:#F0F7FF;"><td><b>B2: Global ML</b></td><td>19-feature Histogram Gradient Boosting Regressor</td><td><b>8.37</b></td><td>4.12</td><td>0.765</td><td>0.342</td><td>0.780</td></tr>
-            <tr><td>B3: Hard Regime</td><td>Argmax discrete selection of regime-specific experts</td><td>9.43</td><td>3.94</td><td>0.782</td><td>0.365</td><td>0.815</td></tr>
-            <tr style="font-weight:700; color:var(--primary-blue); background:#F0FDF4;"><td>B4: VarshaMitra Soft MoE</td><td>6-regime soft probability-weighted mixture of lightweight experts</td><td>9.40</td><td><b>3.88</b></td><td><b>0.790</b></td><td><b>0.374</b></td><td><b>0.833</b></td></tr>
-          </tbody>
-        </table>
-        <div style="font-size:0.74rem; color:var(--text-secondary); margin-top:10px; padding:8px 12px; background:#F8FAFC; border-radius:4px; border-left:3px solid var(--border-color);">
-          <b>Scientific Evaluation Notice:</b> Evaluated on the locked September 2024 test split (N = 28,710). Global ML (B2) achieves lowest overall continuous RMSE (8.37 mm). VarshaMitra Soft MoE (B4) provides targeted operational advantages in MAE (3.88 mm), standard-rain CSI (0.790), and disaster-critical heavy precipitation POD (0.833 at &ge;64.5 mm). Metric differences are descriptive; formal paired block bootstrap / permutation significance has not been established.
+        <div id="chart-ladder" style="height:300px;"></div>
+
+        <!-- Persistent B0-B4 Model Tier Strip (Directly Understandable Without Hover) -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px; margin-top:8px; margin-bottom:16px;">
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:8px 10px; text-align:center;">
+            <div style="font-family:var(--font-mono); font-weight:700; font-size:0.76rem; color:#64748B;">B0 &mdash; Raw NWP</div>
+            <div style="font-family:var(--font-mono); font-size:1.0rem; font-weight:700; color:var(--text-primary); margin:1px 0;">24.71 mm</div>
+            <div style="font-size:0.68rem; color:var(--text-muted);">Uncalibrated NOAA GFS</div>
+          </div>
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:8px 10px; text-align:center;">
+            <div style="font-family:var(--font-mono); font-weight:700; font-size:0.76rem; color:#64748B;">B1 &mdash; Global Statistical</div>
+            <div style="font-family:var(--font-mono); font-size:1.0rem; font-weight:700; color:var(--text-primary); margin:1px 0;">17.23 mm</div>
+            <div style="font-size:0.68rem; color:var(--text-muted);">Domain-wide linear bias</div>
+          </div>
+          <div style="background:#EFF6FF; border:1.5px solid var(--interactive-blue); border-radius:var(--radius-sm); padding:8px 10px; text-align:center; box-shadow:0 1px 3px rgba(37,99,235,0.08);">
+            <div style="font-family:var(--font-mono); font-weight:800; font-size:0.76rem; color:var(--interactive-blue);">B2 &mdash; Global ML</div>
+            <div style="font-family:var(--font-mono); font-size:1.0rem; font-weight:800; color:var(--interactive-blue); margin:1px 0;">8.37 mm</div>
+            <div style="font-size:0.68rem; font-weight:700; color:var(--interactive-blue);">&starf; Lowest Continuous RMSE</div>
+          </div>
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:8px 10px; text-align:center;">
+            <div style="font-family:var(--font-mono); font-weight:700; font-size:0.76rem; color:#64748B;">B3 &mdash; Hard Regime</div>
+            <div style="font-family:var(--font-mono); font-size:1.0rem; font-weight:700; color:var(--text-primary); margin:1px 0;">9.43 mm</div>
+            <div style="font-size:0.68rem; color:var(--text-muted);">Argmax discrete router</div>
+          </div>
+          <div style="background:#F0FDF4; border:1.5px solid #16A34A; border-radius:var(--radius-sm); padding:8px 10px; text-align:center; box-shadow:0 1px 3px rgba(22,163,74,0.08);">
+            <div style="font-family:var(--font-mono); font-weight:800; font-size:0.76rem; color:var(--success);">B4 &mdash; VarshaMitra Soft MoE</div>
+            <div style="font-family:var(--font-mono); font-size:1.0rem; font-weight:800; color:var(--success); margin:1px 0;">9.40 mm</div>
+            <div style="font-size:0.68rem; font-weight:700; color:var(--success);">&starf; Best MAE (3.88) &bull; POD (83.3%)</div>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>Tier</th><th>Methodology</th><th>RMSE (mm)</th><th>MAE (mm)</th><th>CSI (10mm)</th><th>ETS</th><th>Heavy POD (&ge;64.5mm)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>B0: Raw NWP</td><td>Uncalibrated NOAA NCEP GFS 0.25°</td><td>24.71</td><td>9.18</td><td>0.544</td><td>0.053</td><td>0.525</td></tr>
+              <tr><td>B1: Global Statistical</td><td>Domain-wide linear mean bias correction</td><td>17.23</td><td>6.84</td><td>0.612</td><td>0.165</td><td>0.580</td></tr>
+              <tr style="background:#F0F7FF;"><td><b>B2: Global ML</b></td><td>19-feature Histogram Gradient Boosting Regressor</td><td><b>8.37</b></td><td>4.12</td><td>0.765</td><td>0.342</td><td>0.780</td></tr>
+              <tr><td>B3: Hard Regime</td><td>Argmax discrete selection of regime-specific experts</td><td>9.43</td><td>3.94</td><td>0.782</td><td>0.365</td><td>0.815</td></tr>
+              <tr style="font-weight:700; color:var(--primary-blue); background:#F0FDF4;"><td>B4: VarshaMitra Soft MoE</td><td>6-regime soft probability-weighted mixture of lightweight experts</td><td>9.40</td><td><b>3.88</b></td><td><b>0.790</b></td><td><b>0.374</b></td><td><b>0.833</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Show the Answer First, Details Second Summary -->
+        <div style="font-size:0.74rem; color:var(--text-secondary); margin-top:12px; padding:10px 14px; background:#F8FAFC; border-radius:var(--radius-sm); border-left:3px solid var(--interactive-blue); line-height:1.45;">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+            <strong style="color:var(--text-primary); text-transform:uppercase; letter-spacing:0.03em;">Scientific Benchmark Key Takeaways (Locked Test N = 28,710)</strong>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:8px; margin-top:4px;">
+            <div style="background:#FFFFFF; border:1px solid var(--border-color); border-radius:4px; padding:6px 10px;">
+              <span style="font-weight:700; color:var(--interactive-blue);">GLOBAL ML (B2):</span> <strong>8.37 mm RMSE</strong> &mdash; Achieves lowest overall continuous RMSE across the full domain.
+            </div>
+            <div style="background:#FFFFFF; border:1px solid var(--border-color); border-radius:4px; padding:6px 10px;">
+              <span style="font-weight:700; color:var(--success);">VARSHAMITRA SOFT MoE (B4):</span> <strong>9.40 mm RMSE</strong> &mdash; Best MAE (<strong>3.88 mm</strong>), CSI (<strong>0.790</strong>), and Heavy Rain POD (<strong>83.3%</strong>).
+            </div>
+          </div>
+          <div style="font-size:0.68rem; color:var(--text-muted); margin-top:6px;">
+            *Evaluated on locked September 2024 test split. Differences are descriptive; formal paired block bootstrap/permutation significance has not been established.
+          </div>
         </div>
 
         <div style="font-size:0.85rem; font-weight:700; margin-top:20px; margin-bottom:8px;">6-REGIME STRATIFIED VERIFICATION SKILL MATRIX (Validation Dataset Baseline, N = 29,667)</div>
-        <table>
-          <thead>
-            <tr><th>Synoptic Regime</th><th>Validation Grid Cells</th><th>Raw GFS RMSE</th><th>VarshaMitra RMSE</th><th>CSI (10mm)</th><th>RMSE Skill Gain</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><b>Active Monsoon</b></td><td>23,963</td><td>22.59 mm</td><td>8.11 mm</td><td>0.593</td><td><span style="color:var(--success); font-weight:700;">+64.1%</span></td></tr>
-            <tr><td><b>Break Monsoon</b></td><td>34 (sparse)</td><td>4.48 mm</td><td>4.71 mm</td><td>0.000</td><td><span style="color:var(--text-secondary); font-weight:700;">-5.1%</span></td></tr>
-            <tr><td><b>Monsoon Depression / Low</b></td><td>896</td><td>18.77 mm</td><td>14.37 mm</td><td>1.000</td><td><span style="color:var(--success); font-weight:700;">+23.4%</span></td></tr>
-            <tr><td><b>Orographic</b></td><td>2,564</td><td>42.27 mm</td><td>42.78 mm</td><td>0.963</td><td><span style="color:var(--text-secondary); font-weight:700;">-1.2%</span></td></tr>
-            <tr><td><b>Coastal</b></td><td>1,175</td><td>20.47 mm</td><td>N/A*</td><td>N/A*</td><td><span style="color:var(--text-secondary);">N/A*</span></td></tr>
-            <tr><td><b>Western Disturbance</b></td><td>1,035</td><td>16.70 mm</td><td>11.25 mm</td><td>0.310</td><td><span style="color:var(--success); font-weight:700;">+32.6%</span></td></tr>
-          </tbody>
-        </table>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>Synoptic Regime</th><th>Validation Grid Cells</th><th>Raw GFS RMSE</th><th>VarshaMitra RMSE</th><th>CSI (10mm)</th><th>RMSE Skill Gain</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><b>Active Monsoon</b></td><td>23,963</td><td>22.59 mm</td><td>8.11 mm</td><td>0.593</td><td><span style="color:var(--success); font-weight:700;">+64.1%</span></td></tr>
+              <tr><td><b>Break Monsoon</b></td><td>34 (sparse)</td><td>4.48 mm</td><td>4.71 mm</td><td>0.000</td><td><span style="color:var(--text-secondary); font-weight:700;">-5.1%</span></td></tr>
+              <tr><td><b>Monsoon Depression / Low</b></td><td>896</td><td>18.77 mm</td><td>14.37 mm</td><td>1.000</td><td><span style="color:var(--success); font-weight:700;">+23.4%</span></td></tr>
+              <tr><td><b>Orographic</b></td><td>2,564</td><td>42.27 mm</td><td>42.78 mm</td><td>0.963</td><td><span style="color:var(--text-secondary); font-weight:700;">-1.2%</span></td></tr>
+              <tr><td><b>Coastal</b></td><td>1,175</td><td>20.47 mm</td><td>N/A*</td><td>N/A*</td><td><span style="color:var(--text-secondary);">N/A*</span></td></tr>
+              <tr><td><b>Western Disturbance</b></td><td>1,035</td><td>16.70 mm</td><td>11.25 mm</td><td>0.310</td><td><span style="color:var(--success); font-weight:700;">+32.6%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
         <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:8px;">
           *Source: Operational verification artifact (public/data/verification_scores_summary.json, N = 29,667 validation cohort). Full domain-wide B0–B4 locked test holdout (September 2024, N = 28,710) is presented in the primary benchmark table above. Coastal regime samples reflect offshore zero-precipitation cells; Break Monsoon occurrences were sparse in this validation window.
         </div>
@@ -3246,86 +3396,60 @@
     <!-- TAB 13: REPORTS -->
     <div id="tab-reports" class="tab-content">
       <!-- DOWNLOADABLE DECISION-SUPPORT REPORTS CARD -->
-      <div class="card" style="margin-bottom: 16px;">
+      <div class="card" style="margin-bottom: 16px; border-left: 4px solid var(--interactive-blue); padding: 18px 22px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
           <div>
-            <div style="font-size:0.88rem; font-weight:700; color:var(--text-primary); letter-spacing:-0.01em;">
-              OPERATIONAL FORECAST REPORTS &amp; DATA EXPORTS
+            <div style="font-family:var(--font-heading); font-size:1.05rem; font-weight:800; color:var(--text-primary); letter-spacing:-0.02em;">
+              OPERATIONAL FORECAST REPORTS
             </div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">
-              Download verified decision-support synthesis documents and machine-readable GIS datasets for the active synoptic cycle.
+            <div style="font-size:0.80rem; color:var(--text-secondary); margin-top:3px;">
+              Generate decision-support files from the current forecast cycle.
             </div>
           </div>
-          <div style="display:inline-flex; align-items:center; gap:6px; background:#F8FAFC; border:1px solid var(--border-color); padding:4px 10px; border-radius:var(--radius-sm); font-size:0.70rem; font-family:var(--font-mono); color:var(--text-secondary);">
+          <div style="display:inline-flex; align-items:center; gap:6px; background:#F8FAFC; border:1px solid var(--border-color); padding:4px 10px; border-radius:var(--radius-sm); font-size:0.72rem; font-family:var(--font-mono); color:var(--text-secondary);">
             <span style="width:6px; height:6px; border-radius:50%; background:var(--success);"></span>
-            Active Cycle: <strong id="report-cycle-tag" style="color:var(--text-primary);">VM-20240928-12Z</strong>
+            Active Cycle: <strong id="report-cycle-tag" style="color:var(--text-primary); font-family:var(--font-mono);">VM-20240928-12Z</strong>
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:14px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:12px;">
           <!-- PDF Download Option -->
-          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.16s ease;">
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:14px 16px; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">Download PDF Report</span>
-              </div>
-              <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
-                Generate a decision-support rainfall report containing synoptic regime diagnosis, P10/P50/P90 rainfall intervals, regional risk matrix, TreeSHAP feature attributions, and locked B0–B4 verification benchmarks.
-              </div>
-            </div>
-            <div>
-              <button id="btn-download-pdf" onclick="downloadReport('pdf')" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--interactive-blue); color:#FFFFFF; border:none; border-radius:var(--radius-sm); padding:9px 16px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.16s cubic-bezier(0.16, 1, 0.3, 1);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <button id="btn-download-pdf" onclick="downloadReport('pdf')" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:var(--interactive-blue); color:#FFFFFF; border:none; border-radius:var(--radius-sm); padding:10px 18px; font-size:0.84rem; font-weight:700; cursor:pointer; box-shadow:0 1px 3px rgba(37,99,235,0.25);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="7 10 12 15 17 10"></polyline>
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
                 <span>Download PDF Report</span>
               </button>
-              <div id="pdf-status-msg" style="font-size:0.70rem; color:var(--text-muted); margin-top:6px; min-height:16px; text-align:center;"></div>
+              <div id="pdf-status-msg" style="font-size:0.72rem; color:var(--text-muted); margin-top:6px; min-height:16px; text-align:center;"></div>
+            </div>
+            <div style="border-top:1px solid var(--border-light); padding-top:8px; margin-top:4px;">
+              <div style="font-weight:700; font-size:0.76rem; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.04em;">PDF</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">3-page scientific forecast report</div>
             </div>
           </div>
 
           <!-- CSV Download Option -->
-          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:16px; display:flex; flex-direction:column; justify-content:space-between; transition:border-color 0.16s ease;">
+          <div style="background:#F8FAFC; border:1px solid var(--border-color); border-radius:var(--radius-sm); padding:14px 16px; display:flex; flex-direction:column; justify-content:space-between;">
             <div>
-              <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="3" y1="9" x2="21" y2="9"></line>
-                  <line x1="3" y1="15" x2="21" y2="15"></line>
-                  <line x1="9" y1="3" x2="9" y2="21"></line>
-                  <line x1="15" y1="3" x2="15" y2="21"></line>
-                </svg>
-                <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">Download CSV Data</span>
-              </div>
-              <div style="font-size:0.75rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
-                Export forecast and risk data covering all 36 Maharashtra districts with Raw NWP, postprocessed quantiles (P10, P50, P90), downscaling deltas, regime categorization, and heavy rain exceedance probabilities.
-              </div>
-            </div>
-            <div>
-              <button id="btn-download-csv" onclick="downloadReport('csv')" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:#0F172A; color:#FFFFFF; border:none; border-radius:var(--radius-sm); padding:9px 16px; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.16s cubic-bezier(0.16, 1, 0.3, 1);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <button id="btn-download-csv" onclick="downloadReport('csv')" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; width:100%; background:#0F172A; color:#FFFFFF; border:none; border-radius:var(--radius-sm); padding:10px 18px; font-size:0.84rem; font-weight:700; cursor:pointer; box-shadow:0 1px 3px rgba(15,23,42,0.18);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="7 10 12 15 17 10"></polyline>
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
                 <span>Download CSV Data</span>
               </button>
-              <div id="csv-status-msg" style="font-size:0.70rem; color:var(--text-muted); margin-top:6px; min-height:16px; text-align:center;"></div>
+              <div id="csv-status-msg" style="font-size:0.72rem; color:var(--text-muted); margin-top:6px; min-height:16px; text-align:center;"></div>
+            </div>
+            <div style="border-top:1px solid var(--border-light); padding-top:8px; margin-top:4px;">
+              <div style="font-weight:700; font-size:0.76rem; color:var(--text-primary); text-transform:uppercase; letter-spacing:0.04em;">CSV</div>
+              <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px;">36-district machine-readable export</div>
             </div>
           </div>
-        </div>
-
-        <div style="font-size:0.72rem; color:var(--text-secondary); padding:8px 12px; background:#F8FAFC; border-radius:var(--radius-sm); border-left:3px solid var(--border-color); line-height:1.45;">
-          <strong>Scientific Advisory:</strong> VarshaMitra AI Post-Processed Forecast — Decision-support output. This report is a research/prototype product and is not an official IMD warning or official government forecast.
         </div>
       </div>
 
@@ -3416,11 +3540,6 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         </table>
       </div>
     </div>
-
-    <!-- Disclaimer -->
-    <footer class="disclaimer">
-      <b>OPERATIONAL METEOROLOGICAL DISCLAIMER:</b> VarshaMitra is an operational AI meteorological research and decision-support prototype developed for SIH 2026. Official public weather forecasts, warnings, and emergency advisories are issued exclusively by the India Meteorological Department (IMD) and National Disaster Management Authority (NDMA).
-    </footer>
   </main>
 
   <script>
@@ -3486,7 +3605,7 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         'overview': ['Command Center', 'Monsoon forecast intelligence across Maharashtra'],
         'live-forecast': ['Live Forecast Operations', 'Primary GIS weather workstation & model comparison'],
         'district-intelligence': ['District Intelligence', 'Operational briefing & feature attribution'],
-        'regime-intelligence': ['Regime Intelligence', 'Weak supervision classification & model router'],
+        'regime-intelligence': ['Regime Intelligence', 'Weak supervision & 6-regime classification'],
         'heavy-rainfall-risk': ['Heavy Rainfall Risk & Alerts', 'Exceedance probability & operational warning matrix'],
         'explainability': ['Explainability & TreeSHAP', 'Feature attribution of synoptic atmospheric drivers using TreeSHAP'],
         'what-if': ['What-If Contingency Lab', 'Interactive perturbation experiments on atmospheric drivers'],
@@ -3508,7 +3627,21 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         if (leafletMap) setTimeout(() => leafletMap.invalidateSize(), 150);
         setTimeout(animateOverviewKPIs, 100);
       }
-      window.dispatchEvent(new Event('resize'));
+      setTimeout(() => {
+        window.dispatchEvent(new Event('resize'));
+        const chartIds = [
+          'chart-ladder', 'chart-replay', 'chart-live-comparison',
+          'chart-regimes', 'chart-regime-radar', 'chart-shap',
+          'chart-global-shap', 'chart-calibration', 'chart-ablation',
+          'chart-risk-districts', 'chart-whatif-response'
+        ];
+        chartIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && el.offsetParent !== null && window.Plotly) {
+            Plotly.Plots.resize(el);
+          }
+        });
+      }, 80);
     }
 
     // Color Scales
@@ -3819,42 +3952,50 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         y: ['Raw GFS Diffusion', 'Vertical Wind Shear', 'Soil Moisture', 'Boundary Layer RH', 'Elevation Gradient', 'Moisture Flux Convergence', 'Regime Routing'],
         x: [-9.4, -2.8, 1.6, 2.1, 3.5, 4.8, 7.2],
         orientation: 'h',
-        marker: { color: ['#C84B4B', '#C84B4B', '#2563A6', '#2563A6', '#2563A6', '#2563A6', '#2563A6'] },
+        marker: { color: ['#C84B4B', '#C84B4B', '#2563EB', '#2563EB', '#2563EB', '#2563EB', '#2563EB'] },
         text: ['-9.4 mm', '-2.8 mm', '+1.6 mm', '+2.1 mm', '+3.5 mm', '+4.8 mm', '+7.2 mm'],
-        textposition: 'auto'
+        textposition: 'auto',
+        textfont: { family: 'JetBrains Mono, monospace', size: 11 }
       }], {
-        margin: { l: 160, r: 20, t: 10, b: 30 },
-        xaxis: { title: 'Impact on Rainfall Forecast (mm/24h)', gridcolor: '#EEF2F6' },
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 180, r: 20, t: 15, b: 45 },
+        xaxis: { title: { text: 'Impact on Rainfall Forecast (mm/24h)', font: { size: 12 } }, gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
+        yaxis: { tickfont: { size: 11, family: 'Inter, sans-serif', color: '#1E293B' } },
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
       // 2. Ladder Progression (Locked September 2024 Test Holdout, N = 28,710)
       Plotly.newPlot('chart-ladder', [{
         type: 'bar',
-        x: ['B0: Raw NWP', 'B1: Global Statistical', 'B2: Global ML', 'B3: Hard Regime', 'B4: VarshaMitra Soft MoE'],
+        x: ['B0', 'B1', 'B2', 'B3', 'B4'],
         y: [24.71, 17.23, 8.37, 9.43, 9.40],
-        marker: { color: ['#94A3B8', '#94A3B8', '#2563A6', '#2563A6', '#2E9B72'] },
+        marker: { color: ['#94A3B8', '#94A3B8', '#2563EB', '#2563EB', '#15803D'] },
         text: ['24.71 mm', '17.23 mm', '8.37 mm', '9.43 mm', '9.40 mm'],
-        textposition: 'auto'
+        textposition: 'auto',
+        textfont: { family: 'JetBrains Mono, monospace', size: 11 }
       }], {
-        margin: { l: 40, r: 20, t: 10, b: 40 },
-        yaxis: { title: 'RMSE mm (lower is better)', gridcolor: '#EEF2F6' },
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 45, r: 20, t: 20, b: 35 },
+        xaxis: { tickfont: { size: 12, family: 'JetBrains Mono, monospace', color: '#0F172A', weight: 700 } },
+        yaxis: { title: { text: 'RMSE mm (lower is better)', font: { size: 12 } }, gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
       // 3. Calibration Diagram
       Plotly.newPlot('chart-calibration', [
         { x: [0, 1], y: [0, 1], mode: 'lines', line: { dash: 'dash', color: '#94A3B8' }, name: 'Perfect Calibration' },
-        { x: [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95], y: [0.04, 0.14, 0.27, 0.34, 0.43, 0.56, 0.66, 0.73, 0.83, 0.93], mode: 'lines+markers', line: { color: '#2563A6', width: 2.5 }, marker: { size: 7 }, name: 'VarshaMitra' }
+        { x: [0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95], y: [0.04, 0.14, 0.27, 0.34, 0.43, 0.56, 0.66, 0.73, 0.83, 0.93], mode: 'lines+markers', line: { color: '#2563EB', width: 2.5 }, marker: { size: 7, color: '#1D4ED8' }, name: 'VarshaMitra' }
       ], {
-        margin: { l: 40, r: 20, t: 10, b: 40 },
-        xaxis: { title: 'Forecast Probability', range: [0, 1], gridcolor: '#EEF2F6' },
-        yaxis: { title: 'Observed Relative Frequency', range: [0, 1], gridcolor: '#EEF2F6' },
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 45, r: 20, t: 20, b: 50 },
+        legend: { orientation: 'h', y: 1.12, x: 0.1, font: { size: 11, family: 'Inter, sans-serif' } },
+        xaxis: { title: { text: 'Forecast Probability', font: { size: 12 } }, range: [0, 1], gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
+        yaxis: { title: { text: 'Observed Relative Frequency', font: { size: 12 } }, range: [0, 1], gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
       // 4. Ablation Study
       Plotly.newPlot('chart-ablation', [{
@@ -3864,25 +4005,46 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         orientation: 'h',
         marker: { color: ['#C84B4B', '#D99A24', '#D99A24', '#64748B', '#64748B', '#2E9B72'] },
         text: ['18.32 mm', '17.05 mm', '16.74 mm', '16.00 mm', '15.65 mm', '14.90 mm'],
-        textposition: 'auto'
+        textposition: 'auto',
+        textfont: { family: 'JetBrains Mono, monospace', size: 11 }
       }], {
-        margin: { l: 180, r: 20, t: 10, b: 30 },
-        xaxis: { title: 'RMSE mm/24h (lower is better)', range: [12, 20], gridcolor: '#EEF2F6' },
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 190, r: 20, t: 15, b: 45 },
+        xaxis: { title: { text: 'RMSE mm/24h (lower is better)', font: { size: 12 } }, range: [12, 20], gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
+        yaxis: { tickfont: { size: 11, family: 'Inter, sans-serif', color: '#1E293B' } },
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
       // 5. Live Comparison
+      const layoutLiveComp = {
+        barmode: 'group',
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 50, r: 20, t: 32, b: 65 },
+        legend: {
+          orientation: 'h',
+          y: 1.16,
+          x: 0.0,
+          font: { size: 11, family: 'Inter, sans-serif' }
+        },
+        xaxis: {
+          tickfont: { size: 11, family: 'Inter, sans-serif', color: '#1E293B' },
+          gridcolor: '#F1F5F9'
+        },
+        yaxis: {
+          title: { text: 'Precipitation (mm/24h)', font: { size: 12 } },
+          gridcolor: '#EEF2F6',
+          tickfont: { family: 'JetBrains Mono, monospace', size: 11 }
+        },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent',
+        transition: { duration: 400, easing: 'cubic-in-out' }
+      };
+
       Plotly.newPlot('chart-live-comparison', [
         { name: 'Raw NOAA GFS', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [88.5, 115.2, 38.4, 26.2, 31.8], type: 'bar', marker: { color: '#94A3B8' } },
-        { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [74.2, 92.6, 24.1, 18.5, 22.4], type: 'bar', marker: { color: '#2563A6' } }
-      ], {
-        barmode: 'group',
-        margin: { l: 40, r: 20, t: 20, b: 40 },
-        yaxis: { title: 'Precipitation (mm/24h)', gridcolor: '#EEF2F6' },
-        paper_bgcolor: 'transparent',
-        plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+        { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [74.2, 92.6, 24.1, 18.5, 22.4], type: 'bar', marker: { color: '#2563EB' } }
+      ], layoutLiveComp, { displayModeBar: false, responsive: true });
 
       // 6. Regime Probabilities (6 Canonical Operational Regimes)
       Plotly.newPlot('chart-regimes', [{
@@ -3890,24 +4052,47 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         labels: ['Active Monsoon', 'Break Monsoon', 'Monsoon Depression / Low', 'Orographic', 'Coastal', 'Western Disturbance'],
         values: [48.1, 29.7, 10.6, 7.2, 2.3, 2.2],
         hole: 0.55,
-        marker: { colors: ['#2563A6', '#D99A24', '#DC2626', '#16A34A', '#0D9488', '#7C3AED'] }
+        textinfo: 'percent',
+        textfont: { family: 'JetBrains Mono, monospace', size: 10 },
+        marker: { colors: ['#2563EB', '#D99A24', '#DC2626', '#16A34A', '#0D9488', '#7C3AED'] }
       }], {
-        margin: { l: 20, r: 20, t: 20, b: 20 },
+        font: { family: 'Inter, sans-serif' },
+        showlegend: false,
+        margin: { l: 15, r: 15, t: 15, b: 15 },
         paper_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
-      // 7. Regime Radar
+      // 7. Regime Radar (Physical Synoptic Drivers)
       Plotly.newPlot('chart-regime-radar', [{
         type: 'scatterpolar',
         r: [85, 92, 78, 64, 45, 85],
         theta: ['Westerly Jet', 'Upper Easterly', 'Low-level RH', 'MFC Convergence', 'Vorticity', 'Westerly Jet'],
         fill: 'toself',
-        line: { color: '#2563A6' }
+        fillcolor: 'rgba(37, 99, 235, 0.15)',
+        line: { color: '#2563EB', width: 2.2 },
+        marker: { size: 6, color: '#1D4ED8' }
       }], {
-        polar: { radialaxis: { visible: true, range: [0, 100] } },
-        margin: { l: 30, r: 30, t: 20, b: 20 },
-        paper_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+        font: { family: 'Inter, sans-serif' },
+        polar: {
+          radialaxis: {
+            visible: true,
+            range: [0, 100],
+            tickfont: { size: 9, family: 'JetBrains Mono, monospace', color: '#64748B' },
+            gridcolor: '#E2E8F0',
+            linecolor: '#CBD5E1'
+          },
+          angularaxis: {
+            tickfont: { size: 10, family: 'Inter, sans-serif', color: '#0F172A', weight: 600 },
+            gridcolor: '#E2E8F0',
+            linecolor: '#CBD5E1',
+            rotation: 90,
+            direction: 'counterclockwise'
+          }
+        },
+        margin: { l: 40, r: 40, t: 25, b: 25 },
+        paper_bgcolor: 'transparent',
+        plot_bgcolor: 'transparent'
+      }, { displayModeBar: false, responsive: true });
 
       // 8. Global TreeSHAP
       Plotly.newPlot('chart-global-shap', [{
@@ -3915,15 +4100,18 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         y: ['Synoptic Regime Index', 'Low-level Moisture Flux', 'Topographic Slope Gradient', '850 hPa Westerly Speed', 'Boundary Layer RH', '200 hPa Easterly Jet', 'Surface Pressure Tendency', 'Soil Moisture Proxy'],
         x: [8.4, 6.7, 5.2, 4.8, 3.9, 3.1, 2.4, 1.8],
         orientation: 'h',
-        marker: { color: '#2563A6' },
+        marker: { color: '#2563EB' },
         text: ['+8.4 mm', '+6.7 mm', '+5.2 mm', '+4.8 mm', '+3.9 mm', '+3.1 mm', '+2.4 mm', '+1.8 mm'],
-        textposition: 'auto'
+        textposition: 'auto',
+        textfont: { family: 'JetBrains Mono, monospace', size: 11 }
       }], {
-        margin: { l: 190, r: 20, t: 10, b: 30 },
-        xaxis: { title: 'Mean Absolute TreeSHAP Value (mm/24h)', gridcolor: '#EEF2F6' },
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 200, r: 20, t: 15, b: 45 },
+        xaxis: { title: { text: 'Mean Absolute TreeSHAP Value (mm/24h)', font: { size: 12 } }, gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
+        yaxis: { tickfont: { size: 11, family: 'Inter, sans-serif', color: '#1E293B' } },
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
       // 9. Heavy Rainfall Risk (Standardized IMD 64.5 mm Criterion)
       Plotly.newPlot('chart-risk-districts', [{
@@ -3932,30 +4120,59 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
         y: [74.2, 68.5, 62.1, 48.4, 44.0, 38.6, 32.5, 29.8, 22.0, 18.5],
         marker: { color: ['#DC2626', '#DC2626', '#DC2626', '#EA580C', '#EA580C', '#EA580C', '#D99A24', '#D99A24', '#2E9B72', '#2E9B72'] },
         text: ['74%', '68%', '62%', '48%', '44%', '38%', '33%', '30%', '22%', '19%'],
-        textposition: 'auto'
+        textposition: 'auto',
+        textfont: { family: 'JetBrains Mono, monospace', size: 11 }
       }], {
-        margin: { l: 40, r: 20, t: 20, b: 60 },
-        yaxis: { title: 'P(Rain \u2265 64.5 mm / 24h)', range: [0, 100], gridcolor: '#EEF2F6' },
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 45, r: 20, t: 20, b: 70 },
+        xaxis: { tickfont: { size: 11, family: 'Inter, sans-serif', color: '#1E293B' } },
+        yaxis: { title: { text: 'P(Rain \u2265 64.5 mm / 24h)', font: { size: 12 } }, range: [0, 100], gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
       // 10. What-If Response
       Plotly.newPlot('chart-whatif-response', [
         { name: 'Baseline Calibrated', x: ['0h', '6h', '12h', '18h', '24h'], y: [4.2, 8.5, 12.8, 8.4, 4.5], type: 'scatter', mode: 'lines+markers', line: { color: '#64748B' } },
-        { name: 'Perturbed Scenario', x: ['0h', '6h', '12h', '18h', '24h'], y: [5.1, 11.2, 17.6, 12.0, 6.2], type: 'scatter', mode: 'lines+markers', line: { color: '#2563A6', width: 2.5 } }
+        { name: 'Perturbed Scenario', x: ['0h', '6h', '12h', '18h', '24h'], y: [5.1, 11.2, 17.6, 12.0, 6.2], type: 'scatter', mode: 'lines+markers', line: { color: '#2563EB', width: 2.5 } }
       ], {
-        margin: { l: 40, r: 20, t: 20, b: 30 },
-        yaxis: { title: 'Rain Rate (mm/h)', gridcolor: '#EEF2F6' },
+        font: { family: 'Inter, sans-serif' },
+        margin: { l: 45, r: 20, t: 25, b: 45 },
+        legend: { orientation: 'h', y: 1.15, x: 0.1, font: { size: 11, family: 'Inter, sans-serif' } },
+        yaxis: { title: { text: 'Rain Rate (mm/h)', font: { size: 12 } }, gridcolor: '#EEF2F6', tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
+        xaxis: { tickfont: { family: 'JetBrains Mono, monospace', size: 11 } },
         paper_bgcolor: 'transparent',
         plot_bgcolor: 'transparent'
-      }, { displayModeBar: false });
+      }, { displayModeBar: false, responsive: true });
 
       // 11. Historical Replay & Case Study Switcher
       window.loadCaseStudy = function(caseKey) {
         const btnA = document.getElementById('btn-case-a');
         const btnB = document.getElementById('btn-case-b');
         const desc = document.getElementById('case-study-desc');
+
+        const layoutReplay = {
+          barmode: 'group',
+          font: { family: 'Inter, sans-serif' },
+          margin: { l: 50, r: 20, t: 32, b: 65 },
+          legend: {
+            orientation: 'h',
+            y: 1.16,
+            x: 0.0,
+            font: { size: 11, family: 'Inter, sans-serif' }
+          },
+          xaxis: {
+            tickfont: { size: 11, family: 'Inter, sans-serif', color: '#1E293B' },
+            gridcolor: '#F1F5F9'
+          },
+          yaxis: {
+            title: { text: 'Daily Rainfall (mm / 24h)', font: { size: 12 } },
+            gridcolor: '#EEF2F6',
+            tickfont: { family: 'JetBrains Mono, monospace', size: 11 }
+          },
+          paper_bgcolor: 'transparent',
+          plot_bgcolor: 'transparent'
+        };
 
         if (caseKey === 'active') {
           if (btnA) btnA.classList.add('active');
@@ -3965,15 +4182,9 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
           }
           Plotly.react('chart-replay', [
             { name: 'Raw NWP (NOAA GFS)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [142, 198, 48, 22, 18], type: 'bar', marker: { color: '#94A3B8' } },
-            { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [118, 162, 34, 16, 14], type: 'bar', marker: { color: '#2563A6' } },
-            { name: 'Observational Reference (IMD Gridded)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [122, 158, 31, 15, 12], type: 'bar', marker: { color: '#2E9B72' } }
-          ], {
-            barmode: 'group',
-            margin: { l: 40, r: 20, t: 20, b: 40 },
-            yaxis: { title: 'Daily Rainfall (mm / 24h)', gridcolor: '#EEF2F6' },
-            paper_bgcolor: 'transparent',
-            plot_bgcolor: 'transparent'
-          }, { displayModeBar: false });
+            { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [118, 162, 34, 16, 14], type: 'bar', marker: { color: '#2563EB' } },
+            { name: 'Observational Reference (IMD Gridded)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [122, 158, 31, 15, 12], type: 'bar', marker: { color: '#15803D' } }
+          ], layoutReplay, { displayModeBar: false, responsive: true });
         } else {
           if (btnB) btnB.classList.add('active');
           if (btnA) btnA.classList.remove('active');
@@ -3982,15 +4193,9 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
           }
           Plotly.react('chart-replay', [
             { name: 'Raw NWP (NOAA GFS)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [48, 62, 28, 24, 20], type: 'bar', marker: { color: '#94A3B8' } },
-            { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [16, 22, 8, 4, 5], type: 'bar', marker: { color: '#2563A6' } },
-            { name: 'Observational Reference (IMD Gridded)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [14, 19, 6, 3, 4], type: 'bar', marker: { color: '#2E9B72' } }
-          ], {
-            barmode: 'group',
-            margin: { l: 40, r: 20, t: 20, b: 40 },
-            yaxis: { title: 'Daily Rainfall (mm / 24h)', gridcolor: '#EEF2F6' },
-            paper_bgcolor: 'transparent',
-            plot_bgcolor: 'transparent'
-          }, { displayModeBar: false });
+            { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [16, 22, 8, 4, 5], type: 'bar', marker: { color: '#2563EB' } },
+            { name: 'Observational Reference (IMD Gridded)', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: [14, 19, 6, 3, 4], type: 'bar', marker: { color: '#15803D' } }
+          ], layoutReplay, { displayModeBar: false, responsive: true });
         }
       };
       window.loadCaseStudy('active');
@@ -4016,15 +4221,8 @@ MODEL EVALUATION (LOCKED TEST): B4 Soft MoE RMSE: 9.40 mm vs Raw GFS: 24.71 mm (
 
         Plotly.react('chart-live-comparison', [
           { name: 'Raw NOAA GFS', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: gfsData, type: 'bar', marker: { color: '#94A3B8' } },
-          { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: vmData, type: 'bar', marker: { color: '#2563A6' } }
-        ], {
-          barmode: 'group',
-          margin: { l: 40, r: 20, t: 20, b: 40 },
-          yaxis: { title: 'Precipitation (mm/24h)', gridcolor: '#EEF2F6' },
-          paper_bgcolor: 'transparent',
-          plot_bgcolor: 'transparent',
-          transition: { duration: 450, easing: 'cubic-in-out' }
-        }, { displayModeBar: false, responsive: true });
+          { name: 'VarshaMitra Calibrated', x: ['Konkan Coastal', 'Ghats Crest', 'Madhya Maha', 'Marathwada', 'Vidarbha'], y: vmData, type: 'bar', marker: { color: '#2563EB' } }
+        ], layoutLiveComp, { displayModeBar: false, responsive: true });
       };
 
       // Dynamic Operational Bulletin Cycle Formatter
